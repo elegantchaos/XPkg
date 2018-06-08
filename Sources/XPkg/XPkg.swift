@@ -13,7 +13,8 @@ public class XPkg {
 
     let commands: [String:Command] = [
         "install": InstallCommand(),
-        "remove": RemoveCommand()
+        "remove": RemoveCommand(),
+        "link": LinkCommand()
     ]
 
     public init(arguments: Arguments) {
