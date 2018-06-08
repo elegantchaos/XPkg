@@ -5,6 +5,8 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import Arguments
+import Logger
+import Foundation
 
 protocol Command {
     func run(xpkg: XPkg)
@@ -12,10 +14,22 @@ protocol Command {
 
 struct InstallCommand: Command {
     func run(xpkg: XPkg) {
-        let vault = xpkg.vaultURL()
-
         let package = xpkg.arguments.argument("package")
+        let local = xpkg.localPackageURL(package)
+        let fm = FileManager.default
 
-        print("installing \(package) into \(vault)")
+        if fm.fileExists(atPath: local.path) {
+            Logger.stdout.log("Package `\(package)` is already installed.")
+        } else {
+            let remote = xpkg.remotePackageURL(package)
+            let container = local.deletingLastPathComponent()
+            try? fm.createDirectory(at: container, withIntermediateDirectories: true)
+
+            let runner = Runner(cwd: container)
+            let gitArgs = ["clone", remote.absoluteString]
+            if let result = try? runner.sync("/usr/bin/git", arguments: gitArgs) {
+                print("\(result.status) \(result.stdout)")
+            }
+        }
     }
 }

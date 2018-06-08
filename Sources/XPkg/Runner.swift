@@ -8,11 +8,16 @@ import Foundation
 
 class Runner {
     let environment: [String:String]? = nil
+    let cwd: URL?
 
     struct Result {
         let status: Int32
         let stdout: String
         let stderr: String
+    }
+
+    init(cwd: URL? = nil) {
+        self.cwd = cwd
     }
 
     /**
@@ -22,9 +27,13 @@ class Runner {
 
     func exec(_ command : String, arguments: [String] = []) {
         let process = Process()
+        if let cwd = cwd {
+            process.currentDirectoryURL = cwd
+        }
+
         process.launchPath = command
         process.arguments = arguments
-        process.environment = self.environment
+        // process.environment = self.environment
         process.launch()
         process.waitUntilExit()
         exit(process.terminationStatus)

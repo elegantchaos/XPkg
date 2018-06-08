@@ -9,6 +9,7 @@ import Foundation
 
 public class XPkg {
     let arguments: Arguments
+    let defaultOrg = "elegantchaos" // TODO: read from preference
 
     public init(arguments: Arguments) {
         self.arguments = arguments
@@ -44,5 +45,26 @@ public class XPkg {
 
         try? FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
         return localURL
+    }
+
+    internal func remotePackageURL(_ package: String) -> URL {
+        let remote : URL?
+        if package.contains("git@") {
+            remote = URL(string: package)
+        } else if package.contains("/") {
+            remote = URL(string: "git@github.com:\(package)")
+        } else {
+            remote = URL(string: "git@github.com:\(defaultOrg)/\(package)")
+        }
+
+        return remote! // assertion is that this can't fail for a properly formed package name...
+    }
+
+    internal func localPackageURL(_ package: String) -> URL {
+        let vault = vaultURL()
+        let remote = remotePackageURL(package)
+        let local = vault.appendingPathComponent(remote.path)
+
+        return local
     }
 }
