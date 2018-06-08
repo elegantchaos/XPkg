@@ -33,5 +33,6 @@ Examples:
 
 """
 
-let engine = XPkg()
-engine.run(arguments: Arguments(documentation: doc))
+let arguments = Arguments(documentation: doc)
+let engine = XPkg(arguments: arguments)
+engine.run()

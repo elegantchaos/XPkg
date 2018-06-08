@@ -7,11 +7,13 @@
 import Arguments
 
 protocol Command {
-    func run(arguments: Arguments)
+    func run(xpkg: XPkg)
 }
 
 struct InstallCommand: Command {
-    func run(arguments: Arguments) {
-        print("installing")
+    func run(xpkg: XPkg) {
+        let vault = xpkg.vaultURL()
+
+        print("installing into \(vault)")
     }
 }
