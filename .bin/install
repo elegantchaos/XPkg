@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo swift build --configuration debug
+sudo cp -f .build/debug/xpkg /usr/local/bin/xpkg
