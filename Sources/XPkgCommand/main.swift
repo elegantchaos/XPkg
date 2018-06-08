@@ -12,10 +12,11 @@ Cross Platform Package Manager.
 
 Usage:
     xpkg install <package>
+    xpkg remove <package>
     xpkg (-h | --help)
 
 Arguments:
-    <package>                           The package to install.
+    <package>                           The package to install/remove/modify.
 
 
 Options:

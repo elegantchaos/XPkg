@@ -7,7 +7,7 @@
 import Foundation
 
 class Runner {
-    let environment: [String:String]? = nil
+    var environment: [String:String]
     let cwd: URL?
 
     struct Result {
@@ -16,7 +16,8 @@ class Runner {
         let stderr: String
     }
 
-    init(cwd: URL? = nil) {
+    init(cwd: URL? = nil, environment: [String:String] = ProcessInfo.processInfo.environment) {
+        self.environment = environment
         self.cwd = cwd
     }
 
@@ -25,15 +26,15 @@ class Runner {
      Control is transferred to the launched process, and this function doesn't return.
      */
 
-    func exec(_ command : String, arguments: [String] = []) {
+    func exec(_ executable : URL, arguments: [String] = []) {
         let process = Process()
         if let cwd = cwd {
             process.currentDirectoryURL = cwd
         }
 
-        process.launchPath = command
+        process.executableURL = executable
         process.arguments = arguments
-        // process.environment = self.environment
+        process.environment = environment
         process.launch()
         process.waitUntilExit()
         exit(process.terminationStatus)
@@ -45,18 +46,21 @@ class Runner {
      Waits for the process to exit and returns the captured output plus the exit status.
      */
 
-    func sync(_ command : String, arguments: [String] = []) throws -> Result {
+    func sync(_ executable : URL, arguments: [String] = []) throws -> Result {
         let pipe = Pipe()
         let handle = pipe.fileHandleForReading
         let errPipe = Pipe()
         let errHandle = errPipe.fileHandleForReading
 
         let process = Process()
-        process.launchPath = command
+        if let cwd = cwd {
+            process.currentDirectoryURL = cwd
+        }
+        process.executableURL = executable
         process.arguments = arguments
         process.standardOutput = pipe
         process.standardError = errPipe
-        process.environment = self.environment
+        process.environment = environment
         process.launch()
         let data = handle.readDataToEndOfFile()
         let errData = errHandle.readDataToEndOfFile()

@@ -24,6 +24,8 @@ public class XPkg {
     internal func getCommand() -> Command? {
         if arguments.command("install") {
             return InstallCommand()
+        } else if arguments.command("remove") {
+            return RemoveCommand()
         }
 
         return nil
@@ -66,5 +68,9 @@ public class XPkg {
         let local = vault.appendingPathComponent(remote.path)
 
         return local
+    }
+
+    internal func gitURL() -> URL {
+        return URL(fileURLWithPath: "/usr/bin/git")
     }
 }

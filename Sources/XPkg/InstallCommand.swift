@@ -8,10 +8,6 @@ import Arguments
 import Logger
 import Foundation
 
-protocol Command {
-    func run(xpkg: XPkg)
-}
-
 struct InstallCommand: Command {
     func run(xpkg: XPkg) {
         let package = xpkg.arguments.argument("package")
@@ -27,7 +23,7 @@ struct InstallCommand: Command {
 
             let runner = Runner(cwd: container)
             let gitArgs = ["clone", remote.absoluteString]
-            if let result = try? runner.sync("/usr/bin/git", arguments: gitArgs) {
+            if let result = try? runner.sync(xpkg.gitURL(), arguments: gitArgs) {
                 print("\(result.status) \(result.stdout)")
             }
         }
