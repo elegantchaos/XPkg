@@ -9,13 +9,15 @@ import Logger
 import Foundation
 
 struct InstallCommand: Command {
+    let output = Logger.stdout
+
     func run(xpkg: XPkg) {
         let package = xpkg.arguments.argument("package")
         let local = xpkg.localPackageURL(package)
         let fm = FileManager.default
 
         if fm.fileExists(atPath: local.path) {
-            Logger.stdout.log("Package `\(package)` is already installed.")
+            output.log("Package `\(package)` is already installed.")
         } else {
             let remote = xpkg.remotePackageURL(package)
             let container = local.deletingLastPathComponent()
@@ -24,7 +26,11 @@ struct InstallCommand: Command {
             let runner = Runner(cwd: container)
             let gitArgs = ["clone", remote.absoluteString]
             if let result = try? runner.sync(xpkg.gitURL(), arguments: gitArgs) {
-                print("\(result.status) \(result.stdout)")
+                if result.status == 0 {
+                    output.log("Package `\(package)` installed.")
+                } else {
+                    output.log("Failed to install `\(package)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+                }
             }
         }
     }
