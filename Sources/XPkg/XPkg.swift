@@ -21,7 +21,7 @@ public class XPkg {
     }
 
     internal func getCommand() -> Command? {
-        if arguments.isCommand("install") {
+        if arguments.command("install") {
             return InstallCommand()
         }
 

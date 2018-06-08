@@ -14,6 +14,8 @@ struct InstallCommand: Command {
     func run(xpkg: XPkg) {
         let vault = xpkg.vaultURL()
 
-        print("installing into \(vault)")
+        let package = xpkg.arguments.argument("package")
+
+        print("installing \(package) into \(vault)")
     }
 }
