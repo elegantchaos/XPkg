@@ -11,6 +11,11 @@ public class XPkg {
     let arguments: Arguments
     let defaultOrg = "elegantchaos" // TODO: read from preference
 
+    let commands: [String:Command] = [
+        "install": InstallCommand(),
+        "remove": RemoveCommand()
+    ]
+
     public init(arguments: Arguments) {
         self.arguments = arguments
     }
@@ -22,10 +27,10 @@ public class XPkg {
     }
 
     internal func getCommand() -> Command? {
-        if arguments.command("install") {
-            return InstallCommand()
-        } else if arguments.command("remove") {
-            return RemoveCommand()
+        for command in commands {
+            if arguments.command(command.key) {
+                return command.value
+            }
         }
 
         return nil

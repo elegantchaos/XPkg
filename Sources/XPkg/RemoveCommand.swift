@@ -9,20 +9,31 @@ import Logger
 import Foundation
 
 struct RemoveCommand: Command {
+    let output = Logger.stdout
+
     func run(xpkg: XPkg) {
         let package = xpkg.arguments.argument("package")
         let local = xpkg.localPackageURL(package)
         let fm = FileManager.default
 
         guard fm.fileExists(atPath: local.path) else {
-            Logger.stdout.log("Package `\(package)` is not installed.")
+            output.log("Package `\(package)` is not installed.")
             return
         }
 
         let resolved = local.resolvingSymlinksInPath()
         let runner = Runner(cwd: resolved)
-        if let result = try? runner.sync(xpkg.gitURL(), arguments: ["status"]) {
-            print("\(result.status) \(result.stdout)")
+        var safeToDelete = false
+        if let result = try? runner.sync(xpkg.gitURL(), arguments: ["status", "--porcelain"]) {
+            if (result.status != 0) || (result.stdout != "") {
+                output.log("Package `\(package)` is modified. Use --force to force deletion.")
+            } else {
+                safeToDelete = true
+            }
+        }
+
+        if (safeToDelete) {
+            try? fm.removeItem(at: local)
         }
     }
 }
