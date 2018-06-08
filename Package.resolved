@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "Arguments",
-        "repositoryURL": "https://github.com/elegantchaos/Arguments",
-        "state": {
-          "branch": null,
-          "revision": "d8ed0267d978ff4d236c6620640778be34d346c1",
-          "version": "1.0.0"
-        }
-      },
-      {
         "package": "Docopt",
         "repositoryURL": "https://github.com/elegantchaos/docopt.swift",
         "state": {
