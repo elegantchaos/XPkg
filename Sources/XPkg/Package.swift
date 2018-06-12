@@ -121,6 +121,6 @@ class Package {
     */
 
     var installed: Bool {
-        return fileManager.fileExists(atPath: store.path) && fileManager.fileExists(atPath: local.path)
+        return fileManager.fileExists(atPath: local.path)
     }
 }
