@@ -6,15 +6,20 @@
 
 
 import XCTest
+import Arguments
 @testable import XPkg
 
 
 class XPkgTests: XCTestCase {
-    func testBasic() {
-        XCTFail("blah")
+    func testSimpleName() {
+        let arguments = Arguments(program: "xpkg")
+        let xpkg = XPkg(arguments: arguments)
+        xpkg.defaultOrg = "testorg"
+        let remote = xpkg.remotePackageURL("test")
+        XCTAssertEqual(remote, URL(string: "git@github.com:testorg/test"))
     }
 
     static var allTests = [
-        ("testBasic", testBasic),
+        ("testSimpleName", testSimpleName),
     ]
 }

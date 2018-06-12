@@ -9,7 +9,7 @@ import Foundation
 
 public class XPkg {
     let arguments: Arguments
-    let defaultOrg = "elegantchaos" // TODO: read from preference
+    var defaultOrg = "elegantchaos" // TODO: read from preference
 
     let commands: [String:Command] = [
         "install": InstallCommand(),
