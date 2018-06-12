@@ -38,6 +38,10 @@ struct InstallCommand: Command {
                     output.log("Failed to install `\(package)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
                 }
             }
+
+            if isProject {
+                try? fm.linkItem(at: container.appendingPathComponent(local.lastPathComponent), to: local)
+            }
         }
     }
 }
