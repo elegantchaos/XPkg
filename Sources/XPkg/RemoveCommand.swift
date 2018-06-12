@@ -33,7 +33,11 @@ struct RemoveCommand: Command {
         if safeToDelete {
             do {
                 try package.remove()
-                output.log("Package \(package.name) removed.")
+                if package.linked && !package.removeable {
+                    output.log("Package \(package.name) was linked to a local directory (\(package.local.path)). \nThe package has been uninstalled, but the linked directory was not touched.")
+                } else {
+                    output.log("Package \(package.name) removed.")
+                }
             } catch {
                 output.log("Package \(package.name) could not be removed.\n\(error)")
             }
