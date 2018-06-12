@@ -32,9 +32,9 @@ struct InstallCommand: Command {
         let gitArgs = ["clone", package.remote.absoluteString, package.local.path]
         if let result = try? runner.sync(xpkg.gitURL, arguments: gitArgs) {
             if result.status == 0 {
-                output.log("Package `\(package)` installed.")
+                output.log("Package `\(package.name)` installed.")
             } else {
-                output.log("Failed to install `\(package)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+                output.log("Failed to install `\(package.name)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
             }
         }
 

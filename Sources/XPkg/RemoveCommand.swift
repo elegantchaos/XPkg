@@ -31,7 +31,12 @@ struct RemoveCommand: Command {
         }
 
         if safeToDelete {
-            package.remove()
+            do {
+                try package.remove()
+                output.log("Package \(package.name) removed.")
+            } catch {
+                output.log("Package \(package.name) could not be removed.\n\(error)")
+            }
         }
     }
 }

@@ -99,12 +99,12 @@ class Package {
     Remove the package.
     */
 
-    func remove() {
+    func remove() throws {
         if removeable {
-            try? fileManager.removeItem(at: local)
+            try fileManager.removeItem(at: local)
         }
 
-        try? fileManager.removeItem(at: store)
+        try fileManager.removeItem(at: store)
     }
 
 
