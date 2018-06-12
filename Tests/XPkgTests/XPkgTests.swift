@@ -11,7 +11,7 @@ import Arguments
 
 
 class XPkgTests: XCTestCase {
-    func testSimpleName() {
+    func testName() {
         let arguments = Arguments(program: "xpkg")
         let xpkg = XPkg(arguments: arguments)
         xpkg.defaultOrg = "testorg"
@@ -19,7 +19,23 @@ class XPkgTests: XCTestCase {
         XCTAssertEqual(remote, URL(string: "git@github.com:testorg/test"))
     }
 
+    func testNameOrg() {
+        let arguments = Arguments(program: "xpkg")
+        let xpkg = XPkg(arguments: arguments)
+        let remote = xpkg.remotePackageURL("someorg/someproj")
+        XCTAssertEqual(remote, URL(string: "git@github.com:someorg/someproj"))
+    }
+
+    func testRepo() {
+        let arguments = Arguments(program: "xpkg")
+        let xpkg = XPkg(arguments: arguments)
+        let remote = xpkg.remotePackageURL("git@mygit.com:someorg/someproj")
+        XCTAssertEqual(remote, URL(string: "git@mygit.com:someorg/someproj"))
+    }
+
     static var allTests = [
-        ("testSimpleName", testSimpleName),
+        ("testName", testName),
+        ("testNameOrg", testNameOrg),
+        ("testRepo", testRepo),
     ]
 }
