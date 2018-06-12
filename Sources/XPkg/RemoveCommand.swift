@@ -21,7 +21,7 @@ struct RemoveCommand: Command {
             return
         }
 
-        let resolved = local.resolvingSymlinksInPath()
+        let resolved = local.appendingPathComponent("repo").resolvingSymlinksInPath()
         let runner = Runner(cwd: resolved)
         var safeToDelete = xpkg.arguments.option("force") as Bool
         if !safeToDelete {
@@ -35,6 +35,7 @@ struct RemoveCommand: Command {
         }
 
         if safeToDelete {
+            try? fm.removeItem(at: resolved)
             try? fm.removeItem(at: local)
         }
     }
