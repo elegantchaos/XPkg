@@ -71,9 +71,7 @@ public class XPkg {
     internal func localPackageURL(_ package: String) -> URL {
         let vault = vaultURL
         let remote = remotePackageURL(package)
-        print(remote.path)
         let path = remote.path.replacingOccurrences(of: "/", with: "-")
-        print(path)
         let local = vault.appendingPathComponent(path)
 
         return local

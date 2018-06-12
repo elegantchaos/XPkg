@@ -14,19 +14,20 @@ struct InstallCommand: Command {
     func run(xpkg: XPkg) {
         let package = xpkg.arguments.argument("package")
         let local = xpkg.localPackageURL(package)
+        let localRepo = local.appendingPathComponent("repo")
         let fm = FileManager.default
+        let isProject = xpkg.arguments.option("project") as Bool
+        let destination: URL
+        if isProject {
+            destination = xpkg.projectsURL.appendingPathComponent(URL(fileURLWithPath: package).lastPathComponent)
+        } else {
+            destination = localRepo
+        }
 
-        if fm.fileExists(atPath: local.path) {
+        if fm.fileExists(atPath: destination.path) {
             output.log("Package `\(package)` is already installed.")
         } else {
             let remote = xpkg.remotePackageURL(package)
-            let isProject = xpkg.arguments.option("project") as Bool
-            let destination : URL
-            if isProject {
-                destination = xpkg.projectsURL.appendingPathComponent(package)
-            } else {
-                destination = local
-            }
             let container = destination.deletingLastPathComponent()
             try? fm.createDirectory(at: container, withIntermediateDirectories: true)
 
@@ -41,7 +42,13 @@ struct InstallCommand: Command {
             }
 
             if isProject {
-                try? fm.linkItem(at: destination, to: local)
+                do {
+                    try fm.createDirectory(at: local, withIntermediateDirectories: true)
+                    try fm.createSymbolicLink(at: localRepo, withDestinationURL: destination)
+                } catch {
+                    print("blah")
+                    print(error)
+                }
             }
         }
     }
