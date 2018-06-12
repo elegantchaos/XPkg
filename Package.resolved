@@ -2,12 +2,12 @@
   "object": {
     "pins": [
       {
-        "package": "Arguments",
-        "repositoryURL": "https://github.com/elegantchaos/Arguments",
+        "package": "DictionaryCoding",
+        "repositoryURL": "https://github.com/elegantchaos/DictionaryCoding.git",
         "state": {
           "branch": null,
-          "revision": "d8ed0267d978ff4d236c6620640778be34d346c1",
-          "version": "1.0.0"
+          "revision": "1d74e037dddd0d8515eb0a08e374c2bac11b998b",
+          "version": "1.0.3"
         }
       },
       {

@@ -12,23 +12,24 @@ struct LinkCommand: Command {
     let output = Logger.stdout
 
     func run(xpkg: XPkg) {
-        let package = xpkg.arguments.argument("package")
-        let local = xpkg.localPackageURL(package)
-        let fm = FileManager.default
-
-        guard !fm.fileExists(atPath: local.path) else {
-            output.log("Package `\(package)` is already installed.")
+        let name = xpkg.arguments.argument("package")
+        let package = Package(remote: xpkg.remotePackageURL(name), vault: xpkg.vaultURL)
+        guard !package.installed else {
+            output.log("Package `\(name)` is already installed.")
             return
         }
 
         let linkedPath = xpkg.arguments.argument("path")
-        guard fm.fileExists(atPath: linkedPath) else {
+        package.local = URL(fileURLWithPath: linkedPath)
+        guard package.installed else {
             output.log("Local path \(linkedPath) doesn't exist.")
             return
         }
 
-        let linkedURL = URL(fileURLWithPath: linkedPath)
-        try? fm.createDirectory(at: local, withIntermediateDirectories: true)
-        try? fm.createSymbolicLink(at: local.appendingPathComponent("repo"), withDestinationURL: linkedURL)
+        do {
+            try package.save()
+        } catch {
+            print(error)
+        }
     }
 }

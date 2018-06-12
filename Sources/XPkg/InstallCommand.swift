@@ -12,44 +12,36 @@ struct InstallCommand: Command {
     let output = Logger.stdout
 
     func run(xpkg: XPkg) {
-        let package = xpkg.arguments.argument("package")
-        let local = xpkg.localPackageURL(package)
-        let localRepo = local.appendingPathComponent("repo")
         let fm = FileManager.default
-        let isProject = xpkg.arguments.option("project") as Bool
-        let destination: URL
-        if isProject {
-            destination = xpkg.projectsURL.appendingPathComponent(URL(fileURLWithPath: package).lastPathComponent)
-        } else {
-            destination = localRepo
+        let packageSpec = xpkg.arguments.argument("package")
+        let package = Package(remote: xpkg.remotePackageURL(packageSpec), vault: xpkg.vaultURL)
+        guard !package.registered else {
+            output.log("Package `\(package.name)` is already installed.")
+            return
         }
 
-        if fm.fileExists(atPath: destination.path) {
-            output.log("Package `\(package)` is already installed.")
-        } else {
-            let remote = xpkg.remotePackageURL(package)
-            let container = destination.deletingLastPathComponent()
-            try? fm.createDirectory(at: container, withIntermediateDirectories: true)
+        let isProject = xpkg.arguments.option("project") as Bool
+        if isProject {
+            package.local = xpkg.projectsURL.appendingPathComponent(package.name)
+        }
 
-            let runner = Runner(cwd: container)
-            let gitArgs = ["clone", remote.absoluteString, destination.path]
-            if let result = try? runner.sync(xpkg.gitURL, arguments: gitArgs) {
-                if result.status == 0 {
-                    output.log("Package `\(package)` installed.")
-                } else {
-                    output.log("Failed to install `\(package)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
-                }
-            }
+        let container = package.local.deletingLastPathComponent()
+        try? fm.createDirectory(at: container, withIntermediateDirectories: true)
 
-            if isProject {
-                do {
-                    try fm.createDirectory(at: local, withIntermediateDirectories: true)
-                    try fm.createSymbolicLink(at: localRepo, withDestinationURL: destination)
-                } catch {
-                    print("blah")
-                    print(error)
-                }
+        let runner = Runner(cwd: container)
+        let gitArgs = ["clone", package.remote.absoluteString, package.local.path]
+        if let result = try? runner.sync(xpkg.gitURL, arguments: gitArgs) {
+            if result.status == 0 {
+                output.log("Package `\(package)` installed.")
+            } else {
+                output.log("Failed to install `\(package)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
             }
+        }
+
+        do {
+            try package.save()
+        } catch {
+            print(error)
         }
     }
 }

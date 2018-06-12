@@ -12,8 +12,9 @@ struct RemoveCommand: Command {
     let output = Logger.stdout
 
     func run(xpkg: XPkg) {
-        let package = xpkg.arguments.argument("package")
-        let local = xpkg.localPackageURL(package)
+        let name = xpkg.arguments.argument("package")
+        let package = Package(name: name, vault: xpkg.vaultURL)!
+        let local = package.local
         let fm = FileManager.default
 
         guard fm.fileExists(atPath: local.path) else {

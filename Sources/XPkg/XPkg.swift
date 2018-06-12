@@ -68,15 +68,6 @@ public class XPkg {
         return remote! // assertion is that this can't fail for a properly formed package name...
     }
 
-    internal func localPackageURL(_ package: String) -> URL {
-        let vault = vaultURL
-        let remote = remotePackageURL(package)
-        let path = remote.path.replacingOccurrences(of: "/", with: "-")
-        let local = vault.appendingPathComponent(path)
-
-        return local
-    }
-
     internal var gitURL: URL {
         return URL(fileURLWithPath: "/usr/bin/git")
     }
