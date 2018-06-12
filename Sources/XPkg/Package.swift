@@ -30,7 +30,7 @@ class Package {
     Will fail if there is no such entry.
     */
 
-    init?(name: String, vault: URL) {
+    init?(name: String, vault: URL, fileManager: FileManager = FileManager.default) {
         let store = vault.appendingPathComponent(name)
         let infoURL = store.appendingPathComponent("info.json")
         let decoder = JSONDecoder()
@@ -45,6 +45,7 @@ class Package {
         self.local = info.local
         self.linked = info.linked
         self.removeable = info.removeable
+        self.fileManager = fileManager
     }
 
     /**
@@ -78,7 +79,7 @@ class Package {
         self.linked = true
         self.removeable = removeable
     }
-    
+
     /**
     Save the package info locally.
     */
@@ -92,6 +93,20 @@ class Package {
             try data.write(to: infoURL)
         }
     }
+
+
+    /**
+    Remove the package.
+    */
+
+    func remove() {
+        if removeable {
+            try? fileManager.removeItem(at: local)
+        }
+
+        try? fileManager.removeItem(at: store)
+    }
+
 
     /**
     Does the store contain an entry for this package?

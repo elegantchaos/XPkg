@@ -12,18 +12,13 @@ struct RemoveCommand: Command {
     let output = Logger.stdout
 
     func run(xpkg: XPkg) {
-        let name = xpkg.arguments.argument("package")
-        let package = Package(name: name, vault: xpkg.vaultURL)!
-        let local = package.local
-        let fm = FileManager.default
-
-        guard fm.fileExists(atPath: local.path) else {
-            output.log("Package `\(package)` is not installed.")
+        let packageName = xpkg.arguments.argument("package")
+        guard let package = Package(name: packageName, vault: xpkg.vaultURL) else {
+            output.log("Package `\(packageName)` is not installed.")
             return
         }
 
-        let resolved = local.appendingPathComponent("repo").resolvingSymlinksInPath()
-        let runner = Runner(cwd: resolved)
+        let runner = Runner(cwd: package.local)
         var safeToDelete = xpkg.arguments.option("force") as Bool
         if !safeToDelete {
             if let result = try? runner.sync(xpkg.gitURL, arguments: ["status", "--porcelain"]) {
@@ -36,8 +31,7 @@ struct RemoveCommand: Command {
         }
 
         if safeToDelete {
-            try? fm.removeItem(at: resolved)
-            try? fm.removeItem(at: local)
+            package.remove()
         }
     }
 }
