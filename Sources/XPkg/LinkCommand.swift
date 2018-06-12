@@ -28,6 +28,7 @@ struct LinkCommand: Command {
         }
 
         let linkedURL = URL(fileURLWithPath: linkedPath)
-        try? fm.createSymbolicLink(at: local, withDestinationURL: linkedURL)
+        try? fm.createDirectory(at: local, withIntermediateDirectories: true)
+        try? fm.createSymbolicLink(at: local.appendingPathComponent("repo"), withDestinationURL: linkedURL)
     }
 }
