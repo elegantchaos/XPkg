@@ -11,11 +11,15 @@ struct PackageInfo : Codable {
     let name: String
     let remote: URL
     let local: URL
+    let linked: Bool
+    let removeable: Bool
 }
 
 class Package {
     var fileManager = FileManager.default
     var name: String
+    var linked = false
+    var removeable = false
     var local: URL
     let remote: URL
     let store: URL
@@ -39,6 +43,8 @@ class Package {
         self.store = store
         self.remote = info.remote
         self.local = info.local
+        self.linked = info.linked
+        self.removeable = info.removeable
     }
 
     /**
@@ -54,12 +60,32 @@ class Package {
     }
 
     /**
+    Link package to an existing folder.
+    */
+
+    func link(to existing: URL, removeable: Bool) {
+        self.local = existing
+        self.linked = true
+        self.removeable = removeable
+    }
+
+    /**
+    Link package into an external container.
+    */
+
+    func link(into container: URL, removeable: Bool) {
+        self.local = container.appendingPathComponent(name)
+        self.linked = true
+        self.removeable = removeable
+    }
+    
+    /**
     Save the package info locally.
     */
 
     func save() throws {
         let encoder = JSONEncoder()
-        let info = PackageInfo(name: name, remote: remote, local: local)
+        let info = PackageInfo(name: name, remote: remote, local: local, linked: linked, removeable: removeable)
         if let data = try? encoder.encode(info) {
             try fileManager.createDirectory(at: store, withIntermediateDirectories: true)
             let infoURL = store.appendingPathComponent("info.json")

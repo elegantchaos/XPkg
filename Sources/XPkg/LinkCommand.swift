@@ -20,7 +20,7 @@ struct LinkCommand: Command {
         }
 
         let linkedPath = xpkg.arguments.argument("path")
-        package.local = URL(fileURLWithPath: linkedPath)
+        package.link(to: URL(fileURLWithPath: linkedPath), removeable: false)
         guard package.installed else {
             output.log("Local path \(linkedPath) doesn't exist.")
             return

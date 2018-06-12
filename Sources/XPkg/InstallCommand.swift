@@ -22,7 +22,7 @@ struct InstallCommand: Command {
 
         let isProject = xpkg.arguments.option("project") as Bool
         if isProject {
-            package.local = xpkg.projectsURL.appendingPathComponent(package.name)
+            package.link(into: xpkg.projectsURL, removeable: true)
         }
 
         let container = package.local.deletingLastPathComponent()
