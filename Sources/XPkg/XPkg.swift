@@ -76,7 +76,11 @@ public class XPkg {
         return local
     }
 
-    internal func gitURL() -> URL {
+    internal var gitURL: URL {
         return URL(fileURLWithPath: "/usr/bin/git")
+    }
+
+    internal var projectsURL: URL {
+        return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
     }
 }

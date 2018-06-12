@@ -25,7 +25,7 @@ struct RemoveCommand: Command {
         let runner = Runner(cwd: resolved)
         var safeToDelete = xpkg.arguments.option("force") as Bool
         if !safeToDelete {
-            if let result = try? runner.sync(xpkg.gitURL(), arguments: ["status", "--porcelain"]) {
+            if let result = try? runner.sync(xpkg.gitURL, arguments: ["status", "--porcelain"]) {
                 if (result.status != 0) || (result.stdout != "") {
                     output.log("Package `\(package)` is modified. Use --force to force deletion.")
                 } else {

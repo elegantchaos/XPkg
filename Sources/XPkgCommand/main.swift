@@ -11,10 +11,10 @@ let doc = """
 Cross Platform Package Manager.
 
 Usage:
-    xpkg install <package>
+    xpkg install <package> [--project]
     xpkg remove <package> [--force]
     xpkg link <package> <path>
-    xpkg (-h | --help)                  
+    xpkg (-h | --help)
 
 Arguments:
     <package>                           The package to install/remove/modify.

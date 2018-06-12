@@ -20,12 +20,18 @@ struct InstallCommand: Command {
             output.log("Package `\(package)` is already installed.")
         } else {
             let remote = xpkg.remotePackageURL(package)
-            let container = local.deletingLastPathComponent()
+            let isProject = xpkg.arguments.option("project") as Bool
+            let container : URL
+            if isProject {
+                container = xpkg.projectsURL
+            } else {
+                container = local.deletingLastPathComponent()
+            }
             try? fm.createDirectory(at: container, withIntermediateDirectories: true)
 
             let runner = Runner(cwd: container)
             let gitArgs = ["clone", remote.absoluteString]
-            if let result = try? runner.sync(xpkg.gitURL(), arguments: gitArgs) {
+            if let result = try? runner.sync(xpkg.gitURL, arguments: gitArgs) {
                 if result.status == 0 {
                     output.log("Package `\(package)` installed.")
                 } else {
