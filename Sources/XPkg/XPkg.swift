@@ -37,7 +37,7 @@ public class XPkg {
         return nil
     }
 
-    internal func vaultURL() -> URL {
+    internal var vaultURL: URL {
         let fm = FileManager.default
         let localPath = ("~/.config/xpkg/vault" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
@@ -69,9 +69,12 @@ public class XPkg {
     }
 
     internal func localPackageURL(_ package: String) -> URL {
-        let vault = vaultURL()
+        let vault = vaultURL
         let remote = remotePackageURL(package)
-        let local = vault.appendingPathComponent(remote.path)
+        print(remote.path)
+        let path = remote.path.replacingOccurrences(of: "/", with: "-")
+        print(path)
+        let local = vault.appendingPathComponent(path)
 
         return local
     }
