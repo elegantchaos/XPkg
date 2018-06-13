@@ -189,6 +189,10 @@ class Package {
         }
     }
 
+    /**
+    Run a list of commands.
+    */
+
     func run(commands: [ManifestCommand]?, engine: XPkg) throws {
         if let commands = commands {
             for command in commands {
@@ -212,26 +216,36 @@ class Package {
         }
     }
 
+    /**
+    Run the built-in link command.
+    */
 
     func builtin(link arguments: [String], engine: XPkg) {
         if arguments.count > 1 {
-            print("linking")
             let name = arguments[1]
             let linked = local.appendingPathComponent(name)
             let link = binURL.appendingPathComponent(name)
             do {
-                print(link)
-                print(linked)
-                try? fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
-                print("linked")
+                try fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
             } catch {
-                print("failed")
-                print("\(error)")
+                engine.output.log("Couldn't link: \(error)")
             }
         }
     }
 
-    func builtin(unlink: [String], engine: XPkg) {
-        print("unlinking")
+    /**
+    Run the built-in unlink command.
+    */
+    
+    func builtin(unlink arguments: [String], engine: XPkg) {
+        if arguments.count > 1 {
+            let name = arguments[1]
+            let link = binURL.appendingPathComponent(name)
+            do {
+                try fileManager.removeItem(at: link)
+            } catch {
+                engine.output.log("Couln't unlink: \(error)")
+            }
+        }
     }
 }
