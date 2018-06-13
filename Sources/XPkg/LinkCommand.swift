@@ -25,10 +25,8 @@ struct LinkCommand: Command {
             return
         }
 
-        do {
+        engine.attempt(action:"Link") {
             try package.save()
-        } catch {
-            print(error)
         }
     }
 }

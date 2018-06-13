@@ -83,4 +83,12 @@ public class XPkg {
     internal var projectsURL: URL {
         return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
     }
+
+    func attempt(action: String, block: () throws -> ()) {
+        do {
+            try block()
+        } catch {
+            output.log("\(action) failed.\n\(error)")
+        }
+    }
 }

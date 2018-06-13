@@ -29,7 +29,7 @@ struct RemoveCommand: Command {
         }
 
         if safeToDelete {
-            do {
+            engine.attempt(action: "Remove \(package.name)") {
                 try package.run(action:"remove", engine: engine)
                 try package.remove()
                 if package.linked && !package.removeable {
@@ -37,8 +37,6 @@ struct RemoveCommand: Command {
                 } else {
                     output.log("Package \(package.name) removed.")
                 }
-            } catch {
-                output.log("Package \(package.name) could not be removed.\n\(error)")
             }
         }
     }

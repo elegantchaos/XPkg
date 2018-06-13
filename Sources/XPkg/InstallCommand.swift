@@ -22,12 +22,10 @@ struct InstallCommand: Command {
             package.link(into: engine.projectsURL, removeable: true)
         }
 
-        do {
+        engine.attempt(action: "Install") {
             try package.clone(engine: engine)
             try package.run(action: "install", engine: engine)
             try package.save()
-        } catch {
-            print(error)
         }
     }
 }

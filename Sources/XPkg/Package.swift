@@ -225,10 +225,8 @@ class Package {
             let name = arguments[1]
             let linked = local.appendingPathComponent(name)
             let link = binURL.appendingPathComponent(name)
-            do {
+            engine.attempt(action: "Link") {
                 try fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
-            } catch {
-                engine.output.log("Couldn't link: \(error)")
             }
         }
     }
@@ -241,13 +239,11 @@ class Package {
         if arguments.count > 1 {
             let name = arguments[1]
             let link = binURL.appendingPathComponent(name)
-            do {
+            engine.attempt(action: "Unlink") {
                 let attributes = try fileManager.attributesOfItem(atPath: link.path)
                 if let type = attributes[FileAttributeKey.type] as? FileAttributeType, type == .typeSymbolicLink {
                     try fileManager.removeItem(at: link)
                 }
-            } catch {
-                engine.output.log("Couln't unlink: \(error)")
             }
         }
     }
