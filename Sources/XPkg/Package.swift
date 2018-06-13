@@ -120,6 +120,16 @@ class Package {
 
 
     /**
+    Reveal the package in the Finder/Desktop.
+    */
+
+    func reveal() {
+        let container = local
+        let runner = Runner(cwd: container)
+        let _ = try? runner.sync(URL(fileURLWithPath: "/usr/bin/env"), arguments: ["open", "."])
+    }
+
+    /**
     Does the store contain an entry for this package?
     */
 

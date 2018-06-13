@@ -4,14 +4,9 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-
-import Arguments
-import Logger
 import Foundation
 
 struct ListCommand: Command {
-    let output = Logger.stdout
-
     func run(engine: XPkg) {
         let fm = FileManager.default
         let vault = engine.vaultURL

@@ -14,6 +14,7 @@ Usage:
     xpkg install <package> [--project]
     xpkg link <package> <path>
     xpkg list
+    xpkg open <package>
     xpkg remove <package> [--force]
     xpkg (-h | --help)
 

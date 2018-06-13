@@ -17,7 +17,8 @@ public class XPkg {
         "install": InstallCommand(),
         "remove": RemoveCommand(),
         "link": LinkCommand(),
-        "list": ListCommand()
+        "list": ListCommand(),
+        "open": OpenCommand()
     ]
 
     public init(arguments: Arguments) {
@@ -90,5 +91,20 @@ public class XPkg {
         } catch {
             output.log("\(action) failed.\n\(error)")
         }
+    }
+
+    /**
+    Return a package structure for an existing package that was specified as
+    an argument.
+    */
+
+    func existingPackage(from argument: String = "package") -> Package {
+        let packageName = arguments.argument(argument)
+        guard let package = Package(name: packageName, vault: vaultURL) else {
+            output.log("Package \(packageName) is not installed.")
+            exit(1)
+        }
+
+        return package
     }
 }

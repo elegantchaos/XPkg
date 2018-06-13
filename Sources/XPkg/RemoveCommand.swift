@@ -10,11 +10,7 @@ import Foundation
 struct RemoveCommand: Command {
     func run(engine: XPkg) {
         let output = engine.output
-        let packageName = engine.arguments.argument("package")
-        guard let package = Package(name: packageName, vault: engine.vaultURL) else {
-            output.log("Package \(packageName) is not installed.")
-            return
-        }
+        let package = engine.existingPackage()
 
         let runner = Runner(cwd: package.local)
         var safeToDelete = engine.arguments.option("force") as Bool
