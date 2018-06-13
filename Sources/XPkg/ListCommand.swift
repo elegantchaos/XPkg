@@ -26,25 +26,5 @@ struct ListCommand: Command {
         } else {
             print("No packages installed.")
         }
-        // let name = xpkg.arguments.argument("package")
-        // let package = Package(remote: xpkg.remotePackageURL(name), vault: xpkg.vaultURL)
-        // guard !package.installed else {
-        //     output.log("Package `\(name)` is already installed.")
-        //     return
-        // }
-        //
-        // let linkedPath = xpkg.arguments.argument("path")
-        // let linkedURL = URL(fileURLWithPath: linkedPath).absoluteURL
-        // package.link(to: linkedURL, removeable: false)
-        // guard package.installed else {
-        //     output.log("Local path \(linkedURL) doesn't exist.")
-        //     return
-        // }
-        //
-        // do {
-        //     try package.save()
-        // } catch {
-        //     print(error)
-        // }
     }
 }
