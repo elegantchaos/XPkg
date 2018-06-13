@@ -224,8 +224,14 @@ class Package {
         if arguments.count > 1 {
             let name = arguments[1]
             let linked = local.appendingPathComponent(name)
-            let link = binURL.appendingPathComponent(name)
-            engine.attempt(action: "Link") {
+            let link = (arguments.count > 2) ? URL(expandedFilePath: arguments[2]) : binURL.appendingPathComponent(name)
+            engine.attempt(action: "Link (\(name) as \(link))") {
+                let backup = link.appendingPathExtension(".backup")
+                if !fileManager.fileExists(atPath: backup.path) {
+                    if fileManager.fileExists(atPath: link.path) {
+                        try fileManager.moveItem(at: link, to: backup)
+                    }
+                }
                 try fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
             }
         }

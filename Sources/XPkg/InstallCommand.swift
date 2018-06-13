@@ -24,8 +24,8 @@ struct InstallCommand: Command {
 
         engine.attempt(action: "Install") {
             try package.clone(engine: engine)
-            try package.run(action: "install", engine: engine)
             try package.save()
+            try package.run(action: "install", engine: engine)
         }
     }
 }
