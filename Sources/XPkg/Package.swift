@@ -216,17 +216,22 @@ class Package {
         }
     }
 
+    func links(from arguments: [String]) -> (String, URL, URL) {
+        let name = arguments[1]
+        let linked = local.appendingPathComponent(name)
+        let link = (arguments.count > 2) ? URL(expandedFilePath: arguments[2]) : binURL.appendingPathComponent(name)
+        return (name, link, linked)
+    }
+
     /**
     Run the built-in link command.
     */
 
     func builtin(link arguments: [String], engine: XPkg) {
         if arguments.count > 1 {
-            let name = arguments[1]
-            let linked = local.appendingPathComponent(name)
-            let link = (arguments.count > 2) ? URL(expandedFilePath: arguments[2]) : binURL.appendingPathComponent(name)
+            let (name, link, linked) = links(from: arguments)
             engine.attempt(action: "Link (\(name) as \(link))") {
-                let backup = link.appendingPathExtension(".backup")
+                let backup = link.appendingPathExtension("backup")
                 if !fileManager.fileExists(atPath: backup.path) {
                     if fileManager.fileExists(atPath: link.path) {
                         try fileManager.moveItem(at: link, to: backup)
@@ -243,12 +248,15 @@ class Package {
 
     func builtin(unlink arguments: [String], engine: XPkg) {
         if arguments.count > 1 {
-            let name = arguments[1]
-            let link = binURL.appendingPathComponent(name)
+            let (name, link, linked) = links(from: arguments)
             engine.attempt(action: "Unlink") {
-                let attributes = try fileManager.attributesOfItem(atPath: link.path)
-                if let type = attributes[FileAttributeKey.type] as? FileAttributeType, type == .typeSymbolicLink {
+                print(name, link, linked)
+                if fileManager.fileIsSymLink(at: link) {
                     try fileManager.removeItem(at: link)
+                    let backup = link.appendingPathExtension("backup")
+                    if fileManager.fileExists(at: backup) {
+                        try fileManager.moveItem(at: backup, to: link)
+                    }
                 }
             }
         }

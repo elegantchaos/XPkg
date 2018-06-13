@@ -12,3 +12,19 @@ extension URL {
         self.init(fileURLWithPath: expanded)
     }
 }
+
+extension FileManager {
+    func fileExists(at url: URL) -> Bool {
+        return fileExists(atPath: url.path)
+    }
+    
+    func fileIsSymLink(at url: URL) -> Bool {
+        if let attributes = try? attributesOfItem(atPath: url.path) {
+            if let type = attributes[FileAttributeKey.type] as? FileAttributeType {
+                return type == .typeSymbolicLink
+            }
+        }
+        return false
+    }
+
+}
