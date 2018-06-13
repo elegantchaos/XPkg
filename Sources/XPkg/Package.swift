@@ -161,9 +161,9 @@ class Package {
         let gitArgs = ["clone", remote.absoluteString, local.path]
         let result = try runner.sync(engine.gitURL, arguments: gitArgs)
         if result.status == 0 {
-            engine.output.log("Package `\(name)` installed.")
+            engine.output.log("Package \(name) installed.")
         } else {
-            engine.output.log("Failed to install `\(name)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+            engine.output.log("Failed to install \(name).\n\n\(result.status) \(result.stdout) \(result.stderr)")
         }
     }
 
@@ -208,7 +208,7 @@ class Package {
                         if result.status == 0 {
                             engine.output.log(result.stdout)
                         } else {
-                            engine.output.log("Failed to run `\(command)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+                            engine.output.log("Failed to run \(command).\n\n\(result.status) \(result.stdout) \(result.stderr)")
                         }
                     }
                 }

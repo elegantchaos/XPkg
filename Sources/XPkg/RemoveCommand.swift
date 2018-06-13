@@ -12,7 +12,7 @@ struct RemoveCommand: Command {
         let output = engine.output
         let packageName = engine.arguments.argument("package")
         guard let package = Package(name: packageName, vault: engine.vaultURL) else {
-            output.log("Package `\(packageName)` is not installed.")
+            output.log("Package \(packageName) is not installed.")
             return
         }
 
@@ -21,7 +21,7 @@ struct RemoveCommand: Command {
         if !safeToDelete {
             if let result = try? runner.sync(engine.gitURL, arguments: ["status", "--porcelain"]) {
                 if (result.status != 0) || (result.stdout != "") {
-                    output.log("Package `\(package)` is modified. Use --force to force deletion.")
+                    output.log("Package \(package) is modified. Use --force to force deletion.")
                 } else {
                     safeToDelete = true
                 }
