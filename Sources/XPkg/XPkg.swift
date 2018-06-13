@@ -14,7 +14,8 @@ public class XPkg {
     let commands: [String:Command] = [
         "install": InstallCommand(),
         "remove": RemoveCommand(),
-        "link": LinkCommand()
+        "link": LinkCommand(),
+        "list": ListCommand()  
     ]
 
     public init(arguments: Arguments) {
