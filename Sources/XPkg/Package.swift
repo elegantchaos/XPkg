@@ -7,8 +7,13 @@
 import Foundation
 import Logger
 
+typealias ManifestCommand = [String]
+
 struct Manifest: Codable {
-    let install: [String]
+    let install: [ManifestCommand]?
+    let remove: [ManifestCommand]?
+    let updating: [ManifestCommand]?
+    let updated: [ManifestCommand]?
 }
 
 struct PackageInfo: Codable {
@@ -157,16 +162,30 @@ class Package {
             let decoder = JSONDecoder()
             if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
                 switch (command) {
-                case "install": run(arguments: manifest.install)
+                case "install": try run(commands: manifest.install, engine: engine)
+                case "remove": try run(commands: manifest.remove, engine: engine)
                 default:
                     engine.output.log("Unknown command \(command).")
                 }
+            } else {
+                engine.output.log("Couldn't decode.")
             }
 
         }
     }
 
-    func run(arguments: [String]) {
-        print(arguments)
+    func run(commands: [ManifestCommand]?, engine: XPkg) throws {
+        if let commands = commands {
+            for command in commands {
+                let executable = URL(fileURLWithPath: "/usr/bin/env")
+                let runner = Runner(cwd: local)
+                let result = try runner.sync(executable, arguments: command)
+                if result.status == 0 {
+                    engine.output.log(result.stdout)
+                } else {
+                    engine.output.log("Failed to run `\(command)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+                }
+            }
+        }
     }
 }
