@@ -236,13 +236,16 @@ class Package {
     /**
     Run the built-in unlink command.
     */
-    
+
     func builtin(unlink arguments: [String], engine: XPkg) {
         if arguments.count > 1 {
             let name = arguments[1]
             let link = binURL.appendingPathComponent(name)
             do {
-                try fileManager.removeItem(at: link)
+                let attributes = try fileManager.attributesOfItem(atPath: link.path)
+                if let type = attributes[FileAttributeKey.type] as? FileAttributeType, type == .typeSymbolicLink {
+                    try fileManager.removeItem(at: link)
+                }
             } catch {
                 engine.output.log("Couln't unlink: \(error)")
             }
