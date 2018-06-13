@@ -62,10 +62,15 @@ public class XPkg {
         let remote : URL?
         if package.contains("git@") {
             remote = URL(string: package)
-        } else if package.contains("/") {
-            remote = URL(string: "git@github.com:\(package)")
         } else {
-            remote = URL(string: "git@github.com:\(defaultOrg)/\(package)")
+            let local = URL(fileURLWithPath: package)
+            if FileManager.default.fileExists(atPath: local.path) {
+                remote = local
+            } else         if package.contains("/") {
+                remote = URL(string: "git@github.com:\(package)")
+            } else {
+                remote = URL(string: "git@github.com:\(defaultOrg)/\(package)")
+            }
         }
 
         return remote! // assertion is that this can't fail for a properly formed package name...

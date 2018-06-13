@@ -7,7 +7,11 @@
 import Foundation
 import Logger
 
-struct PackageInfo : Codable {
+struct Manifest: Codable {
+    let install: [String]
+}
+
+struct PackageInfo: Codable {
     let version = 1
     let name: String
     let remote: URL
@@ -141,5 +145,28 @@ class Package {
         } else {
             engine.output.log("Failed to install `\(name)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
         }
+    }
+
+    /**
+    Run commands listed in the .xpkg file.
+    */
+
+    func run(command: String, engine: XPkg) throws {
+        let url = local.appendingPathComponent(".xpkg.json")
+        if fileManager.fileExists(atPath: url.path) {
+            let decoder = JSONDecoder()
+            if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
+                switch (command) {
+                case "install": run(arguments: manifest.install)
+                default:
+                    engine.output.log("Unknown command \(command).")
+                }
+            }
+
+        }
+    }
+
+    func run(arguments: [String]) {
+        print(arguments)
     }
 }
