@@ -5,6 +5,7 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import Foundation
+import Logger
 
 struct PackageInfo : Codable {
     let version = 1
@@ -122,5 +123,23 @@ class Package {
 
     var installed: Bool {
         return fileManager.fileExists(atPath: local.path)
+    }
+
+    /**
+    Clone the package into its local destination.
+    */
+
+    func clone(engine: XPkg) throws {
+        let container = local.deletingLastPathComponent()
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+
+        let runner = Runner(cwd: container)
+        let gitArgs = ["clone", remote.absoluteString, local.path]
+        let result = try runner.sync(engine.gitURL, arguments: gitArgs)
+        if result.status == 0 {
+            engine.output.log("Package `\(name)` installed.")
+        } else {
+            engine.output.log("Failed to install `\(name)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+        }
     }
 }

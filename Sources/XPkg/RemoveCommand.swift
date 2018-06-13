@@ -5,23 +5,21 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import Arguments
-import Logger
 import Foundation
 
 struct RemoveCommand: Command {
-    let output = Logger.stdout
-
-    func run(xpkg: XPkg) {
-        let packageName = xpkg.arguments.argument("package")
-        guard let package = Package(name: packageName, vault: xpkg.vaultURL) else {
+    func run(engine: XPkg) {
+        let output = engine.output
+        let packageName = engine.arguments.argument("package")
+        guard let package = Package(name: packageName, vault: engine.vaultURL) else {
             output.log("Package `\(packageName)` is not installed.")
             return
         }
 
         let runner = Runner(cwd: package.local)
-        var safeToDelete = xpkg.arguments.option("force") as Bool
+        var safeToDelete = engine.arguments.option("force") as Bool
         if !safeToDelete {
-            if let result = try? runner.sync(xpkg.gitURL, arguments: ["status", "--porcelain"]) {
+            if let result = try? runner.sync(engine.gitURL, arguments: ["status", "--porcelain"]) {
                 if (result.status != 0) || (result.stdout != "") {
                     output.log("Package `\(package)` is modified. Use --force to force deletion.")
                 } else {

@@ -5,21 +5,19 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import Arguments
-import Logger
 import Foundation
 
 struct LinkCommand: Command {
-    let output = Logger.stdout
-
-    func run(xpkg: XPkg) {
-        let name = xpkg.arguments.argument("package")
-        let package = Package(remote: xpkg.remotePackageURL(name), vault: xpkg.vaultURL)
+    func run(engine: XPkg) {
+        let output = engine.output
+        let name = engine.arguments.argument("package")
+        let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
         guard !package.installed else {
             output.log("Package `\(name)` is already installed.")
             return
         }
 
-        let linkedPath = xpkg.arguments.argument("path")
+        let linkedPath = engine.arguments.argument("path")
         let linkedURL = URL(fileURLWithPath: linkedPath).absoluteURL
         package.link(to: linkedURL, removeable: false)
         guard package.installed else {

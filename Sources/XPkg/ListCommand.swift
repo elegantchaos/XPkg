@@ -12,9 +12,9 @@ import Foundation
 struct ListCommand: Command {
     let output = Logger.stdout
 
-    func run(xpkg: XPkg) {
+    func run(engine: XPkg) {
         let fm = FileManager.default
-        let vault = xpkg.vaultURL
+        let vault = engine.vaultURL
 
         if let items = try? fm.contentsOfDirectory(at: vault, includingPropertiesForKeys: nil), items.count > 0 {
             for item in items {

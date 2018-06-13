@@ -6,16 +6,18 @@
 
 import Arguments
 import Foundation
+import Logger
 
 public class XPkg {
     let arguments: Arguments
+    let output = Logger.stdout
     var defaultOrg = "elegantchaos" // TODO: read from preference
 
     let commands: [String:Command] = [
         "install": InstallCommand(),
         "remove": RemoveCommand(),
         "link": LinkCommand(),
-        "list": ListCommand()  
+        "list": ListCommand()
     ]
 
     public init(arguments: Arguments) {
@@ -24,7 +26,7 @@ public class XPkg {
 
     public func run() {
         if let command = getCommand() {
-            command.run(xpkg: self)
+            command.run(engine: self)
         }
     }
 
