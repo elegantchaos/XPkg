@@ -177,15 +177,31 @@ class Package {
     func run(commands: [ManifestCommand]?, engine: XPkg) throws {
         if let commands = commands {
             for command in commands {
-                let executable = URL(fileURLWithPath: "/usr/bin/env")
-                let runner = Runner(cwd: local)
-                let result = try runner.sync(executable, arguments: command)
-                if result.status == 0 {
-                    engine.output.log(result.stdout)
-                } else {
-                    engine.output.log("Failed to run `\(command)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+                if command.count > 0 {
+                    let tool = command[0]
+                    switch(tool) {
+                    case "link": builtin(link: command, engine: engine)
+                    case "unlink": builtin(unlink: command, engine: engine)
+                    default:
+                        let executable = URL(fileURLWithPath: "/usr/bin/env")
+                        let runner = Runner(cwd: local)
+                        let result = try runner.sync(executable, arguments: command)
+                        if result.status == 0 {
+                            engine.output.log(result.stdout)
+                        } else {
+                            engine.output.log("Failed to run `\(command)`.\n\n\(result.status) \(result.stdout) \(result.stderr)")
+                        }
+                    }
                 }
             }
         }
+    }
+
+    func builtin(link: [String], engine: XPkg) {
+        print("linking")
+    }
+
+    func builtin(unlink: [String], engine: XPkg) {
+        print("unlinking")
     }
 }
