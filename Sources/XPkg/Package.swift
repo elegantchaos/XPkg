@@ -124,7 +124,7 @@ class Package {
     */
 
     var registered: Bool {
-        return fileManager.fileExists(atPath: store.path)
+        return fileManager.fileExists(at: store)
     }
 
     /**
@@ -132,7 +132,7 @@ class Package {
     */
 
     var installed: Bool {
-        return fileManager.fileExists(atPath: local.path)
+        return fileManager.fileExists(at: local)
     }
 
     /**
@@ -232,8 +232,8 @@ class Package {
             let (name, link, linked) = links(from: arguments)
             engine.attempt(action: "Link (\(name) as \(link))") {
                 let backup = link.appendingPathExtension("backup")
-                if !fileManager.fileExists(atPath: backup.path) {
-                    if fileManager.fileExists(atPath: link.path) {
+                if !fileManager.fileExists(at: backup) {
+                    if fileManager.fileExists(at: link) {
                         try fileManager.moveItem(at: link, to: backup)
                     }
                 }

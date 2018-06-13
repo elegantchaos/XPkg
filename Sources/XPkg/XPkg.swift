@@ -45,7 +45,7 @@ public class XPkg {
         let localPath = ("~/.config/xpkg/vault" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
-        if fm.fileExists(atPath: localURL.path) {
+        if fm.fileExists(at: localURL) {
             return localURL
         } else {
             let globalURL = URL(fileURLWithPath: "/usr/local/share/xpkg/vault").resolvingSymlinksInPath()
@@ -64,9 +64,9 @@ public class XPkg {
             remote = URL(string: package)
         } else {
             let local = URL(fileURLWithPath: package)
-            if FileManager.default.fileExists(atPath: local.path) {
+            if FileManager.default.fileExists(at: local) {
                 remote = local
-            } else         if package.contains("/") {
+            } else if package.contains("/") {
                 remote = URL(string: "git@github.com:\(package)")
             } else {
                 remote = URL(string: "git@github.com:\(defaultOrg)/\(package)")
