@@ -14,8 +14,9 @@ Usage:
     xpkg install <package> [--project]
     xpkg link <package> <path>
     xpkg list
+    xpkg path <package> [--store]
     xpkg remove <package> [--force]
-    xpkg reveal <package> [--store]
+    xpkg reveal <package> [--store] [--path]
     xpkg (-h | --help)
 
 Arguments:
@@ -27,8 +28,8 @@ Options:
     -logs <logs>                        Specify all log channels to enable.
     -logs+ <logs>                       Specify additional log channels to enable.
     -logs- <logs>                       Specify log channels to disable.
-    --store                             Reveal the internal store for the package, rather than the package root.
-    
+    --store                             Use internal store, rather than the package root.
+
 Examples:
     xpkg install MyPackage              # Install a package from the default github org
     xpkg install MyOrg/MyPackage        # Install a package from the a github org

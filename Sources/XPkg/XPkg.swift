@@ -18,6 +18,7 @@ public class XPkg {
         "remove": RemoveCommand(),
         "link": LinkCommand(),
         "list": ListCommand(),
+        "path": PathCommand(),
         "reveal": RevealCommand()
     ]
 
