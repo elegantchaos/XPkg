@@ -30,6 +30,7 @@ class Package {
     var name: String
     var linked = false
     var removeable = false
+    var global = false
     var local: URL
     let remote: URL
     let store: URL
@@ -135,6 +136,20 @@ class Package {
     }
 
     /**
+    The directory to use for binary links.
+    By default we use the user's local bin.
+    */
+
+    var binURL: URL {
+        if (global) {
+            return URL(fileURLWithPath: "/usr/local/bin")
+        } else {
+            let localBin = "~/.local/bin" as NSString
+            return URL(fileURLWithPath: localBin.expandingTildeInPath)
+        }
+    }
+
+    /**
     Clone the package into its local destination.
     */
 
@@ -153,22 +168,22 @@ class Package {
     }
 
     /**
-    Run commands listed in the .xpkg file.
+    Run commands listed in the .xpkg file for a given action.
     */
 
-    func run(command: String, engine: XPkg) throws {
+    func run(action: String, engine: XPkg) throws {
         let url = local.appendingPathComponent(".xpkg.json")
         if fileManager.fileExists(atPath: url.path) {
             let decoder = JSONDecoder()
             if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
-                switch (command) {
+                switch (action) {
                 case "install": try run(commands: manifest.install, engine: engine)
                 case "remove": try run(commands: manifest.remove, engine: engine)
                 default:
-                    engine.output.log("Unknown command \(command).")
+                    engine.output.log("Unknown action \(action).")
                 }
             } else {
-                engine.output.log("Couldn't decode.")
+                engine.output.log("Couldn't decode manifest.")
             }
 
         }
@@ -197,8 +212,23 @@ class Package {
         }
     }
 
-    func builtin(link: [String], engine: XPkg) {
-        print("linking")
+
+    func builtin(link arguments: [String], engine: XPkg) {
+        if arguments.count > 1 {
+            print("linking")
+            let name = arguments[1]
+            let linked = local.appendingPathComponent(name)
+            let link = binURL.appendingPathComponent(name)
+            do {
+                print(link)
+                print(linked)
+                try? fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
+                print("linked")
+            } catch {
+                print("failed")
+                print("\(error)")
+            }
+        }
     }
 
     func builtin(unlink: [String], engine: XPkg) {
