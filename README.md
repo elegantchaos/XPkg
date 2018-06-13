@@ -20,7 +20,7 @@ Specifically I wanted to be able to:
 - have hooks automatically run when a package is installed, to set up symlinks etc
 - have similar hooks run automatically to clean up when a package is removed
 
-That's what XPkg does.
+In a nutshell, that's what XPkg does.
 
 ## Installation
 
@@ -71,6 +71,28 @@ The `link` / `unlink` commands take one or two arguments.
 The first argument is the location of a file in the repo, to make a link for. If this is the only argument supplied, by default it will be linked into `~/.local/bin/`.
 
 If you supply a second argument, you can instead link somewhere else.
+
+
+## Additional Use Case
+
+In addition to storing settings and helper scripts in packages, I have a second use case for XPkg.
+
+Pretty much every project I work on also resides in a git repo somewhere.
+
+Previously I used to keep pretty much everything that I was working on in a `Work/` directory, organised in a kind of reverse-dns style. Again, this became unwieldy as the amount of projects grew over time.
+
+Having a nested structure made it tricky to see what was there.
+
+Because everything was theoretically in git, it should have been safe to remove things that weren't currently needed, but doing everything manually made this a bit risky: it was necessary to check first to make sure that all local changes had been committed and pushed, and that there weren't things that only existed locally.
+
+So my second use case is to manage adding/removing projects so that I can work on them when I need to, and safely remove them from a local machine when I don't.
+
+Each project is just a package (a git repo, in other words). The only difference from the normal workflow is that when I install one, rather than hiding the local copy away somewhere, I want it to be placed into a visible location that I can point my editor/ide/tools at.
+
+The way to do this right now is: `xpkg install <repo> --project`. This fetches the project repo and puts it into `~/Projects/<package>`, where I can work on it.
+
+In theory, when I want to remove it, I can then do `xpkg remove <package>` and XPkg will check first to see if there are any outstanding changes. I say "in theory" because this stuff is not completed yet, and definitely not fully tested, so may well not work properly. I certainly wouldn't trust it!
+
 
 
 ## Future Plans
