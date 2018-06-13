@@ -6,9 +6,10 @@
 
 import Foundation
 
-struct OpenCommand: Command {
+struct RevealCommand: Command {
     func run(engine: XPkg) {
         let package = engine.existingPackage()
-        package.reveal()
+        let store = engine.arguments.option("store") as Bool
+        package.reveal(store: store)
     }
 }

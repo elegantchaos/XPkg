@@ -18,7 +18,7 @@ public class XPkg {
         "remove": RemoveCommand(),
         "link": LinkCommand(),
         "list": ListCommand(),
-        "open": OpenCommand()
+        "reveal": RevealCommand()
     ]
 
     public init(arguments: Arguments) {

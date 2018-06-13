@@ -123,10 +123,15 @@ class Package {
     Reveal the package in the Finder/Desktop.
     */
 
-    func reveal() {
-        let container = local
+    func reveal(store showStore: Bool) {
+        let container = showStore ? store : local
+
+        #if canImport(NSApplication)
+        // TODO: use NSWorkspace on the Mac
+        #else
         let runner = Runner(cwd: container)
-        let _ = try? runner.sync(URL(fileURLWithPath: "/usr/bin/env"), arguments: ["open", "."])
+        let _ = try? runner.sync(URL(fileURLWithPath: "/usr/bin/env"), arguments: ["xdg-open", "."])
+        #endif
     }
 
     /**
