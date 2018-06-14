@@ -19,7 +19,8 @@ public class XPkg {
         "link": LinkCommand(),
         "list": ListCommand(),
         "path": PathCommand(),
-        "reveal": RevealCommand()
+        "reveal": RevealCommand(),
+        "update": UpdateCommand(),
     ]
 
     public init(arguments: Arguments) {
