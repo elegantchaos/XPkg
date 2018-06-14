@@ -1,17 +1,31 @@
 #!/bin/bash
 
 ROOT="$HOME/.config/xpkg"
-mkdir -p "$ROOT"
-cd "$ROOT"
-git clone https://github.com/elegantchaos/xpkg.git code
-cd code
+
+if [[ -e "$ROOT/code" ]]
+then
+    echo "Updating xpkg."
+    cd "$ROOT/code"
+    git pull
+else
+    echo "Downloading xpkg."
+    mkdir -p "$ROOT"
+    cd "$ROOT"
+    git clone https://github.com/elegantchaos/xpkg.git code
+    cd code
+fi
+
+echo "Building."
 swift build
 
 LOCALBIN=~/.local/bin
 
+echo "Installing links."
 if [[ -e "$LOCALBIN" ]]
 then
-    ln -s "$ROOT/code/.build/debug/xpkg" "$LOCALBIN/xpkg"
+    ln -sf "$ROOT/code/.build/debug/xpkg" "$LOCALBIN/xpkg"
 else
-    sudo ln -s "$ROOT/code/.build/debug/xpkg" "/usr/local/bin/xpkg"
+    sudo ln -sf "$ROOT/code/.build/debug/xpkg" "/usr/local/bin/xpkg"
 fi
+
+echo "Done."
