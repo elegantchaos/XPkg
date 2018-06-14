@@ -16,7 +16,12 @@ else
 fi
 
 echo "Building."
-swift build
+swift run builder build
+if [[ $? != 0 ]]
+then
+    echo "Build failed."
+    exit 1
+fi
 
 LOCALBIN=~/.local/bin
 
