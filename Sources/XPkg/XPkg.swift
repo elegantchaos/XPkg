@@ -95,6 +95,21 @@ public class XPkg {
         }
     }
 
+    func forEachPackage(_ block: (Package) -> ()) -> Bool {
+        let fm = FileManager.default
+        let vault = vaultURL
+        guard let items = try? fm.contentsOfDirectory(at: vault, includingPropertiesForKeys: nil), items.count > 0 else {
+            return false
+        }
+
+        for item in items {
+            if let package = Package(name: item.lastPathComponent, vault: vault) {
+                block(package)
+            }
+        }
+        return true
+    }
+
     /**
     Return a package structure for an existing package that was specified as
     an argument.

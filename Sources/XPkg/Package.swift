@@ -276,4 +276,12 @@ class Package {
             }
         }
     }
+
+    /**
+    Update the package.
+    */
+
+    func update(engine: XPkg) {
+        engine.output.log("Updating \(name)")
+    }
 }

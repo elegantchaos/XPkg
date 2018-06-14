@@ -17,7 +17,7 @@ Usage:
     xpkg path <package> [--store]
     xpkg remove <package> [--force]
     xpkg reveal <package> [--store] [--path]
-    xpkg update [<package> | --self]
+    xpkg update [self | <package>]
     xpkg (-h | --help)
 
 Arguments:

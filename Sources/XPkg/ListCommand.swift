@@ -10,15 +10,12 @@ struct ListCommand: Command {
     func run(engine: XPkg) {
         let fm = FileManager.default
         let vault = engine.vaultURL
+        let gotPackages = engine.forEachPackage { (package) in
+            let location = package.linked ? " (\(package.local.path))" : ""
+            print("\(package.name)\(location)")
+        }
 
-        if let items = try? fm.contentsOfDirectory(at: vault, includingPropertiesForKeys: nil), items.count > 0 {
-            for item in items {
-                if let package = Package(name: item.lastPathComponent, vault: vault) {
-                    let location = package.linked ? " (\(package.local.path))" : ""
-                    print("\(package.name)\(location)")
-                }
-            }
-        } else {
+        if !gotPackages {
             print("No packages installed.")
         }
     }
