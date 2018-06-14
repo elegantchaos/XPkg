@@ -2,12 +2,30 @@
   "object": {
     "pins": [
       {
-        "package": "DictionaryCoding",
-        "repositoryURL": "https://github.com/elegantchaos/DictionaryCoding.git",
+        "package": "Arguments",
+        "repositoryURL": "https://github.com/elegantchaos/Arguments",
         "state": {
           "branch": null,
-          "revision": "1d74e037dddd0d8515eb0a08e374c2bac11b998b",
-          "version": "1.0.3"
+          "revision": "24b9705bc094292dfd3f936b6a734aac99cb8fbe",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "package": "Builder",
+        "repositoryURL": "https://github.com/elegantchaos/Builder.git",
+        "state": {
+          "branch": null,
+          "revision": "44fe47b8284878b97a13f7bb6ae27432412a5c75",
+          "version": "1.0.5"
+        }
+      },
+      {
+        "package": "BuilderConfiguration",
+        "repositoryURL": "https://github.com/elegantchaos/BuilderConfiguration.git",
+        "state": {
+          "branch": null,
+          "revision": "560f557d88437a724b9d548cf57d11e066d0d08b",
+          "version": "1.1.3"
         }
       },
       {
