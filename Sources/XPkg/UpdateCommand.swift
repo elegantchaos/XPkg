@@ -21,11 +21,18 @@ struct UpdateCommand: Command {
     }
 
     func updateSelf(engine: XPkg) {
+        engine.output.log("Updating xpkg.")
         let url = engine.xpkgURL
         let codeURL = url.appendingPathComponent("code")
         let runner = Runner(cwd: codeURL)
+        if let result = try? runner.sync(engine.gitURL, arguments:["pull"]) {
+            engine.output.log(result.stdout)
+        }
+
         let bootstrapURL = codeURL.appendingPathComponent(".bin").appendingPathComponent("bootstrap")
-        runner.sync(bootstrapURL)
+        if let result = try? runner.sync(bootstrapURL) {
+            engine.output.log(result.stdout)
+        }
     }
 
 }
