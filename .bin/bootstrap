@@ -15,4 +15,7 @@ else
     cd code
 fi
 
-source "$ROOT/code/.bin/install"
+if [[ $? == 0 ]]
+then
+    source "$ROOT/code/.bin/install"
+fi
