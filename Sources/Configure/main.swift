@@ -41,7 +41,7 @@ let configuration = Configuration(
             ]),
         .action(name:"run", phases:[
             .actionPhase(name:"Building", action: "build"),
-            .toolPhase(name:"Running", tool: "run", arguments:[]),
+            .toolPhase(name:"Running", tool: "run", arguments:["xpkg"]),
             ]),
     ]
 )
