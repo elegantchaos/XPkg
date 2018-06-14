@@ -10,14 +10,37 @@ import Foundation
 struct LinkCommand: Command {
     func run(engine: XPkg) {
         let output = engine.output
-        let name = engine.arguments.argument("package")
+        var name = engine.arguments.argument("package")
+        var linkedPath = engine.arguments.argument("path")
+
+        if (name == "") && (linkedPath == "") {
+            // try to figure out the name from the current directory
+            let runner = Runner()
+            if let result = try? runner.sync(engine.gitURL, arguments: ["remote", "get-url", "origin"]) {
+                if result.status == 0 {
+                    name = result.stdout.trimmingCharacters(in: CharacterSet.newlines)
+                }
+            }
+
+            if let result2 = try? runner.sync(engine.gitURL, arguments: ["rev-parse", "--show-toplevel"]) {
+                if result2.status == 0 {
+                    linkedPath = result2.stdout.trimmingCharacters(in: CharacterSet.newlines)
+                }
+            }
+
+            if (name == "") || (linkedPath == "") {
+                output.log("Couldn't infer package name/path.")
+                return
+            }
+        }
+
+
         let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
         guard !package.installed else {
             output.log("Package `\(name)` is already installed.")
             return
         }
 
-        let linkedPath = engine.arguments.argument("path")
         let linkedURL = URL(fileURLWithPath: linkedPath).absoluteURL
         package.link(to: linkedURL, removeable: false)
         guard package.installed else {
@@ -27,6 +50,7 @@ struct LinkCommand: Command {
 
         engine.attempt(action:"Link") {
             try package.save()
+            output.log("Linked \(linkedPath) as \(name).")
         }
     }
 }

@@ -12,7 +12,7 @@ Cross Platform Package Manager.
 
 Usage:
     xpkg install <package> [--project]
-    xpkg link <package> <path>
+    xpkg link [<package> <path>]
     xpkg list
     xpkg path <package> [--store]
     xpkg remove <package> [--force]
