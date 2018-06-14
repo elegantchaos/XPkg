@@ -15,4 +15,4 @@ else
     cd code
 fi
 
-source "$ROOT/.bin/install"
+source "$ROOT/code/.bin/install"
