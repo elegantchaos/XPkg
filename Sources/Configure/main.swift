@@ -37,7 +37,7 @@ let configuration = Configuration(
             .buildPhase(name:"Building", target:"xpkg"),
             ]),
         .action(name:"test", phases:[
-            .testPhase(name:"Testing", target:"XPkgCommand"),
+            .testPhase(name:"Testing", target:"XPkgTests"),
             ]),
         .action(name:"run", phases:[
             .actionPhase(name:"Building", action: "build"),
