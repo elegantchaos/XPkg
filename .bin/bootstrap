@@ -15,22 +15,4 @@ else
     cd code
 fi
 
-echo "Building."
-swift run builder build
-if [[ $? != 0 ]]
-then
-    echo "Build failed."
-    exit 1
-fi
-
-LOCALBIN=~/.local/bin
-
-echo "Installing links."
-if [[ -e "$LOCALBIN" ]]
-then
-    ln -sf "$ROOT/code/.build/debug/xpkg" "$LOCALBIN/xpkg"
-else
-    sudo ln -sf "$ROOT/code/.build/debug/xpkg" "/usr/local/bin/xpkg"
-fi
-
-echo "Done."
+source "$ROOT/.bin/install"
