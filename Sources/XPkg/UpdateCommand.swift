@@ -21,7 +21,11 @@ struct UpdateCommand: Command {
     }
 
     func updateSelf(engine: XPkg) {
-        print("Updating self.")
+        let url = engine.xpkgURL
+        let codeURL = url.appendingPathComponent("code")
+        let runner = Runner(cwd: codeURL)
+        let bootstrapURL = codeURL.appendingPathComponent(".bin").appendingPathComponent("bootstrap")
+        runner.sync(bootstrapURL)
     }
 
 }

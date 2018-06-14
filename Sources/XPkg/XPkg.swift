@@ -43,15 +43,15 @@ public class XPkg {
         return nil
     }
 
-    internal var vaultURL: URL {
+    internal var xpkgURL: URL {
         let fm = FileManager.default
-        let localPath = ("~/.config/xpkg/vault" as NSString).expandingTildeInPath as String
+        let localPath = ("~/.config/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
         if fm.fileExists(at: localURL) {
             return localURL
         } else {
-            let globalURL = URL(fileURLWithPath: "/usr/local/share/xpkg/vault").resolvingSymlinksInPath()
+            let globalURL = URL(fileURLWithPath: "/usr/local/share/xpkg").resolvingSymlinksInPath()
             if fm.fileExists(atPath: globalURL.path) {
                 return globalURL
             }
@@ -77,6 +77,13 @@ public class XPkg {
         }
 
         return remote! // assertion is that this can't fail for a properly formed package name...
+    }
+
+    internal var vaultURL: URL {
+        let url = xpkgURL.appendingPathComponent("vault")
+
+        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
     }
 
     internal var gitURL: URL {
