@@ -81,8 +81,8 @@ class Package {
         self.linked = true
         self.removeable = removeable
         if useLocalName {
-            self.store = store.deletingLastPathComponent().appendingPathComponent(name)
             self.name = existing.lastPathComponent
+            self.store = store.deletingLastPathComponent().appendingPathComponent(name)
         }
     }
 
