@@ -64,7 +64,8 @@ class Package {
     */
 
     init(remote: URL, vault: URL) {
-        let name = remote.lastPathComponent
+        let nameURL = (remote.pathExtension == "git") ? remote.deletingPathExtension() : remote
+        let name = nameURL.lastPathComponent
         self.name = name
         self.remote = remote
         self.store = vault.appendingPathComponent(name)
