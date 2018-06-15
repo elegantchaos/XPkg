@@ -26,7 +26,7 @@ struct PackageInfo: Codable {
 }
 
 class Package {
-    var fileManager = FileManager.default
+    var fileManager: FileManager
     var name: String
     var linked = false
     var removeable = false
@@ -63,13 +63,24 @@ class Package {
     Init a new package record.
     */
 
-    init(remote: URL, vault: URL) {
+    init(remote: URL, vault: URL, fileManager: FileManager = FileManager.default) {
         let nameURL = (remote.pathExtension == "git") ? remote.deletingPathExtension() : remote
         let name = nameURL.lastPathComponent
         self.name = name
         self.remote = remote
         self.store = vault.appendingPathComponent(name)
-        self.local = self.store.appendingPathComponent("local")
+        self.fileManager = fileManager
+
+        // is the package already linked locally?
+        let infoURL = store.appendingPathComponent("info.json")
+        let decoder = JSONDecoder()
+        if let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) {
+            self.local = info.local
+            self.linked = info.linked
+            self.removeable = info.removeable
+        } else {
+            self.local = self.store.appendingPathComponent("local")
+        }
     }
 
     /**
