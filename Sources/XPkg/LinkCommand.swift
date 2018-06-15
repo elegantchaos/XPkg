@@ -35,7 +35,10 @@ struct LinkCommand: Command {
         }
 
 
+        // use the local folder name as the name of the package
         let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
+        package.name = package.local.lastPathComponent
+
         guard !package.installed else {
             output.log("Package `\(name)` is already installed.")
             return
