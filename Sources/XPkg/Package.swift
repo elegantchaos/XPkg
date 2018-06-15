@@ -33,7 +33,7 @@ class Package {
     var global = false
     var local: URL
     let remote: URL
-    let store: URL
+    var store: URL
 
     /**
     Init from an existing entry in the vault.
@@ -76,10 +76,14 @@ class Package {
     Link package to an existing folder.
     */
 
-    func link(to existing: URL, removeable: Bool) {
+    func link(to existing: URL, removeable: Bool, useLocalName: Bool = false) {
         self.local = existing
         self.linked = true
         self.removeable = removeable
+        if useLocalName {
+            self.store = store.deletingLastPathComponent().appendingPathComponent(name)
+            self.name = existing.lastPathComponent
+        }
     }
 
     /**
