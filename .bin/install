@@ -9,13 +9,15 @@ then
 fi
 
 LOCALBIN=~/.local/bin
-
+GOSCRIPT="pushd `xpkg path $@`"
 echo "Installing links."
 if [[ -e "$LOCALBIN" ]]
 then
     ln -sf "$ROOT/code/.build/debug/xpkg" "$LOCALBIN/xpkg"
+    echo "$GOSCRIPT" > "$LOCALBIN/xg"
 else
     sudo ln -sf "$ROOT/code/.build/debug/xpkg" "/usr/local/bin/xpkg"
+    echo "$GOSCRIPT" > "/usr/local/bin/xg"
 fi
 
 echo "Done."
