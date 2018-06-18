@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ROOT="$HOME/.config/xpkg"
+
 echo "Building."
 swift run builder build
 if [[ $? != 0 ]]
@@ -8,13 +10,14 @@ then
     exit 1
 fi
 
-LOCALBIN=~/.local/bin
-GOSCRIPT="pushd `xpkg path $@`"
+LOCALBIN="$HOME/.local/bin"
 echo "Installing links."
 if [[ -e "$LOCALBIN" ]]
 then
+    LOCALSTARTUP="$HOME/.local/share/bash-hooks/startup"
+    mkdir -p "$LOCALSTARTUP"
     ln -sf "$ROOT/code/.build/debug/xpkg" "$LOCALBIN/xpkg"
-    echo "$GOSCRIPT" > "$LOCALBIN/xg"
+    ln -sf "$ROOT/code/.bin/xpkg-bash" "$LOCALSTARTUP/xpkg"
 else
     sudo ln -sf "$ROOT/code/.build/debug/xpkg" "/usr/local/bin/xpkg"
     echo "$GOSCRIPT" > "/usr/local/bin/xg"
