@@ -13,7 +13,7 @@ Cross Platform Package Manager.
 Usage:
     xpkg install <package> [--project]
     xpkg link [<package> <path>]
-    xpkg list
+    xpkg list [--compact]
     xpkg path <package> [--store]
     xpkg remove <package> [--force]
     xpkg reveal <package> [--store] [--path]
@@ -30,6 +30,7 @@ Options:
     -logs+ <logs>                       Specify additional log channels to enable.
     -logs- <logs>                       Specify log channels to disable.
     --store                             Use internal store, rather than the package root.
+    --compact                           Produces minimal output.
 
 Examples:
     xpkg install MyPackage              # Install a package from the default github org

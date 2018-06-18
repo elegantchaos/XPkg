@@ -4,7 +4,7 @@ xg() {
 
 _comp_xg() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    COMPREPLY=( $(compgen -W "$(ls ~/.config/xpkg/vault)" -- "$cur") )
+    COMPREPLY=( $(compgen -W "$(xpkg list --compact)" -- "$cur") )
 }
 
 complete -o nospace -o bashdefault -F _comp_xg xg

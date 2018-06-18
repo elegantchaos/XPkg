@@ -10,13 +10,27 @@ struct ListCommand: Command {
     func run(engine: XPkg) {
         let fm = FileManager.default
         let vault = engine.vaultURL
+        if engine.arguments.option("compact") {
+            listCompact(engine: engine)
+        } else {
+            listNormal(engine: engine)
+        }
+    }
+
+    func listCompact(engine: XPkg) {
+        engine.forEachPackage { (package) in
+            engine.output.log("\(package.name)")
+        }
+    }
+
+    func listNormal(engine: XPkg) {
         let gotPackages = engine.forEachPackage { (package) in
             let location = package.linked ? " (\(package.local.path))" : ""
-            print("\(package.name)\(location)")
+            engine.output.log("\(package.name)\(location)")
         }
 
         if !gotPackages {
-            print("No packages installed.")
+            engine.output.log("No packages installed.")
         }
     }
 }
