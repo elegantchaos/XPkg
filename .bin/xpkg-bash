@@ -1,3 +1,10 @@
 xg() {
     builtin pushd "`xpkg path $@`"
 }
+
+_comp_xg() {
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=( $(compgen -W "$(ls ~/.config/xpkg/vault)" -- "$cur") )
+}
+
+complete -o nospace -o bashdefault -F _comp_xg xg
