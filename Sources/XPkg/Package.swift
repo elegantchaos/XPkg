@@ -203,6 +203,19 @@ class Package {
     */
 
     func update(engine: XPkg) {
-        engine.output.log("Updating \(name)")
+        let runner = Runner(cwd: local)
+        if let result = try? runner.sync(engine.gitURL, arguments: ["pull"]) {
+            if result.status == 0 {
+                if result.stdout == "Already up-to-date.\n" {
+                    engine.output.log("Package \(name) unchanged.")
+                } else {
+                    engine.output.log("Package \(name) updated.")
+                }
+            } else {
+                engine.output.log("Failed to update \(name).\n\n\(result.status) \(result.stdout) \(result.stderr)")
+            }
+        } else {
+            engine.output.log("Failed to launch git whilst updating \(name).")
+        }
     }
 }
