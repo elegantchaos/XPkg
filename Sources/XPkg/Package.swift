@@ -268,6 +268,7 @@ class Package {
                         try fileManager.moveItem(at: link, to: backup)
                     }
                 }
+                try fileManager.createDirectory(at: link.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
             }
         }
