@@ -230,17 +230,9 @@ class Package {
                 if command.count > 0 {
                     let tool = command[0]
                     switch(tool) {
-                    case "link": builtin(link: command, engine: engine)
-                    case "unlink": builtin(unlink: command, engine: engine)
-                    default:
-                        let executable = URL(fileURLWithPath: "/usr/bin/env")
-                        let runner = Runner(cwd: local)
-                        let result = try runner.sync(executable, arguments: command)
-                        if result.status == 0 {
-                            engine.output.log(result.stdout)
-                        } else {
-                            engine.output.log("Failed to run \(command).\n\n\(result.status) \(result.stdout) \(result.stderr)")
-                        }
+                        case "link":    builtin(link: command, engine: engine)
+                        case "unlink":  builtin(unlink: command, engine: engine)
+                        default:        try external(command: tool, arguments: Array(command.dropFirst()), engine: engine)
                     }
                 }
             }
@@ -252,6 +244,27 @@ class Package {
         let linked = local.appendingPathComponent(name)
         let link = (arguments.count > 2) ? URL(expandedFilePath: arguments[2]) : binURL.appendingPathComponent(name)
         return (name, link, linked)
+    }
+
+    func external(command: String, arguments: [String], engine: XPkg) throws {
+        // var executable = URL(expandedFilePath: command).absoluteURL
+        print(command)
+        print(local)
+        var executable = URL(fileURLWithPath: command, relativeTo: local).absoluteURL
+        print(executable)
+        var args = arguments
+        if !fileManager.fileExists(at: executable) {
+            executable = URL(fileURLWithPath: "/usr/bin/env")
+            args.insert(command, at: 0)
+        }
+
+        let runner = Runner(cwd: local)
+        let result = try runner.sync(executable, arguments: args)
+        if result.status == 0 {
+            engine.output.log(result.stdout)
+        } else {
+            engine.output.log("Failed to run \(command).\n\n\(result.status) \(result.stdout) \(result.stderr)")
+        }
     }
 
     /**

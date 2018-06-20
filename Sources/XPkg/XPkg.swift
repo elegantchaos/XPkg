@@ -19,6 +19,7 @@ public class XPkg {
         "link": LinkCommand(),
         "list": ListCommand(),
         "path": PathCommand(),
+        "reinstall": ReinstallCommand(),
         "reveal": RevealCommand(),
         "update": UpdateCommand(),
     ]

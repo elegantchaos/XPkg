@@ -15,6 +15,7 @@ Usage:
     xpkg link [<package> <path>]
     xpkg list [--compact]
     xpkg path <package> [--store]
+    xpkg reinstall <package>
     xpkg remove <package> [--force]
     xpkg reveal <package> [--store] [--path]
     xpkg update [self | <package>]
@@ -31,6 +32,7 @@ Options:
     -logs- <logs>                       Specify log channels to disable.
     --store                             Use internal store, rather than the package root.
     --compact                           Produces minimal output.
+    --rerun                             Re-run the install actions, even if already installed.
 
 Examples:
     xpkg install MyPackage              # Install a package from the default github org

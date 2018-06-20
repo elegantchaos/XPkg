@@ -12,7 +12,9 @@ struct InstallCommand: Command {
         let output = engine.output
         let packageSpec = engine.arguments.argument("package")
         let package = Package(remote: engine.remotePackageURL(packageSpec), vault: engine.vaultURL)
-        guard !package.registered else {
+        let rerun = engine.arguments.option("rerun") as Bool
+
+        guard !package.registered || rerun else {
             output.log("Package `\(package.name)` is already installed.")
             return
         }
@@ -23,8 +25,10 @@ struct InstallCommand: Command {
         }
 
         engine.attempt(action: "Install") {
-            try package.clone(engine: engine)
-            try package.save()
+            if !rerun {
+                try package.clone(engine: engine)
+                try package.save()
+            }
             try package.run(action: "install", engine: engine)
         }
     }
