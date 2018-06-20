@@ -6,8 +6,6 @@
 
 struct UpdateCommand: Command {
     func run(engine: XPkg) {
-        let output = engine.output
-
         if engine.arguments.command("self") {
             updateSelf(engine: engine)
         } else if engine.arguments.argument("package") == "" {

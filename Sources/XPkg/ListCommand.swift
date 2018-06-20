@@ -8,8 +8,6 @@ import Foundation
 
 struct ListCommand: Command {
     func run(engine: XPkg) {
-        let fm = FileManager.default
-        let vault = engine.vaultURL
         if engine.arguments.option("compact") {
             listCompact(engine: engine)
         } else {
@@ -18,7 +16,7 @@ struct ListCommand: Command {
     }
 
     func listCompact(engine: XPkg) {
-        engine.forEachPackage { (package) in
+        let _ = engine.forEachPackage { (package) in
             engine.output.log("\(package.name)")
         }
     }
