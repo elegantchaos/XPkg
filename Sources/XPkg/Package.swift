@@ -204,7 +204,7 @@ class Package {
 
     func update(engine: XPkg) {
         let runner = Runner(cwd: local)
-        if let result = try? runner.sync(engine.gitURL, arguments: ["pull"]) {
+        if let result = try? runner.sync(engine.gitURL, arguments: ["pull", "--ff-only"]) {
             if result.status == 0 {
                 if result.stdout == "Already up-to-date.\n" {
                     engine.output.log("Package \(name) unchanged.")
