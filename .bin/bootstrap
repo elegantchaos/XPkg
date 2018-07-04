@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT="$HOME/.config/xpkg"
+ROOT="$HOME/.local/share/xpkg"
 
 if [[ -e "$ROOT/code" ]]
 then

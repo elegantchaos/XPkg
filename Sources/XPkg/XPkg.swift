@@ -46,7 +46,7 @@ public class XPkg {
 
     internal var xpkgURL: URL {
         let fm = FileManager.default
-        let localPath = ("~/.config/xpkg" as NSString).expandingTildeInPath as String
+        let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
         if fm.fileExists(at: localURL) {

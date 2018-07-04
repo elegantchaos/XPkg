@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT="$HOME/.config/xpkg"
+ROOT="$HOME/.local/share/xpkg"
 
 echo "Building."
 swift run builder build
