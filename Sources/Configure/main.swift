@@ -34,6 +34,7 @@ let configuration = Configuration(
     settings: settings,
     actions: [
         .action(name:"build", phases:[
+            .toolPhase(name:"Preparing", tool:"metadata", arguments:["XPkgCommand"]),
             .buildPhase(name:"Building", target:"xpkg"),
             ]),
         .action(name:"test", phases:[

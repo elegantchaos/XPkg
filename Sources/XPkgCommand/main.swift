@@ -14,12 +14,13 @@ Usage:
     xpkg install <package> [--project]
     xpkg link [<package> <path>]
     xpkg list [--compact | --verbose]
-    xpkg path [<package> | --self] [--store]
+    xpkg path (<package> | --self) [--store]
     xpkg reinstall <package>
     xpkg remove <package> [--force]
     xpkg reveal <package> [--store] [--path]
     xpkg update [<package> | --self]
     xpkg (-h | --help)
+    xpkg --version
 
 Arguments:
     <package>                           The package to install/remove/modify.
@@ -35,7 +36,7 @@ Options:
     --verbose                           Produces extra output.
     --rerun                             Re-run the install actions, even if already installed.
     --self                              Perform the action on xpkg itself, rather than an installed package.
-    
+
 Examples:
     xpkg install MyPackage              # Install a package from the default github org
     xpkg install MyOrg/MyPackage        # Install a package from the a github org
@@ -45,6 +46,6 @@ Examples:
 
 """
 
-let arguments = Arguments(documentation: doc)
+let arguments = Arguments(documentation: doc, version: XPkgCommandMetadata.version)
 let engine = XPkg(arguments: arguments)
 engine.run()
