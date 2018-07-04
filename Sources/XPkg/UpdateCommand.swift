@@ -6,7 +6,7 @@
 
 struct UpdateCommand: Command {
     func run(engine: XPkg) {
-        if engine.arguments.command("self") {
+        if engine.arguments.option("self") as Bool {
             updateSelf(engine: engine)
         } else if engine.arguments.argument("package") == "" {
             let _ = engine.forEachPackage { (package) in

@@ -13,12 +13,12 @@ Cross Platform Package Manager.
 Usage:
     xpkg install <package> [--project]
     xpkg link [<package> <path>]
-    xpkg list [--compact]
-    xpkg path <package> [--store]
+    xpkg list [--compact | --verbose]
+    xpkg path [<package> | --self] [--store]
     xpkg reinstall <package>
     xpkg remove <package> [--force]
     xpkg reveal <package> [--store] [--path]
-    xpkg update [self | <package>]
+    xpkg update [<package> | --self]
     xpkg (-h | --help)
 
 Arguments:
@@ -32,8 +32,10 @@ Options:
     -logs- <logs>                       Specify log channels to disable.
     --store                             Use internal store, rather than the package root.
     --compact                           Produces minimal output.
+    --verbose                           Produces extra output.
     --rerun                             Re-run the install actions, even if already installed.
-
+    --self                              Perform the action on xpkg itself, rather than an installed package.
+    
 Examples:
     xpkg install MyPackage              # Install a package from the default github org
     xpkg install MyOrg/MyPackage        # Install a package from the a github org

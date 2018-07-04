@@ -62,6 +62,10 @@ public class XPkg {
         return localURL
     }
 
+    internal var xpkgCodeURL: URL {
+        return xpkgURL.appendingPathComponent("code")
+    }
+
     internal func remotePackageURL(_ package: String) -> URL {
         let remote : URL?
         if package.contains("git@") {

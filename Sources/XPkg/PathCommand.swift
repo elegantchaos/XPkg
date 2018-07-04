@@ -8,9 +8,14 @@ import Foundation
 
 struct PathCommand: Command {
     func run(engine: XPkg) {
-        let package = engine.existingPackage()
-        let store = engine.arguments.option("store") as Bool
-        let url = store ? package.store : package.local
+        let url: URL
+        if engine.arguments.option("self") {
+            url = engine.xpkgCodeURL
+        } else {
+            let package = engine.existingPackage()
+            let store = engine.arguments.option("store") as Bool
+            url = store ? package.store : package.local
+        }
         engine.output.log(url.path)
     }
 }
