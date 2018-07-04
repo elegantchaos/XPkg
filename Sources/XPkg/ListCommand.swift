@@ -10,6 +10,8 @@ struct ListCommand: Command {
     func run(engine: XPkg) {
         if engine.arguments.option("compact") {
             listCompact(engine: engine)
+        } else if engine.arguments.option("verbose") {
+            listVerbose(engine: engine)
         } else {
             listNormal(engine: engine)
         }
@@ -31,4 +33,16 @@ struct ListCommand: Command {
             engine.output.log("No packages installed.")
         }
     }
+
+    func listVerbose(engine: XPkg) {
+        let gotPackages = engine.forEachPackage { (package) in
+            let location = package.linked ? " (\(package.local.path))" : ""
+            engine.output.log("\(package.name)\(location)")
+        }
+
+        if !gotPackages {
+            engine.output.log("No packages installed.")
+        }
+    }
+
 }
