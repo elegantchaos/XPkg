@@ -15,13 +15,14 @@ struct RemoveCommand: Command {
         let runner = Runner(cwd: package.local)
         var safeToDelete = engine.arguments.option("force") as Bool
         if !safeToDelete {
-            if let result = try? runner.sync(engine.gitURL, arguments: ["status", "--porcelain"]) {
+            if let result = try? runner.sync(engine.gitURL, arguments: ["status"]) {
+                print(result.stdout)
                 if result.status != 0 {
-                    output.log("Failed to check \(package) status - it might be modified or un-pushed. Use --force to force deletion.")
+                    output.log("Failed to check \(package.name) status - it might be modified or un-pushed. Use --force to force deletion.")
                 } else if !result.stdout.contains("nothing to commit, working tree clean") {
-                    output.log("Package \(package) is modified. Use --force to force deletion.")
+                    output.log("Package \(package.name) is modified. Use --force to force deletion.")
                 } else if !result.stdout.contains("Your branch is up to date with") {
-                    output.log("Package \(package) has un-pushed commits. Use --force to force deletion.")
+                    output.log("Package \(package.name) has un-pushed commits. Use --force to force deletion.")
                 } else {
                     safeToDelete = true
                 }
