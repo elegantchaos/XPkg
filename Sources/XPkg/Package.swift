@@ -127,7 +127,7 @@ class Package {
     */
 
     func remove() throws {
-        if removeable {
+        if removeable && installed {
             try fileManager.removeItem(at: local)
         }
 
@@ -217,5 +217,13 @@ class Package {
         } else {
             engine.output.log("Failed to launch git whilst updating \(name).")
         }
+    }
+
+    /**
+    Check that the package information seems to be valid.
+    */
+
+    func check(engine: XPkg) -> Bool {
+        return fileManager.fileExists(at: local)
     }
 }

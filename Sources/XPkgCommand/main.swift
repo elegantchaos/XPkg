@@ -11,6 +11,7 @@ let doc = """
 Cross Platform Package Manager.
 
 Usage:
+    xpkg check [<package>]
     xpkg install <package> [--project]
     xpkg link [<package> <path>]
     xpkg list [--compact | --verbose]

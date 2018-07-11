@@ -14,12 +14,13 @@ public class XPkg {
     var defaultOrg = "elegantchaos" // TODO: read from preference
 
     let commands: [String:Command] = [
+        "check": CheckCommand(),
         "install": InstallCommand(),
-        "remove": RemoveCommand(),
         "link": LinkCommand(),
         "list": ListCommand(),
         "path": PathCommand(),
         "reinstall": ReinstallCommand(),
+        "remove": RemoveCommand(),
         "reveal": RevealCommand(),
         "update": UpdateCommand(),
     ]
