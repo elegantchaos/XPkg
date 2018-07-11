@@ -24,13 +24,18 @@ struct ListCommand: Command {
     }
 
     func listNormal(engine: XPkg) {
+        var gotLinked = false
         let gotPackages = engine.forEachPackage { (package) in
-            let location = package.linked ? " (\(package.local.path))" : ""
-            engine.output.log("\(package.name)\(location)")
+            let flags = package.linked ? "*" : " "
+            gotLinked = gotLinked || package.linked
+            engine.output.log("\(flags) \(package.name)")
         }
+
 
         if !gotPackages {
             engine.output.log("No packages installed.")
+        } else if gotLinked {
+            engine.output.log("\n(items marked with * are linked to external folders)")
         }
     }
 

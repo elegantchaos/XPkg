@@ -5,4 +5,4 @@ struct Metadata {
     let commit: String
 }
 
-let XPkgCommandMetadata = Metadata(version: "0.0.0", build: "91", tags: "heads/master", commit: "5f03e8ff8ec327903abd9f3f3c2879120b0a15e5")
+let XPkgCommandMetadata = Metadata(version: "0.0.0", build: "92", tags: "heads/master", commit: "be2d8728ad0bc9eea27f620d4e1f89f5444aadc1")
