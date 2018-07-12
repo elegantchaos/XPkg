@@ -102,6 +102,7 @@ public class XPkg {
     }
 
     func attempt(action: String, block: () throws -> ()) {
+        verbose.log(action)
         do {
             try block()
         } catch {
