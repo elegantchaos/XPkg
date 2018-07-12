@@ -16,8 +16,10 @@ matrix:
     - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
     - swift package update
     script:
-    - swift run builder test
-    - swift run builder run --version
+    - swift build builder
+    - .build/debug/builder build
+    - .build/debug/xpkg --version
+    - .build/debug/builder test
   - os: osx
     osx_image: xcode9.3
     language: swift
@@ -28,8 +30,10 @@ matrix:
     - export PATH="/Library/Developer/Toolchains/$SWIFT_VERSION.xctoolchain/usr/bin:$PATH"
     - swift package update
     script:
-    - swift run builder test
-    - swift run builder run --version
+    - swift build builder
+    - .build/debug/builder build
+    - .build/debug/xpkg --version
+    - .build/debug/builder test
 notifications:
   email: false
   slack:
