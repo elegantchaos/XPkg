@@ -6,7 +6,6 @@ env:
 sudo: required
 
 script:
-    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
     - swift package update
     - swift build --product builder
     - ".build/debug/builder build"
@@ -23,12 +22,14 @@ matrix:
     - mkdir swift
     - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz
       -s | tar xz -C swift &> /dev/null
+    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
   - os: osx
     osx_image: xcode9.3
     language: swift
     install:
     - wget https://swift.org/builds/$SWIFT_BRANCH/xcode/$SWIFT_VERSION/$SWIFT_VERSION-osx.pkg
     - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
+    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
 
 
 notifications:
