@@ -11,6 +11,7 @@ import Logger
 public class XPkg {
     let arguments: Arguments
     let output = Logger.stdout
+    let verbose = Logger("verbose")
     var defaultOrg = "elegantchaos" // TODO: read from preference
 
     let commands: [String:Command] = [
