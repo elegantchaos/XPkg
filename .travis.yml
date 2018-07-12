@@ -29,7 +29,7 @@ matrix:
     install:
     - wget https://swift.org/builds/$SWIFT_BRANCH/xcode/$SWIFT_VERSION/$SWIFT_VERSION-osx.pkg
     - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
-    - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+    - export PATH="/Library/Developer/Toolchains/$SWIFT_VERSION.xctoolchain/usr/bin:$PATH"
 
 
 notifications:
