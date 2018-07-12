@@ -26,7 +26,7 @@ struct RemoveCommand: Command {
                         output.log("Package \(package.name) is modified. Use --force to force deletion.")
                     } else if result.stdout.contains("Your branch is ahead of") {
                         output.log("Package \(package.name) has un-pushed commits. Use --force to force deletion.")
-                    } else if !result.stdout.contains("Your branch is up to date with") {
+                    } else if !result.stdout.contains("Your branch is up-to-date with") {
                         output.log("Package \(package.name) is not tracking remotely or may have un-pushed commits. Use --force to force deletion.")
                     } else {
                         // everything is committed and pushed, so we're ok
