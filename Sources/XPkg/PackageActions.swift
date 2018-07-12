@@ -20,11 +20,11 @@ extension Package {
                 switch (action) {
                 case "install":
                     links(install: manifest.links, engine: engine)
-                    try run(commands: manifest.install, engine: engine)
+                    // try run(commands: manifest.install, engine: engine)
 
                 case "remove":
-                    try run(commands: manifest.remove, engine: engine)
-                    links(remove: manifest.remove, engine: engine)
+                    // try run(commands: manifest.remove, engine: engine)
+                    links(remove: manifest.links, engine: engine)
 
                 default:
                     engine.output.log("Unknown action \(action).")
@@ -103,6 +103,7 @@ extension Package {
         if let links = links {
             for link in links {
                 let (name, linkURL, linkedURL) = resolve(link: link)
+                print("linking", name, linkURL, linkedURL)
                 engine.attempt(action: "Link (\(name) as \(linkURL))") {
                     let backup = linkURL.appendingPathExtension("backup")
                     if !fileManager.fileExists(at: backup) {
@@ -121,6 +122,7 @@ extension Package {
         if let links = links {
             for link in links {
                 let (name, linkURL, linkedURL) = resolve(link: link)
+                print("removing", name, linkURL, linkedURL)
                 engine.attempt(action: "Unlink") {
                     if fileManager.fileIsSymLink(at: linkURL) {
                         try fileManager.removeItem(at: linkURL)
