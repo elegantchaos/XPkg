@@ -9,7 +9,6 @@ import Foundation
 
 struct ReinstallCommand: Command {
     func run(engine: XPkg) {
-        let output = engine.output
         let package = engine.existingPackage()
 
         engine.attempt(action: "Reinstall") {
