@@ -18,8 +18,14 @@ extension Package {
             let decoder = JSONDecoder()
             if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
                 switch (action) {
-                case "install": try run(commands: manifest.install, engine: engine)
-                case "remove": try run(commands: manifest.remove, engine: engine)
+                case "install":
+                    links(install: manifest.links, engine: engine)
+                    try run(commands: manifest.install, engine: engine)
+
+                case "remove":
+                    try run(commands: manifest.remove, engine: engine)
+                    links(remove: manifest.remove, engine: engine)
+
                 default:
                     engine.output.log("Unknown action \(action).")
                 }
@@ -39,22 +45,20 @@ extension Package {
             for command in commands {
                 if command.count > 0 {
                     let tool = command[0]
+                    let arguments = Array(command.dropFirst())
                     switch(tool) {
-                    case "link":    builtin(link: command, engine: engine)
-                    case "unlink":  builtin(unlink: command, engine: engine)
-                    default:        try external(command: tool, arguments: Array(command.dropFirst()), engine: engine)
+                    case "link":    links(install: [arguments], engine: engine)
+                    case "unlink":  links(remove: [arguments], engine: engine)
+                    default:        try external(command: tool, arguments: arguments, engine: engine)
                     }
                 }
             }
         }
     }
 
-    func links(from arguments: [String]) -> (String, URL, URL) {
-        let name = arguments[1]
-        let linked = local.appendingPathComponent(name)
-        let link = (arguments.count > 2) ? URL(expandedFilePath: arguments[2]) : binURL.appendingPathComponent(name)
-        return (name, link, linked)
-    }
+    /**
+    Run an external command.
+    */
 
     func external(command: String, arguments: [String], engine: XPkg) throws {
         // var executable = URL(expandedFilePath: command).absoluteURL
@@ -78,42 +82,55 @@ extension Package {
     }
 
     /**
-    Run the built-in link command.
+    Given a link specifier in the form: [localPath]. or [localPath, linkPath],
+    return a triple: (localName, linkURL, localURL).
+
+    If only the localPath is suppled, the link is created in the bin folder (either
+    ~/.local/bin or /usr/local/bin, depending on which mode we're in), using the same
+    name as the file it's linking to.
+
+    If both paths are supplied, we expand ~ etc in the link file path.
     */
 
-    func builtin(link arguments: [String], engine: XPkg) {
-        if arguments.count > 1 {
-            let (name, link, linked) = links(from: arguments)
-            engine.attempt(action: "Link (\(name) as \(link))") {
-                let backup = link.appendingPathExtension("backup")
-                if !fileManager.fileExists(at: backup) {
-                    if fileManager.fileExists(at: link) {
-                        try fileManager.moveItem(at: link, to: backup)
-                    }
-                }
-                try fileManager.createDirectory(at: link.deletingLastPathComponent(), withIntermediateDirectories: true)
-                try fileManager.createSymbolicLink(at: link, withDestinationURL: linked)
-            }
-        }
+    func resolve(link spec: [String]) -> (String, URL, URL) {
+        let name = spec[0]
+        let linked = local.appendingPathComponent(name)
+        let link = (spec.count > 1) ? URL(expandedFilePath: spec[1]) : binURL.appendingPathComponent(name)
+        return (name, link, linked)
     }
 
-    /**
-    Run the built-in unlink command.
-    */
-
-    func builtin(unlink arguments: [String], engine: XPkg) {
-        if arguments.count > 1 {
-            let (name, link, linked) = links(from: arguments)
-            engine.attempt(action: "Unlink") {
-                if fileManager.fileIsSymLink(at: link) {
-                    try fileManager.removeItem(at: link)
-                    let backup = link.appendingPathExtension("backup")
-                    if fileManager.fileExists(at: backup) {
-                        try fileManager.moveItem(at: backup, to: link)
+    func links(install links:[ManifestLink]?, engine: XPkg) {
+        if let links = links {
+            for link in links {
+                let (name, linkURL, linkedURL) = resolve(link: link)
+                engine.attempt(action: "Link (\(name) as \(linkURL))") {
+                    let backup = linkURL.appendingPathExtension("backup")
+                    if !fileManager.fileExists(at: backup) {
+                        if fileManager.fileExists(at: linkURL) {
+                            try fileManager.moveItem(at: linkURL, to: backup)
+                        }
                     }
+                    try fileManager.createDirectory(at: linkURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    try fileManager.createSymbolicLink(at: linkURL, withDestinationURL: linkedURL)
                 }
             }
         }
     }
 
+    func links(remove links:[ManifestLink]?, engine: XPkg) {
+        if let links = links {
+            for link in links {
+                let (name, linkURL, linkedURL) = resolve(link: link)
+                engine.attempt(action: "Unlink") {
+                    if fileManager.fileIsSymLink(at: linkURL) {
+                        try fileManager.removeItem(at: linkURL)
+                        let backup = linkURL.appendingPathExtension("backup")
+                        if fileManager.fileExists(at: backup) {
+                            try fileManager.moveItem(at: backup, to: linkURL)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

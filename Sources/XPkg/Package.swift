@@ -8,12 +8,15 @@ import Foundation
 import Logger
 
 typealias ManifestCommand = [String]
+typealias ManifestLink = [String]
 
 struct Manifest: Codable {
     let install: [ManifestCommand]?
     let remove: [ManifestCommand]?
     let updating: [ManifestCommand]?
     let updated: [ManifestCommand]?
+    let links: [ManifestLink]?
+    let dependencies: [String]?
 }
 
 struct PackageInfo: Codable {
