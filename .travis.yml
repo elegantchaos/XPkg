@@ -17,9 +17,9 @@ matrix:
     - swift package update
     script:
     - swift build --product builder
-    - .build/debug/builder build
-    - .build/debug/xpkg --version
-    - .build/debug/builder test
+    - ".build/debug/builder build"
+    - ".build/debug/xpkg --version"
+    - ".build/debug/builder test"
   - os: osx
     osx_image: xcode9.3
     language: swift
@@ -31,11 +31,11 @@ matrix:
     - swift package update
     script:
     - swift build --product builder
-    - .build/debug/builder build
-    - .build/debug/xpkg --version
-    - .build/debug/builder test
+    - ".build/debug/builder build"
+    - ".build/debug/xpkg --version"
+    - ".build/debug/builder test"
 notifications:
   email: false
   slack:
     rooms:
-      secure: FP/IsOlG+jUjHqhd/aBJDPiwYsIkMN5TtbKBr85ax914P6eEzwOUv6KyoOP2Ux9L7GM2vkxesux13YasKG2tX5eSumZGFLciY8x26Jh7g1SjVBJ43WHOp2lA19R9srM5nXYJy1zYRmYgeLezv6pN65FLp4hhQIpy5lyScwFocgIWe+BEf36HpOBUvmmDjf5Cl9L6Pjl7bvfYw+VkoUjSQemIrnTgDKfxm+qR+J79agob/Ig/6d+OHJlXh9crckb9M7pCCW9e3qanzayvhXUA6vU9qsIRtZ0iHmkzAkOkAagnn6M70uYrdccjr7ku1JFasE1mvSdji5qkaZPdnPKt0qVVxM33j5dL5QivCFA6lztD+om9l1+hUPFjOwsWMw9HucG55+sowXvaj+4gDSQIb2vE29RHRDU7LZUualPEPzMfJsvq0FgADpGXxjpr0mFPVVGORbnwN3FyajerQ9sJrjrzLqhYDrp8NrG9EoOailUgfmCu8/h2r8AxqfuSY5EBUMAQ40QI2cV+YnsqjmJXhFOoQzJ9bmdVvYD2y/MHgMwRRNEvoya8JeP6jF+dX5g4AEOp0ecjL52fodKTDk9pp4b1ggo8y9Mki6Hl/TSeblFvha55ebsAudkrv36miQVDXxqm1ILy69OW6NjYT1U9YZCJLnSADUwDSHfVJCf18og=
+      secure: soh6OcjOfQmamDQBFSET9z95ROkk8mhC9DANX0WYMucAeFu+bvm3DJsilU4MauHwmXVr33IeyoF48QNuOUY8o92KfVO787y9lvS06SFcb27Mw9TE36ws7ZYLlODJ90G9rkfeExVuiguiDY+7g3z5DonVyJ07CROYijrv3x0RB0pVV8ShK6OHYUNPnB5Ce9nDdglIRNYNb9zytT4qzj2X0TySQspEMQosdwbWktbtECE7CK80uLiaKHAa2h3YBaoNvmR9Z2G4VGD/tR8frkV6JhWIMnwm2yA1yWwBi2lT3wtFZ79VRSwkUgRgvb8XhnGUgc0/3+/X7YWK4+fSRMDIIjg+0kTtTuC3XQDrFzBwj7xW2OSEqOMKna5GmwvA/Sspit55BeH4rC49MGWbnEvtksar2E172MCyfH4X2KqjkVytWCkbzY2PdvNqwgFH8lnJfEFEB1Yp+5zeXCepEYUb8yD0Lx97ggrIWEOFfQOIGtpX8FBj/q+oPEeYymvl8FY1oceCt6wAj0YiePFb0XqWqSPFHUwhaNYJ9wb9dgIf1rX51XrGSandpYfjmtJjKb0G5kgP3cMx9OutdqL1wqGWSMdRPd9c+NwoTaZGNfdcao7DjtKYahSzA6f6ZBnRs+CaVLfpBhy1YCRjhCpJyCSJf9EbGkVaJDMBoiuwI2UHQcY=
