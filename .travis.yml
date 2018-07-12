@@ -1,7 +1,7 @@
 env:
   global:
   - SWIFT_BRANCH=swift-4.2-branch
-  - SWIFT_VERSION=swift-4.2-DEVELOPMENT-SNAPSHOT-2018-05-30-a
+  - SWIFT_VERSION=swift-4.2-DEVELOPMENT-SNAPSHOT-2018-06-21-a
 
 sudo: required
 
