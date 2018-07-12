@@ -19,11 +19,11 @@ extension Package {
             if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
                 switch (action) {
                 case "install":
-                    links(install: manifest.links, engine: engine)
-                    // try run(commands: manifest.install, engine: engine)
+                    links(create: manifest.links, engine: engine)
+                    try run(commands: manifest.install, engine: engine)
 
                 case "remove":
-                    // try run(commands: manifest.remove, engine: engine)
+                    try run(commands: manifest.remove, engine: engine)
                     links(remove: manifest.links, engine: engine)
 
                 default:
@@ -99,7 +99,11 @@ extension Package {
         return (name, link, linked)
     }
 
-    func links(install links:[ManifestLink]?, engine: XPkg) {
+    /**
+    Run through a list of linkSpecs and create each one.
+    */
+
+    func links(create links:[ManifestLink]?, engine: XPkg) {
         if let links = links {
             for link in links {
                 let (name, linkURL, linkedURL) = resolve(link: link)
@@ -117,10 +121,14 @@ extension Package {
         }
     }
 
+    /**
+    Run through a list of linkSpecs and remove each one.
+    */
+
     func links(remove links:[ManifestLink]?, engine: XPkg) {
         if let links = links {
             for link in links {
-                let (name, linkURL, linkedURL) = resolve(link: link)
+                let (_, linkURL, linkedURL) = resolve(link: link)
                 engine.attempt(action: "Unlink \(linkURL)") {
                     if fileManager.fileIsSymLink(at: linkURL) {
                         try fileManager.removeItem(at: linkURL)
