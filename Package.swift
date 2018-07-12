@@ -26,7 +26,7 @@ let package = Package(
           dependencies: ["BuilderConfiguration"]),
         .testTarget(
             name: "XPkgTests",
-            dependencies: ["XPkg"]
+            dependencies: ["XPkg", "XPkgCommand"]
         )
     ],
     swiftLanguageVersions: [.v4_2]
