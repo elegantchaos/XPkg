@@ -47,7 +47,7 @@ extension Package {
                     let tool = command[0]
                     let arguments = Array(command.dropFirst())
                     switch(tool) {
-                    case "link":    links(install: [arguments], engine: engine)
+                    case "link":    links(create: [arguments], engine: engine)
                     case "unlink":  links(remove: [arguments], engine: engine)
                     default:        try external(command: tool, arguments: arguments, engine: engine)
                     }
@@ -128,7 +128,7 @@ extension Package {
     func links(remove links:[ManifestLink]?, engine: XPkg) {
         if let links = links {
             for link in links {
-                let (_, linkURL, linkedURL) = resolve(link: link)
+                let (_, linkURL, _) = resolve(link: link)
                 engine.attempt(action: "Unlink \(linkURL)") {
                     if fileManager.fileIsSymLink(at: linkURL) {
                         try fileManager.removeItem(at: linkURL)
