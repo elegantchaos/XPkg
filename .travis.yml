@@ -1,7 +1,7 @@
 env:
   global:
   - SWIFT_BRANCH=swift-4.2-branch
-  - SWIFT_VERSION=swift-4.2-DEVELOPMENT-SNAPSHOT-2018-06-21-a
+  - SWIFT_VERSION=swift-4.2-DEVELOPMENT-SNAPSHOT-2018-05-30-a
 
 sudo: required
 
@@ -30,6 +30,7 @@ matrix:
     - wget https://swift.org/builds/$SWIFT_BRANCH/xcode/$SWIFT_VERSION/$SWIFT_VERSION-osx.pkg
     - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
     - export PATH="/Library/Developer/Toolchains/$SWIFT_VERSION.xctoolchain/usr/bin:$PATH"
+    - which swift
 
 
 notifications:
