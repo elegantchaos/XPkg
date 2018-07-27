@@ -10,17 +10,22 @@ then
     exit 1
 fi
 
-LOCALBIN="$HOME/.local/bin"
+LOCAL="$HOME/.local"
 echo "Installing links."
-if [[ -e "$LOCALBIN" ]]
+if [[ -e "$LOCAL" ]]
 then
-    LOCALSTARTUP="$HOME/.local/share/bash-hooks/startup"
-    mkdir -p "$LOCALSTARTUP"
-    ln -sf "$ROOT/code/.build/debug/xpkg" "$LOCALBIN/xpkg"
-    ln -sf "$ROOT/code/.bin/xpkg-bash" "$LOCALSTARTUP/xpkg"
+    STARTUP="$LOCAL/share/bash-hooks/startup"
+    BIN="$LOCAL/bin"
+    SUDO=
 else
-    sudo ln -sf "$ROOT/code/.build/debug/xpkg" "/usr/local/bin/xpkg"
-    echo "$GOSCRIPT" > "/usr/local/bin/xg"
+    STARTUP="/usr/local/share/bash-hooks/startup"
+    BIN="/usr/local/bin"
+    SUDO=sudo
 fi
+
+$SUDO mkdir -p "$STARTUP"
+$SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
+$SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
+
 
 echo "Done."
