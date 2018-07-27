@@ -25,6 +25,7 @@ fi
 
 $SUDO mkdir -p "$STARTUP"
 $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
+$SUDO mkdir -p "$BIN"
 $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
 
 
