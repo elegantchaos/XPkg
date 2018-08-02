@@ -11,20 +11,7 @@ struct RenameCommand: Command {
         let name = engine.arguments.argument("new-name")
 
         if package.installed {
-                        output.log("Renaming \(package.name) to \(name).")
-        } else {
+            package.rename(as: name, engine: engine)
         }
-
-        // if safeToDelete {
-        //     engine.attempt(action: "Remove \(package.name)") {
-        //         try package.run(action:"remove", engine: engine)
-        //         try package.remove()
-        //         if package.linked && !package.removeable {
-        //             output.log("Package \(package.name) was linked to a local directory (\(package.local.path)). \nThe package has been uninstalled, but the linked directory was not touched.")
-        //         } else {
-        //             output.log("Package \(package.name) removed.")
-        //         }
-        //     }
-        // }
     }
 }

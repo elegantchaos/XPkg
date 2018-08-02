@@ -229,4 +229,12 @@ class Package {
     func check(engine: XPkg) -> Bool {
         return fileManager.fileExists(at: local)
     }
+
+    /**
+    Rename the package. If it's a project, we also rename the project folder.
+    */
+
+    func rename(as newName: String, engine: XPkg) {
+        engine.output.log("Renaming \(name) to \(newName).")
+    }
 }
