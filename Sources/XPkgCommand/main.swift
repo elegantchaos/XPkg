@@ -18,6 +18,7 @@ Usage:
     xpkg path (<package> | --self) [--store]
     xpkg reinstall <package>
     xpkg remove <package> [--force]
+    xpkg rename <package> <new-name>
     xpkg reveal <package> [--store] [--path]
     xpkg update [<package> | --self]
     xpkg (-h | --help)
@@ -26,7 +27,7 @@ Usage:
 Arguments:
     <package>                           The package to install/remove/modify.
     <path>                              Path to local package.
-
+    <new-name>                          Name to use locally for a package.
 Options:
     -h, --help                          Show this text.
     -logs <logs>                        Specify all log channels to enable.

@@ -22,6 +22,7 @@ public class XPkg {
         "path": PathCommand(),
         "reinstall": ReinstallCommand(),
         "remove": RemoveCommand(),
+        "rename": RenameCommand(),
         "reveal": RevealCommand(),
         "update": UpdateCommand(),
     ]
