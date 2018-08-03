@@ -82,8 +82,16 @@ class Package {
             self.linked = info.linked
             self.removeable = info.removeable
         } else {
-            self.local = self.store.appendingPathComponent("local")
+            self.local = Package.defaultLocalURL(for: name, in: store)
         }
+    }
+
+    /**
+    Return the default location to use for the local (hidden) clone of a package.
+    */
+
+    static func defaultLocalURL(for name: String, in store: URL) -> URL {
+        return store.appendingPathComponent("local").appendingPathComponent(name)
     }
 
     /**
@@ -235,6 +243,61 @@ class Package {
     */
 
     func rename(as newName: String, engine: XPkg) {
-        engine.output.log("Renaming \(name) to \(newName).")
+        var failure: String? = nil
+        let newStore = store.deletingLastPathComponent().appendingPathComponent(newName)
+        do {
+            try fileManager.moveItem(at: store, to: newStore)
+            self.store = newStore
+        } catch {
+            failure = "Couldn't rename internal store for \(name) as \(newName)."
+        }
+
+        if failure == nil {
+            let oldLocal: URL
+            let newLocal: URL
+            if linked {
+                // package is linked elsewhere, so we just want to rename it
+                oldLocal = local
+                newLocal = local.deletingLastPathComponent().appendingPathComponent(newName)
+
+            } else {
+                newLocal = Package.defaultLocalURL(for: newName, in: newStore)
+
+                if local.lastPathComponent == name {
+                    // package is inside the store, which has already been renamed
+                    // but the local folder itself still needs to be renamed
+                    oldLocal = Package.defaultLocalURL(for: name, in: newStore)
+
+                } else {
+                    // package is inside store, but was previously just in a folder called "local"
+                    // we want to fix things up a bit
+                    let oldStyleLocal = newStore.appendingPathComponent("local")
+                    oldLocal = newStore.appendingPathComponent("temp-rename")
+                    try? fileManager.moveItem(at: oldStyleLocal, to: oldLocal)
+                    try? fileManager.createDirectory(at: oldStyleLocal, withIntermediateDirectories: true)
+                }
+            }
+
+            do {
+                try fileManager.moveItem(at: oldLocal, to: newLocal)
+                self.local = newLocal
+            } catch {
+                failure = "Couldn't rename local copy of \(name) as \(newName).\n\(local)\n\(newLocal)"
+            }
+        }
+
+
+        if failure == nil {
+            do {
+                self.name = newName
+                try save()
+            } catch {
+                failure = "Couldn't save info for \(newName)."
+            }
+        }
+
+        if failure != nil {
+            engine.output.log(failure!)
+        }
     }
 }
