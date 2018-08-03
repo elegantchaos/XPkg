@@ -48,7 +48,6 @@ Examples:
 
 """
 
-print("Xpkg args: \(CommandLine.arguments)")
 let arguments = Arguments(documentation: doc, version: XPkgCommandMetadata.version)
 let engine = XPkg(arguments: arguments)
 engine.run()

@@ -8,10 +8,15 @@ struct RenameCommand: Command {
     func run(engine: XPkg) {
         let output = engine.output
         let package = engine.existingPackage()
+        let oldName = package.name
         let name = engine.arguments.argument("new-name")
-        print(package)
         if package.installed {
-            package.rename(as: name, engine: engine)
+            do {
+                try package.rename(as: name, engine: engine)
+                engine.output.log("Renamed \(oldName) as \(name).")
+            } catch {
+                engine.output.log("Failed to rename \(oldName) as \(name).\n\(error).")
+            }
         }
     }
 }

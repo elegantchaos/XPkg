@@ -10,6 +10,12 @@ import Logger
 typealias ManifestCommand = [String]
 typealias ManifestLink = [String]
 
+enum RenameError: Error {
+    case renameStore
+    case renameLocal
+    case saveInfo
+}
+
 struct Manifest: Codable {
     let install: [ManifestCommand]?
     let remove: [ManifestCommand]?
@@ -242,62 +248,52 @@ class Package {
     Rename the package. If it's a project, we also rename the project folder.
     */
 
-    func rename(as newName: String, engine: XPkg) {
-        var failure: String? = nil
+    func rename(as newName: String, engine: XPkg) throws {
         let newStore = store.deletingLastPathComponent().appendingPathComponent(newName)
         do {
             try fileManager.moveItem(at: store, to: newStore)
             self.store = newStore
         } catch {
-            failure = "Couldn't rename internal store for \(name) as \(newName)."
+            throw RenameError.renameStore
         }
 
-        if failure == nil {
-            let oldLocal: URL
-            let newLocal: URL
-            if linked {
-                // package is linked elsewhere, so we just want to rename it
-                oldLocal = local
-                newLocal = local.deletingLastPathComponent().appendingPathComponent(newName)
+        let oldLocal: URL
+        let newLocal: URL
+        if linked {
+            // package is linked elsewhere, so we just want to rename it
+            oldLocal = local
+            newLocal = local.deletingLastPathComponent().appendingPathComponent(newName)
+
+        } else {
+            newLocal = Package.defaultLocalURL(for: newName, in: newStore)
+
+            if local.lastPathComponent == name {
+                // package is inside the store, which has already been renamed
+                // but the local folder itself still needs to be renamed
+                oldLocal = Package.defaultLocalURL(for: name, in: newStore)
 
             } else {
-                newLocal = Package.defaultLocalURL(for: newName, in: newStore)
-
-                if local.lastPathComponent == name {
-                    // package is inside the store, which has already been renamed
-                    // but the local folder itself still needs to be renamed
-                    oldLocal = Package.defaultLocalURL(for: name, in: newStore)
-
-                } else {
-                    // package is inside store, but was previously just in a folder called "local"
-                    // we want to fix things up a bit
-                    let oldStyleLocal = newStore.appendingPathComponent("local")
-                    oldLocal = newStore.appendingPathComponent("temp-rename")
-                    try? fileManager.moveItem(at: oldStyleLocal, to: oldLocal)
-                    try? fileManager.createDirectory(at: oldStyleLocal, withIntermediateDirectories: true)
-                }
-            }
-
-            do {
-                try fileManager.moveItem(at: oldLocal, to: newLocal)
-                self.local = newLocal
-            } catch {
-                failure = "Couldn't rename local copy of \(name) as \(newName).\n\(local)\n\(newLocal)"
+                // package is inside store, but was previously just in a folder called "local"
+                // we want to fix things up a bit
+                let oldStyleLocal = newStore.appendingPathComponent("local")
+                oldLocal = newStore.appendingPathComponent("temp-rename")
+                try? fileManager.moveItem(at: oldStyleLocal, to: oldLocal)
+                try? fileManager.createDirectory(at: oldStyleLocal, withIntermediateDirectories: true)
             }
         }
 
-
-        if failure == nil {
-            do {
-                self.name = newName
-                try save()
-            } catch {
-                failure = "Couldn't save info for \(newName)."
-            }
+        do {
+            try fileManager.moveItem(at: oldLocal, to: newLocal)
+            self.local = newLocal
+        } catch {
+            throw RenameError.renameLocal
         }
 
-        if failure != nil {
-            engine.output.log(failure!)
+        do {
+            self.name = newName
+            try save()
+        } catch {
+            throw RenameError.saveInfo
         }
     }
 }
