@@ -11,7 +11,7 @@ typealias ManifestCommand = [String]
 typealias ManifestLink = [String]
 
 enum RenameError: Error {
-    case renameStore
+    case renameStore(from: URL, to: URL)
     case renameLocal
     case saveInfo
 }
@@ -254,7 +254,7 @@ class Package {
             try fileManager.moveItem(at: store, to: newStore)
             self.store = newStore
         } catch {
-            throw RenameError.renameStore
+            throw RenameError.renameStore(from: store, to: newStore)
         }
 
         let oldLocal: URL

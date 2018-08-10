@@ -9,9 +9,9 @@ struct RenameCommand: Command {
         let output = engine.output
         let package = engine.existingPackage()
         let oldName = package.name
-        let name = engine.arguments.argument("new-name")
         if package.installed {
             engine.attempt(action: "Rename") {
+                let name = try engine.arguments.expectedArgument("name")
                 try package.rename(as: name, engine: engine)
                 try package.save()
                 engine.output.log("Renamed \(oldName) as \(name).")
