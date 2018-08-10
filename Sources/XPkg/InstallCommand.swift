@@ -27,6 +27,9 @@ struct InstallCommand: Command {
         engine.attempt(action: "Install") {
             if !rerun {
                 try package.clone(engine: engine)
+                if let name = engine.arguments.option("as") {
+                    try package.rename(as: name, engine: engine)
+                }
                 try package.save()
             }
             try package.run(action: "install", engine: engine)

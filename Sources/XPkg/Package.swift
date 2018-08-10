@@ -289,11 +289,6 @@ class Package {
             throw RenameError.renameLocal
         }
 
-        do {
-            self.name = newName
-            try save()
-        } catch {
-            throw RenameError.saveInfo
-        }
+        self.name = newName
     }
 }

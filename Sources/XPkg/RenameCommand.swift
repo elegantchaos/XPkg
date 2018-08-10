@@ -11,11 +11,10 @@ struct RenameCommand: Command {
         let oldName = package.name
         let name = engine.arguments.argument("new-name")
         if package.installed {
-            do {
+            engine.attempt(action: "Rename") {
                 try package.rename(as: name, engine: engine)
+                try package.save()
                 engine.output.log("Renamed \(oldName) as \(name).")
-            } catch {
-                engine.output.log("Failed to rename \(oldName) as \(name).\n\(error).")
             }
         }
     }
