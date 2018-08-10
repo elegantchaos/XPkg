@@ -28,7 +28,7 @@ Arguments:
     <package>                           The package to install/remove/modify.
     <path>                              Path to local package.
     <name>                              Name to use locally for a package.
-    
+
 Options:
     -h, --help                          Show this text.
     -logs <logs>                        Specify all log channels to enable.

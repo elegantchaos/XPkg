@@ -9,11 +9,11 @@ import Foundation
 struct PathCommand: Command {
     func run(engine: XPkg) {
         let url: URL
-        if engine.arguments.option("self") {
+        if engine.arguments.flag("self") {
             url = engine.xpkgCodeURL
         } else {
             let package = engine.existingPackage()
-            let store = engine.arguments.option("store") as Bool
+            let store = engine.arguments.flag("store")
             url = store ? package.store : package.local
         }
         engine.output.log(url.path)

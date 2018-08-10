@@ -12,14 +12,14 @@ struct InstallCommand: Command {
         let output = engine.output
         let packageSpec = engine.arguments.argument("package")
         let package = Package(remote: engine.remotePackageURL(packageSpec), vault: engine.vaultURL)
-        let rerun = engine.arguments.option("rerun") as Bool
+        let rerun = engine.arguments.flag("rerun")
 
         guard !package.registered || rerun else {
             output.log("Package `\(package.name)` is already installed.")
             return
         }
 
-        let isProject = engine.arguments.option("project") as Bool
+        let isProject = engine.arguments.flag("project")
         if isProject {
             package.link(into: engine.projectsURL, removeable: true)
         }
