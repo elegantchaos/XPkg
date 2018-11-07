@@ -6,6 +6,7 @@
 
 import Foundation
 import Logger
+import Runner
 
 typealias ManifestCommand = [String]
 typealias ManifestLink = [String]
@@ -162,8 +163,8 @@ class Package {
         #if canImport(NSApplication)
         // TODO: use NSWorkspace on the Mac
         #else
-        let runner = Runner(cwd: container)
-        let _ = try? runner.sync(URL(fileURLWithPath: "/usr/bin/env"), arguments: ["xdg-open", "."])
+        let runner = Runner(for: URL(fileURLWithPath: "/usr/bin/env"), cwd: container)
+        let _ = try? runner.sync(arguments: ["xdg-open", "."])
         #endif
     }
 
@@ -205,9 +206,9 @@ class Package {
         let container = local.deletingLastPathComponent()
         try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
 
-        let runner = Runner(cwd: container)
+        let runner = Runner(for: engine.gitURL, cwd: container)
         let gitArgs = ["clone", remote.absoluteString, local.path]
-        let result = try runner.sync(engine.gitURL, arguments: gitArgs)
+        let result = try runner.sync(arguments: gitArgs)
         if result.status == 0 {
             engine.output.log("Package \(name) installed.")
         } else {
@@ -220,8 +221,8 @@ class Package {
     */
 
     func update(engine: XPkg) {
-        let runner = Runner(cwd: local)
-        if let result = try? runner.sync(engine.gitURL, arguments: ["pull", "--ff-only"]) {
+        let runner = Runner(for: engine.gitURL, cwd: local)
+        if let result = try? runner.sync(arguments: ["pull", "--ff-only"]) {
             if result.status == 0 {
                 if result.stdout == "Already up-to-date.\n" {
                     engine.output.log("Package \(name) unchanged.")

@@ -6,6 +6,7 @@
 
 import Arguments
 import Foundation
+import Runner
 
 struct RemoveCommand: Command {
     func run(engine: XPkg) {
@@ -16,9 +17,9 @@ struct RemoveCommand: Command {
 
         // check the git status
         if package.installed {
-            let runner = Runner(cwd: package.local)
+            let runner = Runner(for: engine.gitURL, cwd: package.local)
             if !safeToDelete {
-                if let result = try? runner.sync(engine.gitURL, arguments: ["status"]) {
+                if let result = try? runner.sync(arguments: ["status"]) {
                     engine.verbose.log(result.stdout)
                     if result.status != 0 {
                         output.log("Failed to check \(package.name) status - it might be modified or un-pushed. Use --force to force deletion.")

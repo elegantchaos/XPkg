@@ -6,7 +6,6 @@
 
 struct RenameCommand: Command {
     func run(engine: XPkg) {
-        let output = engine.output
         let package = engine.existingPackage()
         let oldName = package.name
         if package.installed {

@@ -6,6 +6,7 @@
 
 import Arguments
 import Foundation
+import Runner
 
 struct LinkCommand: Command {
     func run(engine: XPkg) {
@@ -15,14 +16,14 @@ struct LinkCommand: Command {
 
         if (name == "") && (linkedPath == "") {
             // try to figure out the name from the current directory
-            let runner = Runner()
-            if let result = try? runner.sync(engine.gitURL, arguments: ["remote", "get-url", "origin"]) {
+            let runner = Runner(for: engine.gitURL)
+            if let result = try? runner.sync(arguments: ["remote", "get-url", "origin"]) {
                 if result.status == 0 {
                     name = result.stdout.trimmingCharacters(in: CharacterSet.newlines)
                 }
             }
 
-            if let result2 = try? runner.sync(engine.gitURL, arguments: ["rev-parse", "--show-toplevel"]) {
+            if let result2 = try? runner.sync(arguments: ["rev-parse", "--show-toplevel"]) {
                 if result2.status == 0 {
                     linkedPath = result2.stdout.trimmingCharacters(in: CharacterSet.newlines)
                 }

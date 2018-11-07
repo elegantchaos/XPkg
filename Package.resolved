@@ -42,8 +42,17 @@
         "repositoryURL": "https://github.com/elegantchaos/Logger",
         "state": {
           "branch": null,
-          "revision": "1b0851311c0546e3c0272514508359317b812a8d",
-          "version": "1.0.8"
+          "revision": "2cc9e50d5725ebe9beed158f9b603cfffbaf67c3",
+          "version": "1.0.11"
+        }
+      },
+      {
+        "package": "Runner",
+        "repositoryURL": "https://github.com/elegantchaos/Runner",
+        "state": {
+          "branch": null,
+          "revision": "1a257b260150b7a7a9771f636a6a373682ad54e5",
+          "version": "1.0.1"
         }
       }
     ]

@@ -5,6 +5,7 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import Foundation
+import Runner
 
 extension Package {
 
@@ -72,8 +73,8 @@ extension Package {
             args.insert(command, at: 0)
         }
 
-        let runner = Runner(cwd: local)
-        let result = try runner.sync(executable, arguments: args)
+        let runner = Runner(for: executable, cwd: local)
+        let result = try runner.sync(arguments: args)
         if result.status == 0 {
             engine.output.log(result.stdout)
         } else {

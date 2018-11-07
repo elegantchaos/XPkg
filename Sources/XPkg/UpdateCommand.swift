@@ -4,6 +4,8 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import Runner
+
 struct UpdateCommand: Command {
     func run(engine: XPkg) {
         if engine.arguments.flag("self") as Bool {
@@ -22,13 +24,14 @@ struct UpdateCommand: Command {
         engine.output.log("Updating xpkg.")
         let url = engine.xpkgURL
         let codeURL = url.appendingPathComponent("code")
-        let runner = Runner(cwd: codeURL)
-        if let result = try? runner.sync(engine.gitURL, arguments:["pull"]) {
+        let runner = Runner(for: engine.gitURL, cwd: codeURL)
+        if let result = try? runner.sync(arguments: ["pull"]) {
             engine.output.log(result.stdout)
         }
 
         let bootstrapURL = codeURL.appendingPathComponent(".bin").appendingPathComponent("bootstrap")
-        if let result = try? runner.sync(bootstrapURL) {
+        let bootstrapRunner = Runner(for: bootstrapURL, cwd: codeURL)
+        if let result = try? bootstrapRunner.sync() {
             engine.output.log(result.stdout)
         }
     }
