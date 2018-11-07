@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Arguments",
         "state": {
           "branch": null,
-          "revision": "001e6fd3ffe56f25be2a4e6cf9ba3e440974c471",
-          "version": "1.0.2"
+          "revision": "29a240fb5c5bcd0eb56feb527dfb3cab7076290c",
+          "version": "1.0.4"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Builder.git",
         "state": {
           "branch": null,
-          "revision": "6ab378ddd30d17ca48e5b89e548778476acd8034",
-          "version": "1.0.9"
+          "revision": "376494ed8eba80146cefe3fe4dc5556bd68cb4dc",
+          "version": "1.0.10"
         }
       },
       {
