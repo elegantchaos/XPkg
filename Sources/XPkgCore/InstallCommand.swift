@@ -24,7 +24,12 @@ struct InstallCommand: Command {
             package.link(into: engine.projectsURL, removeable: true)
         }
 
-        engine.attempt(action: "Install") {
+        let cleanup = {
+            print("cleanup")
+            try package.remove()
+        }
+        
+        engine.attempt(action: "Install", cleanup: cleanup) {
             if !rerun {
                 try package.clone(engine: engine)
                 if let name = engine.arguments.option("as") {

@@ -213,6 +213,7 @@ class Package {
             engine.output.log("Package \(name) installed.")
         } else {
             engine.output.log("Failed to install \(name).\n\n\(result.status) \(result.stdout) \(result.stderr)")
+            throw NSError(domain: "XPkg", code: 1, userInfo: nil)
         }
     }
 
