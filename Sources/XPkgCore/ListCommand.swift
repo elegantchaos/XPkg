@@ -8,9 +8,9 @@ import Foundation
 
 struct ListCommand: Command {
     func run(engine: XPkg) {
-        if engine.arguments.option("oneline") {
+        if engine.arguments.flag("oneline") {
           listOneline(engine: engine)
-        } else if engine.arguments.option("compact") {
+        } else if engine.arguments.flag("compact") {
             listCompact(engine: engine)
         } else if engine.arguments.flag("verbose") {
             listVerbose(engine: engine)

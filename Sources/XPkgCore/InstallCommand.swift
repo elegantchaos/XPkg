@@ -25,7 +25,6 @@ struct InstallCommand: Command {
         }
 
         let cleanup = {
-            print("cleanup")
             try package.remove()
         }
         

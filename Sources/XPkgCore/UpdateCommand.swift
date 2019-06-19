@@ -8,7 +8,7 @@ import Runner
 
 struct UpdateCommand: Command {
     func run(engine: XPkg) {
-        if engine.arguments.flag("self") as Bool {
+        if engine.arguments.flag("self") {
             updateSelf(engine: engine)
         } else if engine.arguments.argument("package") == "" {
             let _ = engine.forEachPackage { (package) in

@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Arguments",
         "state": {
           "branch": null,
-          "revision": "29a240fb5c5bcd0eb56feb527dfb3cab7076290c",
-          "version": "1.0.4"
+          "revision": "e17c144eb00b6d9e500c34eb09de265add523de2",
+          "version": "1.1.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Builder.git",
         "state": {
           "branch": null,
-          "revision": "376494ed8eba80146cefe3fe4dc5556bd68cb4dc",
-          "version": "1.0.10"
+          "revision": "7f0faae70c52021b1536786bd78342c9860c3ac3",
+          "version": "1.0.12"
         }
       },
       {
@@ -30,11 +30,11 @@
       },
       {
         "package": "Docopt",
-        "repositoryURL": "https://github.com/elegantchaos/docopt.swift",
+        "repositoryURL": "https://github.com/elegantchaos/docopt.swift.git",
         "state": {
           "branch": null,
-          "revision": "66f9a7d64e6542427a1e4eed3d8ad5ace262cf11",
-          "version": "0.6.8"
+          "revision": "fa71fca4b4e7411c70a21ef89256cd04a64c6dda",
+          "version": "0.6.11"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Logger",
         "state": {
           "branch": null,
-          "revision": "2cc9e50d5725ebe9beed158f9b603cfffbaf67c3",
-          "version": "1.0.11"
+          "revision": "65d89667f72e480aba8ed37c3d874a0c5349a005",
+          "version": "1.3.6"
         }
       },
       {
