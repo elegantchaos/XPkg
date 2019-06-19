@@ -8,13 +8,23 @@ import Foundation
 
 struct ListCommand: Command {
     func run(engine: XPkg) {
-        if engine.arguments.option("compact") {
+        if engine.arguments.option("oneline") {
+          listOneline(engine: engine)
+        } else if engine.arguments.option("compact") {
             listCompact(engine: engine)
         } else if engine.arguments.option("verbose") {
             listVerbose(engine: engine)
         } else {
             listNormal(engine: engine)
         }
+    }
+
+    func listOneline(engine: XPkg) {
+        var output: [String] = []
+        let _ = engine.forEachPackage { (package) in
+            output.append(package.name)
+        }
+        engine.output.log(output.joined(separator: " "))
     }
 
     func listCompact(engine: XPkg) {

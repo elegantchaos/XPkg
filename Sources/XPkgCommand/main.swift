@@ -14,7 +14,7 @@ Usage:
     xpkg check [<package>]
     xpkg install <package> [--project]
     xpkg link [<package> <path>]
-    xpkg list [--compact | --verbose]
+    xpkg list [--compact | --verbose | --oneline]
     xpkg path (<package> | --self) [--store]
     xpkg reinstall <package>
     xpkg remove <package> [--force]
@@ -34,6 +34,7 @@ Options:
     -logs- <logs>                       Specify log channels to disable.
     --store                             Use internal store, rather than the package root.
     --compact                           Produces minimal output.
+    --oneline                           Produces output on a single line.
     --verbose                           Produces extra output.
     --rerun                             Re-run the install actions, even if already installed.
     --self                              Perform the action on xpkg itself, rather than an installed package.
