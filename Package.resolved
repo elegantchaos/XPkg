@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "Arguments",
-        "repositoryURL": "https://github.com/elegantchaos/Arguments",
+        "repositoryURL": "https://github.com/elegantchaos/Arguments.git",
         "state": {
           "branch": null,
           "revision": "e17c144eb00b6d9e500c34eb09de265add523de2",
@@ -39,7 +39,7 @@
       },
       {
         "package": "Logger",
-        "repositoryURL": "https://github.com/elegantchaos/Logger",
+        "repositoryURL": "https://github.com/elegantchaos/Logger.git",
         "state": {
           "branch": null,
           "revision": "c101ca48876adabeb25848f5fe0efba748c24d73",

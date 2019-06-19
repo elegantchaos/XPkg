@@ -6,6 +6,7 @@
 
 import XPkgCore
 import Arguments
+import Logger
 
 let doc = """
 Cross Platform Package Manager.
@@ -51,3 +52,4 @@ Examples:
 let arguments = Arguments(documentation: doc, version: XPkgCommandMetadata.version)
 let engine = XPkg(arguments: arguments)
 engine.run()
+Logger.defaultManager.flush()
