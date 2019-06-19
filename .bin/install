@@ -10,6 +10,8 @@ then
     exit 1
 fi
 
+FISH="$HOME/.config/fish/functions"
+
 LOCAL="$HOME/.local"
 echo "Installing links."
 if [[ -e "$LOCAL" ]]
@@ -27,6 +29,7 @@ $SUDO mkdir -p "$STARTUP"
 $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
 $SUDO mkdir -p "$BIN"
 $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
-
+mkdir -p "$FISH"
+ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
 echo "Done."
