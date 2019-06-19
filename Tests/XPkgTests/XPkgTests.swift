@@ -7,7 +7,7 @@
 
 import XCTest
 import Arguments
-@testable import XPkg
+@testable import XPkgCore
 
 
 class XPkgTests: XCTestCase {

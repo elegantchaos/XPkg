@@ -20,16 +20,16 @@ let package = Package(
     targets: [
       .target(
           name: "XPkgCommand",
-          dependencies: ["XPkg"]),
+          dependencies: ["XPkgCore"]),
         .target(
-            name: "XPkg",
+            name: "XPkgCore",
             dependencies: ["Arguments", "Logger"]),
         .target(
             name: "Configure",
           dependencies: ["BuilderConfiguration"]),
         .testTarget(
             name: "XPkgTests",
-            dependencies: ["XPkg", "XPkgCommand"]
+            dependencies: ["XPkgCore"]
         )
     ],
     swiftLanguageVersions: [.v4_2]

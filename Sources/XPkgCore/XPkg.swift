@@ -101,11 +101,12 @@ public class XPkg {
         return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
     }
 
-    func attempt(action: String, block: () throws -> ()) {
+    func attempt(action: String, cleanup: (() throws -> Void)? = nil, block: () throws -> ()) {
         verbose.log(action)
         do {
             try block()
         } catch {
+            try? cleanup?()
             output.log("\(action) failed.\n\(error)")
         }
     }
