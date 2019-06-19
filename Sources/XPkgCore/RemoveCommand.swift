@@ -12,7 +12,7 @@ struct RemoveCommand: Command {
         let output = engine.output
         let package = engine.existingPackage()
 
-        var safeToDelete = engine.arguments.option("force") as Bool
+        var safeToDelete = engine.arguments.flag("force")
 
         // check the git status
         if package.installed {

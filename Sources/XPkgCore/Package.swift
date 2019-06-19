@@ -28,6 +28,17 @@ struct PackageInfo: Codable {
     let removeable: Bool
 }
 
+enum PackageError: Error, CustomStringConvertible {
+    case failedToClone(repo: String)
+    
+    var description: String {
+        switch self {
+        case .failedToClone(let repo):
+            return "Couldn't clone from \(repo)."
+        }
+    }
+}
+
 class Package {
     var fileManager: FileManager
     var name: String
@@ -197,8 +208,9 @@ class Package {
         if result.status == 0 {
             engine.output.log("Package \(name) installed.")
         } else {
-            engine.output.log("Failed to install \(name).\n\n\(result.status) \(result.stdout) \(result.stderr)")
-            throw NSError(domain: "XPkg", code: 1, userInfo: nil)
+            engine.output.log("Failed to install \(name).")
+            engine.verbose.log("\(result.status) \(result.stdout) \(result.stderr)")
+            throw PackageError.failedToClone(repo: remote.absoluteString)
         }
     }
 
