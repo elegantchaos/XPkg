@@ -38,7 +38,9 @@ struct ListCommand: Command {
         let gotPackages = engine.forEachPackage { (package) in
             let flags = package.linked ? "*" : " "
             gotLinked = gotLinked || package.linked
-            engine.output.log("\(flags) \(package.name)")
+            let status = package.status(engine: engine)
+            let statusString = status == .pristine ? "" : " (\(status))"
+            engine.output.log("\(flags) \(package.name)\(statusString)")
         }
 
 
@@ -51,8 +53,10 @@ struct ListCommand: Command {
 
     func listVerbose(engine: XPkg) {
         let gotPackages = engine.forEachPackage { (package) in
-            let location = package.linked ? " (\(package.local.path))" : ""
-            engine.output.log("\(package.name)\(location)")
+            let location = package.linked ? " --> \(package.local.path)" : ""
+            let status = package.status(engine: engine)
+            let statusString = status == .pristine ? "" : " (\(status))"
+            engine.output.log("\(package.name)\(statusString)\(location)")
         }
 
         if !gotPackages {
