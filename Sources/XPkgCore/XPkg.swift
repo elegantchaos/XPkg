@@ -8,11 +8,34 @@ import Arguments
 import Foundation
 import Logger
 
+extension URLSession {
+    func synchronousDataTask(with request: URLRequest) -> (Data?, URLResponse?, Error?) {
+        var data: Data?
+        var response: URLResponse?
+        var error: Error?
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let dataTask = self.dataTask(with: request) {
+            data = $0
+            response = $1
+            error = $2
+            
+            semaphore.signal()
+        }
+        dataTask.resume()
+        
+        _ = semaphore.wait(timeout: .distantFuture)
+        
+        return (data, response, error)
+    }
+}
+
 public class XPkg {
     let arguments: Arguments
     let output = Logger.stdout
     let verbose = Logger("verbose")
-    var defaultOrg = "elegantchaos" // TODO: read from preference
+    var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
 
     let commands: [String:Command] = [
         "check": CheckCommand(),
@@ -68,6 +91,14 @@ public class XPkg {
         return xpkgURL.appendingPathComponent("code")
     }
 
+    internal func remoteExists(_ remote: String) -> Bool {
+        let runner = Runner()
+        if let result = try? runner.sync(gitURL, arguments: ["ls-remote", remote, "--exit-code"]) {
+            return result.status == 0
+        }
+        return false
+    }
+    
     internal func remotePackageURL(_ package: String) -> URL {
         let remote : URL?
         if package.contains("git@") {
@@ -79,7 +110,17 @@ public class XPkg {
             } else if package.contains("/") {
                 remote = URL(string: "git@github.com:\(package)")
             } else {
-                remote = URL(string: "git@github.com:\(defaultOrg)/\(package)")
+                // iterate default orgs, looking for a repo that exists
+                // if we don't find any, we just default to the unqualified package - knowing that it's probably wrong
+                var found: URL? = nil
+                for org in defaultOrgs {
+                    let repo = "git@github.com:\(org)/\(package)"
+                    if remoteExists(repo) {
+                        found = URL(string: repo)
+                        break
+                    }
+                }
+                remote = found ?? URL(string: "git@github.com:\(package)")
             }
         }
 
