@@ -207,7 +207,7 @@ class Package {
     /**
     What state is the local package in?
      */
-    
+
     func status(engine: XPkg) -> PackageStatus {
         let runner = Runner(cwd: local)
         if let result = try? runner.sync(engine.gitURL, arguments: ["status", "--porcelain", "--branch"]) {
@@ -218,12 +218,10 @@ class Package {
                     let branch = lines[0]
                     if branch == "## No commits yet on master" {
                         return .uncommitted
-                    } else if !branch.contains("...") {
-                        return .untracked
                     } else {
                         let output = lines.dropFirst().joined(separator: "\n")
                         if output == "" {
-                            return .pristine
+                            return branch.contains("...") ? .pristine : .untracked
                         } else if output.contains("??") || output.contains(" D ") || output.contains(" M ") || output.contains("R  ") {
                             return .modified
                         } else if output.contains("[ahead ") {
@@ -235,7 +233,7 @@ class Package {
                 }
             }
         }
-        
+
         return .unknown
     }
 
