@@ -18,7 +18,7 @@ Usage:
     xpkg list [--compact | --verbose | --oneline]
     xpkg path (<package> | --self) [--store]
     xpkg reinstall <package>
-    xpkg remove <package> [--force]
+    xpkg remove <package> [--force] [--verbose]
     xpkg reveal <package> [--store] [--path]
     xpkg update [<package> | --self]
     xpkg (-h | --help)
@@ -49,7 +49,8 @@ Examples:
 
 """
 
-let arguments = Arguments(documentation: doc, version: XPkgCommandMetadata.version)
+let filtered = Manager.removeLoggingOptions(from: CommandLine.arguments)
+let arguments = Arguments(documentation: doc, version: XPkgCommandMetadata.version, arguments: filtered)
 let engine = XPkg(arguments: arguments)
 engine.run()
 Logger.defaultManager.flush()
