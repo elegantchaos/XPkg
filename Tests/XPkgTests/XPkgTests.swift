@@ -14,7 +14,7 @@ class XPkgTests: XCTestCase {
     func testName() {
         let arguments = Arguments(program: "xpkg")
         let engine = XPkg(arguments: arguments)
-        engine.defaultOrg = "testorg"
+        engine.defaultOrgs = ["testorg"]
         let remote = engine.remotePackageURL("test")
         XCTAssertEqual(remote, URL(string: "git@github.com:testorg/test"))
     }
