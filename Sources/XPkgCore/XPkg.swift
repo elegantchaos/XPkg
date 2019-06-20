@@ -100,7 +100,7 @@ public class XPkg {
         return false
     }
 
-    internal func remotePackageURL(_ package: String) -> URL {
+    internal func remotePackageURL(_ package: String, skipValidation: Bool = false) -> URL {
         let remote : URL?
         if package.contains("git@") {
             remote = URL(string: package)
@@ -116,7 +116,7 @@ public class XPkg {
                 var found: URL? = nil
                 for org in defaultOrgs {
                     let repo = "git@github.com:\(org)/\(package)"
-                    if remoteExists(repo) {
+                    if skipValidation || remoteExists(repo) {
                         found = URL(string: repo)
                         output.log("Found remote package \(org)/\(package).")
                         break

@@ -15,7 +15,7 @@ class XPkgTests: XCTestCase {
         let arguments = Arguments(program: "xpkg")
         let engine = XPkg(arguments: arguments)
         engine.defaultOrgs = ["testorg"]
-        let remote = engine.remotePackageURL("test")
+        let remote = engine.remotePackageURL("test", skipValidation: true)
         XCTAssertEqual(remote, URL(string: "git@github.com:testorg/test"))
     }
 
