@@ -11,6 +11,14 @@ struct InstallCommand: Command {
     func run(engine: XPkg) {
         let output = engine.output
         let packageSpec = engine.arguments.argument("package")
+
+        // do a quick check first for an existing local package
+        if let existing = Package(name: packageSpec, vault: engine.vaultURL) {
+            output.log("Package `\(existing.name)` is already installed.")
+            return
+        }
+
+        output.log("Searching for package \(packageSpec)...")
         let package = Package(remote: engine.remotePackageURL(packageSpec), vault: engine.vaultURL)
         let rerun = engine.arguments.flag("rerun")
 
@@ -27,7 +35,7 @@ struct InstallCommand: Command {
         let cleanup = {
             try package.remove()
         }
-        
+
         engine.attempt(action: "Install", cleanup: cleanup) {
             if !rerun {
                 try package.clone(engine: engine)
