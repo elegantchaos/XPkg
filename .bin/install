@@ -32,4 +32,9 @@ $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
 mkdir -p "$FISH"
 ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
+echo "Installing essential packages."
+
+~/.local/bin/xpkg install elegantchaos/bash-hooks
+~/.local/bin/xpkg install samdeane/settings-shell
+
 echo "Done."
