@@ -24,7 +24,7 @@ In a nutshell, that's what XPkg does.
 
 ## Installation
 
-Running `curl https://raw.githubusercontent.com/elegantchaos/XPkg/master/.bin/bootstrap` should get you up and running.
+Running `curl https://raw.githubusercontent.com/elegantchaos/XPkg/master/.bin/bootstrap | bash` should get you up and running.
 
 What this does is:
 - clone the project into `.local/share/xpkg`
