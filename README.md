@@ -24,9 +24,13 @@ In a nutshell, that's what XPkg does.
 
 ## Installation
 
-Right now you have to clone XPkg manually, build it with `swift build`, then put the binary that results (in `.build/debug/xpkg`) somewhere in your path.
+Running `curl https://raw.githubusercontent.com/elegantchaos/XPkg/master/.bin/bootstrap` should get you up and running.
 
-Later on I intend to clean this up and provide a one-line bootstrap script to download and install it.
+What this does is:
+- clone the project into `.local/share/xpkg`
+- build it
+- install some hooks to link it in to your path
+- install a couple of essential packages
 
 
 ## Usage
