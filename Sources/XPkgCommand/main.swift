@@ -55,25 +55,31 @@ func infoPlist() -> [String:String] {
         defer { dlclose(handle) }
         
         if let ptr = dlsym(handle, MH_EXECUTE_SYM) {
-            let mhExecHeaderPtr = ptr.assumingMemoryBound(to: mach_header_64.self)
             var size: UInt = 0
-            let ptr = getsectiondata(mhExecHeaderPtr, "__TEXT", "__Info_plist", &size)
-            let data = Data(bytesNoCopy: ptr!, count: Int(size), deallocator: .none)
-            do {
-                let info = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
-                return info
-            } catch {
+            let mhExecHeaderPtr = ptr.assumingMemoryBound(to: mach_header_64.self)
+            if let ptr = getsectiondata(mhExecHeaderPtr, "__TEXT", "__Info_plist", &size) {
+                let data = Data(bytesNoCopy: ptr, count: Int(size), deallocator: .none)
+                do {
+                    let info = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
+                    return info as? [String:String] ?? [:]
+                } catch {
+                }
             }
         }
     }
     return [:]
 }
 
-print("blah")
-let info = infoPlist
-let version = info["CFBundleShortVersionString"] as? String
+let info = infoPlist()
+let version: String
+if let name = info["CFBundleDisplayName"] as? String, let short = info["CFBundleShortVersionString"] as? String, let build = info["CFBundleVersion"] as? String {
+    version = "\(name) \(short) (\(build))."
+} else {
+    version = "Unknown version."
+}
+
 let filtered = Manager.removeLoggingOptions(from: CommandLine.arguments)
-let arguments = Arguments(documentation: doc, version: version ?? "unknown", arguments: filtered)
+let arguments = Arguments(documentation: doc, version: version, arguments: filtered)
 let engine = XPkg(arguments: arguments)
 engine.run()
 Logger.defaultManager.flush()
