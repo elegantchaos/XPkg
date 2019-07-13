@@ -7,6 +7,7 @@
 import XPkgCore
 import Arguments
 import Logger
+import Foundation
 
 let doc = """
 Cross Platform Package Manager.
@@ -49,8 +50,30 @@ Examples:
 
 """
 
+func infoPlist() -> [String:String] {
+    if let handle = dlopen(nil, RTLD_LAZY) {
+        defer { dlclose(handle) }
+        
+        if let ptr = dlsym(handle, MH_EXECUTE_SYM) {
+            let mhExecHeaderPtr = ptr.assumingMemoryBound(to: mach_header_64.self)
+            var size: UInt = 0
+            let ptr = getsectiondata(mhExecHeaderPtr, "__TEXT", "__Info_plist", &size)
+            let data = Data(bytesNoCopy: ptr!, count: Int(size), deallocator: .none)
+            do {
+                let info = try PropertyListSerialization.propertyList(from: data, options: [], format: nil)
+                return info
+            } catch {
+            }
+        }
+    }
+    return [:]
+}
+
+print("blah")
+let info = infoPlist
+let version = info["CFBundleShortVersionString"] as? String
 let filtered = Manager.removeLoggingOptions(from: CommandLine.arguments)
-let arguments = Arguments(documentation: doc, version: XPkgCommandMetadata.version, arguments: filtered)
+let arguments = Arguments(documentation: doc, version: version ?? "unknown", arguments: filtered)
 let engine = XPkg(arguments: arguments)
 engine.run()
 Logger.defaultManager.flush()
