@@ -11,22 +11,8 @@ let settings = Settings(specs: [
         values: [
         ],
         inherits: [
-            .spec(name: "mac", filter: ["macOS"]),
-            .spec(name: "debug", filter: ["debug"])
         ]
     ),
-    .spec(
-        name: "mac",
-        values: [
-          .setting("minimum-target", "macosx10.13"),
-        ]
-    ),
-    .spec(
-        name: "debug",
-        values: [
-          .setting("optimisation", "none")
-        ]
-    )
     ]
 )
 
@@ -34,8 +20,8 @@ let configuration = Configuration(
     settings: settings,
     actions: [
         .action(name:"build", phases:[
-            .toolPhase(name:"Preparing", tool:"metadata", arguments:["XPkgCommand"]),
-            .buildPhase(name:"Building", target:"xpkg"),
+            .toolPhase(name:"Updating Metadata", tool:"metadata", arguments:["XPkgCommand"]),
+            .buildPhase(name:"Building", target:"XPkgCommand"),
             ]),
         .action(name:"test", phases:[
             .testPhase(name:"Testing", target:"XPkgTests"),
