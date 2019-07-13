@@ -20,8 +20,8 @@ let configuration = Configuration(
     settings: settings,
     actions: [
         .action(name:"build", phases:[
-            .toolPhase(name:"Updating Metadata", tool:"metadata", arguments:["XPkgCommand"]),
-            .buildPhase(name:"Building", target:"XPkgCommand"),
+            .toolPhase(name:"Updating Metadata", tool:"metadata", arguments:["xpkg", "Sources/XPkgCommand/Info.plist"]),
+            .buildPhase(name:"Building", target:"xpkg"),
             ]),
         .action(name:"test", phases:[
             .testPhase(name:"Testing", target:"XPkgTests"),
