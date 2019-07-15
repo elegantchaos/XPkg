@@ -20,27 +20,54 @@ struct InstallCommand: Command {
             return
         }
 
-        output.log("Searching for package \(packageSpec)...")
-        let url = engine.remotePackageURL(packageSpec)
-
-        // check for an existing local package with the url
-        if let package = manifest.package(named: packageSpec) {
-            output.log("Package `\(package.name)` is already installed.")
-            return
+        let candidates = [
+            URL(string: packageSpec)!,
+            URL(string:"git@github.com:\(packageSpec)")!,
+            URL(string:"git@gihub.com:elegantchaos/\(packageSpec)")!,
+            URL(string:"git@gihub.com:samdeane/\(packageSpec)")!
+        ]
+        
+        var found: URL? = nil
+        var updatedManifest = manifest
+        for candidate in candidates {
+            output.log("Trying `\(candidate.path)`.")
+            let package = XPkg.PackageManifest(name: "", version: "1.0.0", path: ".", url: candidate.path, dependencies: [])
+            updatedManifest = manifest
+            updatedManifest.dependencies.append(package)
+            engine.saveManifest(manifest: updatedManifest)
+            
+            updatedManifest = engine.loadManifest()
+            if updatedManifest.dependencies.count > manifest.dependencies.count {
+                output.log("Found pakacge at `\(candidate.path)`.")
+                found = candidate
+                break
+            }
         }
 
-        let package = XPkg.PackageManifest(name: packageSpec, version: "1.0.0", path: ".", url: url.path, dependencies: [])
-        var updatedManifest = manifest
-        updatedManifest.dependencies.append(package)
-        engine.saveManifest(manifest: updatedManifest)
-        
-        let checkManifest = engine.loadManifest()
-        if checkManifest.dependencies.count <= manifest.dependencies.count {
+        if found == nil {
             output.log("Couldn't add `\(packageSpec)`.")
             engine.saveManifest(manifest: manifest)
             return
         }
-        
+
+        if let package = updatedManifest.package(withURL: found!) {
+            let cleanup = {
+                engine.saveManifest(manifest: manifest)
+            }
+            
+            let pkg = Package(manifest: package)
+            engine.attempt(action: "Install", cleanup: cleanup) {
+                //            if !rerun {
+                //                try package.clone(engine: engine)
+                //                if let name = engine.arguments.option("as") {
+                //                    try package.rename(as: name, engine: engine)
+                //                }
+                //                try package.save()
+                //            }
+                try pkg.run(action: "install", engine: engine)
+            }
+
+        }
 //        let package = Package(remote: , vault: engine.vaultURL)
 //        let rerun = engine.arguments.flag("rerun")
 //
@@ -54,20 +81,5 @@ struct InstallCommand: Command {
 //            package.link(into: engine.projectsURL, removeable: true)
 //        }
 
-        let cleanup = {
-            engine.saveManifest(manifest: manifest)
-        }
-
-        let pkg = Package(manifest: package)
-        engine.attempt(action: "Install", cleanup: cleanup) {
-//            if !rerun {
-//                try package.clone(engine: engine)
-//                if let name = engine.arguments.option("as") {
-//                    try package.rename(as: name, engine: engine)
-//                }
-//                try package.save()
-//            }
-            try pkg.run(action: "install", engine: engine)
-        }
     }
 }

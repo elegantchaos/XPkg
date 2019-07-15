@@ -28,8 +28,11 @@ struct ListCommand: Command {
     }
 
     func listCompact(engine: XPkg) {
-        let _ = engine.forEachPackage { (package) in
+        let gotPackages = engine.forEachPackage { (package) in
             engine.output.log("\(package.name)")
+        }
+        if !gotPackages {
+            engine.output.log("No packages installed.")
         }
     }
 

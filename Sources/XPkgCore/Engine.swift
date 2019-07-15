@@ -73,7 +73,7 @@ public class XPkg {
 
     internal var xpkgURL: URL {
         let fm = FileManager.default
-        let localPath = ("~/.local/share/xpkg2" as NSString).expandingTildeInPath as String
+        let localPath = ("~/.local/share/xpkg-spm" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
         if fm.fileExists(at: localURL) {
@@ -241,6 +241,9 @@ let package = Package(
     
     func forEachPackage(_ block: (Package) -> ()) -> Bool {
         let manifest = loadManifest()
+        if manifest.dependencies.count == 0 {
+            return false
+        }
         for item in manifest.dependencies {
             let package = Package(manifest: item)
             block(package)
