@@ -96,13 +96,53 @@ struct Package: Decodable {
         return nil
     }
     
-    var allPackages: [Package] {
-        var packages: [Package] = []
-        for package in dependencies {
-            packages.append(package)
-            packages.append(contentsOf: package.allPackages)
+    class DepthsIndex {
+        var index: [Package:Depths] = [:]
+
+        func record(package: Package, depth: Int) {
+            if let depths = index[package] {
+                depths.record(depth: depth)
+            } else {
+                index[package] = Depths(depth: depth)
+            }
         }
-        return packages
+    }
+    
+    class Depths {
+        var highest: Int
+        var lowest: Int
+        
+        init(depth: Int) {
+            highest = depth
+            lowest = depth
+        }
+        
+        func record(depth: Int) {
+            highest = max(depth, highest)
+            lowest = min(depth, lowest)
+        }
+    }
+    
+    func recordPackages(index: DepthsIndex, depth: Int) {
+        for package in dependencies {
+            index.record(package: package, depth: depth)
+            package.recordPackages(index: index, depth: depth + 1)
+        }
+    }
+    
+    var allPackages: ([Package], [Package]) {
+        let index = DepthsIndex()
+        recordPackages(index: index, depth: 1)
+        
+        let byMostDependent = index.index.sorted { (p1, p2) -> Bool in
+            return p1.value.highest > p2.value.highest
+        }
+        
+        let byLeastDependent = index.index.sorted { (p1, p2) -> Bool in
+            return p1.value.lowest < p2.value.lowest
+        }
+
+        return (byMostDependent.map({ $0.key }), byLeastDependent.map({ $0.key }))
     }
     
     mutating func add(package: Package) {

@@ -223,8 +223,8 @@ let package = Package(
     }
     
     func processUpdate(from: Package, to: Package) {
-        let before = from.allPackages
-        let after = to.allPackages
+        let (_, before) = from.allPackages
+        let (after, _) = to.allPackages
         
         let beforeSet = Set<Package>(before)
         for package in after {
