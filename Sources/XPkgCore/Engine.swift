@@ -203,7 +203,7 @@ let package = Package(
 
         var manifestText = manifestHead
         for package in manifest.dependencies {
-            manifestText.append("       .package(url: \"\(package.url)\", from: \"\(package.version)\"),\n")
+            manifestText.append("       .package(url: \"\(package.url)\", .branch(\"master\")),\n")
         }
         manifestText.append(manifestTail)
         let url = vaultURL.appendingPathComponent("Package.swift")
