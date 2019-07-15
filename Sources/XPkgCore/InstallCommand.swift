@@ -20,48 +20,23 @@ struct InstallCommand: Command {
             return
         }
 
+        // resolve the spec to a full url
         output.log("Searching for package \(packageSpec)...")
         let url = engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
         
+        // add the package to the manifest
         let package = Package(url: url, version: "1.0.0")
         updatedManifest = manifest
         updatedManifest.add(package: package)
         
+        // try to write the update
         guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count > manifest.dependencies.count else {
             output.log("Couldn't add `\(packageSpec)`.")
             return
         }
         
-        if let package = resolved.package(withURL: url) {
-            let cleanup = {
-                engine.saveManifest(manifest: manifest)
-            }
-            
-            engine.attempt(action: "Install", cleanup: cleanup) {
-                //            if !rerun {
-                //                try package.clone(engine: engine)
-                //                if let name = engine.arguments.option("as") {
-                //                    try package.rename(as: name, engine: engine)
-                //                }
-                //                try package.save()
-                //            }
-                try package.run(action: "install", engine: engine)
-            }
-
-        }
-//        let package = Package(remote: , vault: engine.vaultURL)
-//        let rerun = engine.arguments.flag("rerun")
-//
-//        guard !package.registered || rerun else {
-//            output.log("Package `\(package.name)` is already installed.")
-//            return
-//        }
-
-//        let isProject = engine.arguments.flag("project")
-//        if isProject {
-//            package.link(into: engine.projectsURL, removeable: true)
-//        }
-
+        // if it wrote ok, run the install actions for any new packages
+        engine.processUpdate(from: manifest, to: resolved)
     }
 }

@@ -213,7 +213,6 @@ let package = Package(
     func updateManifest(from: Package, to: Package) -> Package? {
         saveManifest(manifest: to)
         if let resolved = tryToLoadManifest() {
-            processUpdate(from: from, to: resolved)
             return resolved
         }
             
@@ -229,14 +228,24 @@ let package = Package(
         let beforeSet = Set<Package>(before)
         for package in after {
             if !beforeSet.contains(package) {
-                print("Appear to have added \(package.name)")
+                do {
+                    try package.run(action: "install", engine: self)
+                    print("Appear to have added \(package.name)")
+                } catch {
+                    print("Install action for \(package.name) failed.")
+                }
             }
         }
         
         let afterSet = Set<Package>(after)
         for package in before {
             if !afterSet.contains(package) {
-                print("Appear to have removed \(package.name)")
+                do {
+                    try package.run(action:"remove", engine: self)
+                    print("Removed \(package.name).")
+                } catch {
+                    print("Remove action for \(package.name) failed.")
+                }
             }
         }
     }
