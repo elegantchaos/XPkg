@@ -60,13 +60,13 @@ struct InstallCommand: Command {
 
         let pkg = Package(manifest: package)
         engine.attempt(action: "Install", cleanup: cleanup) {
-            if !rerun {
-                try package.clone(engine: engine)
-                if let name = engine.arguments.option("as") {
-                    try package.rename(as: name, engine: engine)
-                }
-                try package.save()
-            }
+//            if !rerun {
+//                try package.clone(engine: engine)
+//                if let name = engine.arguments.option("as") {
+//                    try package.rename(as: name, engine: engine)
+//                }
+//                try package.save()
+//            }
             try pkg.run(action: "install", engine: engine)
         }
     }

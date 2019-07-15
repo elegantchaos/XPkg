@@ -14,13 +14,10 @@ extension Package {
     */
 
     func run(action: String, engine: XPkg) throws {
-        let runner = Runner(cwd: engine.vaultURL)
-        if let result = try? runner.sync(engine.swiftURL, arguments: ["run", "\(name)-xpkg", action]) {
-            if result.status == 0 {
-                let decode = JSONDecoder()
-                if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(PackageManifest.self, from: data) {
-                    return manifest
-                }
+        let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
+        if let result = try? runner.sync(arguments: ["run", "\(name)-xpkg", action]) {
+            if result.status != 0 {
+                engine.output.log("Couldn't run action \(action).")
             }
         }
 

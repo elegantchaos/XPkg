@@ -7,6 +7,7 @@
 import Arguments
 import Foundation
 import Logger
+import Runner
 
 extension URLSession {
     func synchronousDataTask(with request: URLRequest) -> (Data?, URLResponse?, Error?) {
@@ -93,8 +94,8 @@ public class XPkg {
     }
 
     internal func remoteExists(_ remote: String) -> Bool {
-        let runner = Runner()
-        if let result = try? runner.sync(gitURL, arguments: ["ls-remote", remote, "--exit-code"]) {
+        let runner = Runner(for: gitURL)
+        if let result = try? runner.sync(arguments: ["ls-remote", remote, "--exit-code"]) {
             return result.status == 0
         }
         return false
@@ -197,8 +198,8 @@ public class XPkg {
     }
 
     func loadManifest() -> PackageManifest {
-        let runner = Runner(cwd: vaultURL)
-        if let result = try? runner.sync(swiftURL, arguments: ["package", "show-dependencies", "--format", "json"]) {
+        let runner = Runner(for: swiftURL, cwd: vaultURL)
+        if let result = try? runner.sync(arguments: ["package", "show-dependencies", "--format", "json"]) {
             if result.status == 0 {
                 let decode = JSONDecoder()
                 if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(PackageManifest.self, from: data) {

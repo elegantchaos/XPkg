@@ -48,11 +48,11 @@
       },
       {
         "package": "Runner",
-        "repositoryURL": "https://github.com/elegantchaos/Runner",
+        "repositoryURL": "https://github.com/elegantchaos/Runner.git",
         "state": {
           "branch": null,
-          "revision": "1a257b260150b7a7a9771f636a6a373682ad54e5",
-          "version": "1.0.1"
+          "revision": "292c94f8613ddd72d45f3bb1f503dceec3b83e44",
+          "version": "1.0.3"
         }
       }
     ]

@@ -219,8 +219,8 @@ class Package {
      */
 
     func status(engine: XPkg) -> PackageStatus {
-        let runner = Runner(cwd: local)
-        if let result = try? runner.sync(engine.gitURL, arguments: ["status", "--porcelain", "--branch"]) {
+        let runner = Runner(for: engine.gitURL, cwd: local)
+        if let result = try? runner.sync(arguments: ["status", "--porcelain", "--branch"]) {
             engine.verbose.log(result.stdout)
             if result.status == 0 {
                 let lines = result.stdout.split(separator: "\n")
