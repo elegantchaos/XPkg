@@ -16,33 +16,34 @@ extension Package {
     func run(action: String, engine: XPkg) throws {
         let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
         if let result = try? runner.sync(arguments: ["run", "\(name)-xpkg", action]) {
+            print(result.stdout)
             if result.status != 0 {
                 engine.output.log("Couldn't run action \(action).")
             }
         }
 
-        
-        let url = local.appendingPathComponent(".xpkg.json")
-        if fileManager.fileExists(atPath: url.path) {
-            let decoder = JSONDecoder()
-            if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
-                switch (action) {
-                case "install":
-                    links(create: manifest.links, engine: engine)
-                    try run(commands: manifest.install, engine: engine)
-
-                case "remove":
-                    try run(commands: manifest.remove, engine: engine)
-                    links(remove: manifest.links, engine: engine)
-
-                default:
-                    engine.output.log("Unknown action \(action).")
-                }
-            } else {
-                engine.output.log("Couldn't decode manifest.")
-            }
-
-        }
+//
+//        let url = local.appendingPathComponent(".xpkg.json")
+//        if fileManager.fileExists(atPath: url.path) {
+//            let decoder = JSONDecoder()
+//            if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
+//                switch (action) {
+//                case "install":
+//                    links(create: manifest.links, engine: engine)
+//                    try run(commands: manifest.install, engine: engine)
+//
+//                case "remove":
+//                    try run(commands: manifest.remove, engine: engine)
+//                    links(remove: manifest.links, engine: engine)
+//
+//                default:
+//                    engine.output.log("Unknown action \(action).")
+//                }
+//            } else {
+//                engine.output.log("Couldn't decode manifest.")
+//            }
+//
+//        }
     }
 
     /**

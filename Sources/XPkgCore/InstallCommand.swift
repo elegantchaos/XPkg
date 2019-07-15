@@ -20,37 +20,23 @@ struct InstallCommand: Command {
             return
         }
 
-        let candidates = [
-            URL(string: packageSpec)!,
-            URL(string:"git@github.com:\(packageSpec)")!,
-            URL(string:"git@gihub.com:elegantchaos/\(packageSpec)")!,
-            URL(string:"git@gihub.com:samdeane/\(packageSpec)")!
-        ]
-        
-        var found: URL? = nil
+        output.log("Searching for package \(packageSpec)...")
+        let url = engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
-        for candidate in candidates {
-            output.log("Trying `\(candidate.path)`.")
-            let package = XPkg.PackageManifest(name: "", version: "1.0.0", path: ".", url: candidate.path, dependencies: [])
-            updatedManifest = manifest
-            updatedManifest.dependencies.append(package)
-            engine.saveManifest(manifest: updatedManifest)
-            
-            updatedManifest = engine.loadManifest()
-            if updatedManifest.dependencies.count > manifest.dependencies.count {
-                output.log("Found pakacge at `\(candidate.path)`.")
-                found = candidate
-                break
-            }
-        }
-
-        if found == nil {
-            output.log("Couldn't add `\(packageSpec)`.")
+        
+        let package = XPkg.PackageManifest(name: "", version: "1.0.0", path: ".", url: url.path, dependencies: [])
+        updatedManifest = manifest
+        updatedManifest.dependencies.append(package)
+        engine.saveManifest(manifest: updatedManifest)
+        
+        updatedManifest = engine.loadManifest()
+        if updatedManifest.dependencies.count <= manifest.dependencies.count {
             engine.saveManifest(manifest: manifest)
+            output.log("Couldn't add `\(packageSpec)`.")
             return
         }
 
-        if let package = updatedManifest.package(withURL: found!) {
+        if let package = updatedManifest.package(withURL: url) {
             let cleanup = {
                 engine.saveManifest(manifest: manifest)
             }
