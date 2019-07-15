@@ -149,6 +149,24 @@ public class XPkg {
         return URL(fileURLWithPath: ("~/Projects2" as NSString).expandingTildeInPath)
     }
 
+    func swift(_ arguments: [String], failureMessage: @autoclosure () -> String = "") -> Runner.Result? {
+        let runner = Runner(for: swiftURL, cwd: vaultURL)
+        do {
+            let result = try runner.sync(arguments: arguments)
+            if result.status != 0 {
+                let message = failureMessage()
+                if !message.isEmpty { output.log(message) }
+                verbose.log(result.stderr)
+            }
+            return result
+        } catch {
+            let message = failureMessage()
+            if !message.isEmpty { output.log(message) }
+            verbose.log(error)
+            return nil
+        }
+    }
+    
     func attempt(action: String, cleanup: (() throws -> Void)? = nil, block: () throws -> ()) {
         verbose.log(action)
         do {

@@ -215,29 +215,31 @@ struct Package: Decodable {
     */
 
     func link(to url: URL, engine: XPkg) {
-        let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
-        do {
-            let result = try runner.sync(arguments: ["package", "edit", name, "--path", url.path])
-            if result.status != 0 {
-                engine.output.log("Failed to link \(name) into \(url).")
-                engine.verbose.log(result.stderr)
-            }
-        } catch {
-            engine.output.log("Failed to link \(name) into \(url).")
-            engine.verbose.log(error)
-        }
-
+        let _ = engine.swift(["package", "edit", name, "--path", url.path], failureMessage: "Failed to link \(name) into \(url).")
     }
 
     /**
-    Link package into an external container.
-    */
-
-    func link(into container: URL, removeable: Bool) {
-//        self.local = container.appendingPathComponent(name)
-//        self.linked = true
-//        self.removeable = removeable
+     Link package to an existing folder.
+     */
+    
+    func unlink(engine: XPkg) -> Bool {
+        guard let result = engine.swift(["package", "unedit", name]) else {
+            engine.output.log("Failed to unlink \(name) from \(path).")
+            return false
+        }
+        
+        return result.status == 0 || result.stderr.contains("not in edit mode")
     }
+
+//    /**
+//    Link package into an external container.
+//    */
+//
+//    func link(into container: URL, removeable: Bool) {
+////        self.local = container.appendingPathComponent(name)
+////        self.linked = true
+////        self.removeable = removeable
+//    }
 
     /**
     Save the package info locally.
@@ -315,8 +317,9 @@ struct Package: Decodable {
                     } else {
                         let output = lines.dropFirst().joined(separator: "\n")
                         if output == "" {
-                            return branch.contains("...") ? .pristine : .untracked
-                        } else if output.contains("??") || output.contains(" D ") || output.contains(" M ") || output.contains("R  ") {
+                            let branchOk = branch.contains("...") || branch == "## HEAD (no branch)"
+                            return branchOk ? .pristine : .untracked
+                        } else if output.contains("??") || output.contains(" D ") || output.contains(" M ") || output.contains("R  ") || output.contains("A  ") {
                             return .modified
                         } else if output.contains("[ahead ") {
                             return .ahead

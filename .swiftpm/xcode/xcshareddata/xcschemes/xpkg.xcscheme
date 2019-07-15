@@ -77,11 +77,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "install"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "remove"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "list --oneline"
@@ -93,11 +93,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--project"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--as=wibble"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
