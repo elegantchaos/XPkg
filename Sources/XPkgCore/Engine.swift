@@ -160,20 +160,20 @@ public class XPkg {
     }
 
     func tryToLoadManifest() -> Package? {
-        let runner = Runner(for: swiftURL, cwd: vaultURL)
-        if let result = try? runner.sync(arguments: ["package", "show-dependencies", "--format", "json"]) {
+        do {
+            let runner = Runner(for: swiftURL, cwd: vaultURL)
+            let result = try runner.sync(arguments: ["package", "show-dependencies", "--format", "json"])
             if result.status == 0 {
                 let decode = JSONDecoder()
                 if let data = result.stdout.data(using: .utf8) {
-                    do {
-                        let manifest = try decode.decode(Package.self, from: data)
-                        return manifest
-                    } catch {
-                        print(error)
-                    }
+                    let manifest = try decode.decode(Package.self, from: data)
+                    return manifest
                 }
             }
+        } catch {
+            print(error)
         }
+        
         return nil
     }
 
@@ -207,7 +207,11 @@ let package = Package(
         }
         manifestText.append(manifestTail)
         let url = vaultURL.appendingPathComponent("Package.swift")
-        try? manifestText.write(to: url, atomically: true, encoding: .utf8)
+        do {
+            try manifestText.write(to: url, atomically: true, encoding: .utf8)
+        } catch {
+            print(error)
+        }
     }
     
     func updateManifest(from: Package, to: Package) -> Package? {
@@ -230,7 +234,7 @@ let package = Package(
             if !beforeSet.contains(package) {
                 do {
                     try package.run(action: "install", engine: self)
-                    print("Appear to have added \(package.name)")
+                    print("Added \(package.name)")
                 } catch {
                     print("Install action for \(package.name) failed.")
                 }

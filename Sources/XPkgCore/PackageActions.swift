@@ -15,7 +15,7 @@ extension Package {
 
     func run(action: String, engine: XPkg) throws {
         let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
-        if let result = try? runner.sync(arguments: ["run", "\(name)-xpkg", action]) {
+        if let result = try? runner.sync(arguments: ["run", "\(name)-xpkg-hooks", action]) {
             print(result.stdout)
             if result.status != 0 {
                 engine.output.log("Couldn't run action \(action).")
