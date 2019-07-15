@@ -9,9 +9,15 @@ import Foundation
 
 struct InstallCommand: Command {
     func run(engine: XPkg) {
-        let output = engine.output
         let packageSpec = engine.arguments.argument("package")
-
+        let asProject = engine.arguments.flag("project")
+        let asName = engine.arguments.option("as")
+        InstallCommand.install(engine: engine, packageSpec: packageSpec, asProject: asProject, asName: asName)
+    }
+    
+    static func install(engine: XPkg, packageSpec: String, asProject: Bool = false, asName: String? = nil, linkTo: URL? = nil) {
+        let output = engine.output
+        
         let manifest = engine.loadManifest()
         
         // do a quick check first for an existing local package with the name/spec
@@ -19,7 +25,7 @@ struct InstallCommand: Command {
             output.log("Package `\(package.name)` is already installed.")
             return
         }
-
+        
         // resolve the spec to a full url
         output.log("Searching for package \(packageSpec)...")
         let url = engine.remotePackageURL(packageSpec)
@@ -35,16 +41,18 @@ struct InstallCommand: Command {
             output.log("Couldn't add `\(packageSpec)`.")
             return
         }
-
+        
         // link into project if requested
-        if engine.arguments.flag("project"), let package = resolved.package(withURL: url) {
-            let name = engine.arguments.option("as") ?? package.name
-            let linkURL = engine.projectsURL.appendingPathComponent(name)
+        let needLink = asProject || (linkTo != nil)
+        if needLink, let package = resolved.package(withURL: url) {
+            let name = asName ?? package.name
+            let linkURL = linkTo ?? engine.projectsURL.appendingPathComponent(name)
             package.link(to: linkURL, engine: engine)
         }
-
+        
         // if it wrote ok, run the install actions for any new packages
         engine.processUpdate(from: manifest, to: resolved)
         
     }
+    
 }

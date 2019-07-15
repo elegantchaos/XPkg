@@ -14,27 +14,30 @@ struct LinkCommand: Command {
         var name = engine.arguments.argument("package")
         var linkedPath = engine.arguments.argument("path")
 
-        if (name == "") && (linkedPath == "") {
+        let runner = Runner(for: engine.gitURL)
+        if name == "" {
             // try to figure out the name from the current directory
-            let runner = Runner(for: engine.gitURL)
             if let result = try? runner.sync(arguments: ["remote", "get-url", "origin"]) {
                 if result.status == 0 {
                     name = result.stdout.trimmingCharacters(in: CharacterSet.newlines)
                 }
             }
-
+        }
+        
+        if linkedPath == "" {
             if let result2 = try? runner.sync(arguments: ["rev-parse", "--show-toplevel"]) {
                 if result2.status == 0 {
                     linkedPath = result2.stdout.trimmingCharacters(in: CharacterSet.newlines)
                 }
             }
-
-            if (name == "") || (linkedPath == "") {
-                output.log("Couldn't infer package name/path.")
-                return
-            }
         }
 
+        guard name != "", let linkedURL = URL(string: linkedPath) else {
+            output.log("Couldn't infer package name/path.")
+            return
+        }
+
+        InstallCommand.install(engine: engine, packageSpec: name, linkTo: linkedURL)
 //
 //        let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
 //        guard !package.installed else {
