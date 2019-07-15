@@ -72,11 +72,9 @@ func infoPlist() -> [String:String] {
     return [:]
 }
 
-print("blah")
-
 let info = infoPlist()
 let version: String
-if let name = info["CFBundleDisplayName"] as? String, let short = info["CFBundleShortVersionString"] as? String, let build = info["CFBundleVersion"] as? String {
+if let name = info["CFBundleDisplayName"], let short = info["CFBundleShortVersionString"], let build = info["CFBundleVersion"] {
     version = "\(name) \(short) (\(build))."
 } else {
     version = "Unknown version."

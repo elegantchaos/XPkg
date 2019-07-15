@@ -35,23 +35,23 @@ struct LinkCommand: Command {
             }
         }
 
-
-        let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
-        guard !package.installed else {
-            output.log("Package `\(name)` is already installed.")
-            return
-        }
-
-        let linkedURL = URL(fileURLWithPath: linkedPath).absoluteURL
-        package.link(to: linkedURL, removeable: false, useLocalName: true)
-        guard package.installed else {
-            output.log("Local path \(linkedURL) doesn't exist.")
-            return
-        }
-
-        engine.attempt(action:"Link") {
-            try package.save()
-            output.log("Linked \(linkedPath) as \(name).")
-        }
+//
+//        let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
+//        guard !package.installed else {
+//            output.log("Package `\(name)` is already installed.")
+//            return
+//        }
+//
+//        let linkedURL = URL(fileURLWithPath: linkedPath).absoluteURL
+//        package.link(to: linkedURL, removeable: false, useLocalName: true)
+//        guard package.installed else {
+//            output.log("Local path \(linkedURL) doesn't exist.")
+//            return
+//        }
+//
+//        engine.attempt(action:"Link") {
+//            try package.save()
+//            output.log("Linked \(linkedPath) as \(name).")
+//        }
     }
 }

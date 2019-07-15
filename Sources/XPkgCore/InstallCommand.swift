@@ -24,7 +24,7 @@ struct InstallCommand: Command {
         let url = engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
         
-        let package = XPkg.PackageManifest(name: "", version: "1.0.0", path: ".", url: url.path, dependencies: [])
+        let package = Package(url: url, version: "1.0.0")
         updatedManifest = manifest
         updatedManifest.dependencies.append(package)
         engine.saveManifest(manifest: updatedManifest)
@@ -41,7 +41,6 @@ struct InstallCommand: Command {
                 engine.saveManifest(manifest: manifest)
             }
             
-            let pkg = Package(manifest: package)
             engine.attempt(action: "Install", cleanup: cleanup) {
                 //            if !rerun {
                 //                try package.clone(engine: engine)
@@ -50,7 +49,7 @@ struct InstallCommand: Command {
                 //                }
                 //                try package.save()
                 //            }
-                try pkg.run(action: "install", engine: engine)
+                try package.run(action: "install", engine: engine)
             }
 
         }

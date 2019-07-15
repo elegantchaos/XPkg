@@ -159,59 +159,21 @@ public class XPkg {
         }
     }
 
-    struct PackageDependency {
-        let url: String
-        let version: String
-    }
-    
-    struct PackageManifest: Decodable {
-        let name: String
-        let version: String
-        let path: String
-        let url: String
-        var dependencies: [PackageManifest]
-        
-        func package(named name: String) -> PackageManifest? {
-            for package in dependencies {
-                if package.name == name {
-                    return package
-                }
-            }
-            return nil
-        }
-        
-        func package(withURL url: URL) -> PackageManifest? {
-            for package in dependencies {
-                if package.url == url.absoluteString {
-                    return package
-                }
-            }
-            return nil
-        }
-
-//        func packages() -> [PackageDependency] {
-//            var packages: [PackageDependency] = []
-//            for package in dependencies {
-//                packages.append(PackageDependency(url: package.url, version: package.)
-//            }
-//        }
-    }
-
-    func loadManifest() -> PackageManifest {
+    func loadManifest() -> Package {
         let runner = Runner(for: swiftURL, cwd: vaultURL)
         if let result = try? runner.sync(arguments: ["package", "show-dependencies", "--format", "json"]) {
             if result.status == 0 {
                 let decode = JSONDecoder()
-                if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(PackageManifest.self, from: data) {
+                if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(Package.self, from: data) {
                     return manifest
                 }
             }
         }
 
-        return PackageManifest(name: "XPkgVault", version: "1.0.0", path: ".", url: ".", dependencies: [])
+        return Package(name: "XPkgVault")
     }
     
-    func saveManifest(manifest: PackageManifest) {
+    func saveManifest(manifest: Package) {
         let manifestHead = """
 // swift-tools-version:5.0
 import PackageDescription
@@ -244,8 +206,7 @@ let package = Package(
         if manifest.dependencies.count == 0 {
             return false
         }
-        for item in manifest.dependencies {
-            let package = Package(manifest: item)
+        for package in manifest.dependencies {
             block(package)
         }
         return true
@@ -258,7 +219,8 @@ let package = Package(
 
     func existingPackage(from argument: String = "package") -> Package {
         let packageName = arguments.argument(argument)
-        guard let package = Package(name: packageName, vault: vaultURL) else {
+        let manifest = loadManifest()
+        guard let package = manifest.package(named: packageName) else {
             output.log("Package \(packageName) is not installed.")
             exit(1)
         }

@@ -55,73 +55,95 @@ enum PackageStatus {
     case uncommitted
 }
 
-class Package {
-    var fileManager: FileManager
-    var name: String
+class Package: Decodable {
+    let name: String
+    let version: String
+    let path: String
+    let url: String
+    var dependencies: [Package]
+
+    
+    init(url: URL, version: String) {
+        self.name = ""
+        self.path = ""
+        self.url = url.absoluteString
+        self.version = version
+        self.dependencies = []
+    }
+
+    init(name: String) {
+        self.name = name
+        self.path = ""
+        self.url = ""
+        self.version = ""
+        self.dependencies = []
+    }
+    
+    func package(named name: String) -> Package? {
+        for package in dependencies {
+            if package.name == name {
+                return package
+            }
+        }
+        return nil
+    }
+    
+    func package(withURL url: URL) -> Package? {
+        for package in dependencies {
+            if package.url == url.absoluteString {
+                return package
+            }
+        }
+        return nil
+    }
+    
+
+    var fileManager: FileManager { return FileManager.default }
     var linked = false
     var removeable = false
     var global = false
-    var local: URL
-    let remote: URL
-    var store: URL
+    var local: URL { return URL(fileURLWithPath: path) }
+    var remote: URL { return URL(string: url)! }
+    var store: URL { return URL(fileURLWithPath: path) }
 
     /**
     Init from an existing entry in the vault.
 
     Will fail if there is no such entry.
     */
-
-    init?(name: String, vault: URL, fileManager: FileManager = FileManager.default) {
-        let store = vault.appendingPathComponent(name)
-        let infoURL = store.appendingPathComponent("info.json")
-        let decoder = JSONDecoder()
-
-        guard let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) else {
-            return nil
-        }
-
-        self.name = name
-        self.store = store
-        self.remote = info.remote
-        self.local = info.local
-        self.linked = info.linked
-        self.removeable = info.removeable
-        self.fileManager = fileManager
-    }
-
-    init(manifest: XPkg.PackageManifest) {
-        self.name = manifest.name
-        self.store = URL(fileURLWithPath: manifest.path)
-        self.remote = URL(fileURLWithPath: manifest.url)
-        self.local = URL(fileURLWithPath: manifest.path)
-        self.linked = false
-        self.removeable = true
-        self.fileManager = FileManager.default
-    }
+//
+//    init?(name: String, vault: URL, fileManager: FileManager = FileManager.default) {
+//        let store = vault.appendingPathComponent(name)
+//        let infoURL = store.appendingPathComponent("info.json")
+//        let decoder = JSONDecoder()
+//
+//        guard let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) else {
+//            return nil
+//        }
+//
+//        self.name = name
+//    }
     
     /**
     Init a new package record.
     */
-
-    init(remote: URL, vault: URL, fileManager: FileManager = FileManager.default) {
-        let nameURL = (remote.pathExtension == "git") ? remote.deletingPathExtension() : remote
-        let name = nameURL.lastPathComponent
-        self.name = name
-        self.remote = remote
-        self.store = vault.appendingPathComponent(name)
-        self.fileManager = fileManager
-
-        // is the package already linked locally?
-        let infoURL = store.appendingPathComponent("info.json")
-        let decoder = JSONDecoder()
-        if let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) {
-            self.local = info.local
-            self.linked = info.linked
-            self.removeable = info.removeable
-        } else {
-            self.local = Package.defaultLocalURL(for: name, in: store)
-        }
-    }
+//
+//    init(remote: URL, vault: URL) {
+//        let nameURL = (remote.pathExtension == "git") ? remote.deletingPathExtension() : remote
+//        let name = nameURL.lastPathComponent
+//        self.name = name
+////
+////        // is the package already linked locally?
+////        let infoURL = store.appendingPathComponent("info.json")
+////        let decoder = JSONDecoder()
+////        if let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) {
+////            self.local = info.local
+////            self.linked = info.linked
+////            self.removeable = info.removeable
+////        } else {
+////            self.local = Package.defaultLocalURL(for: name, in: store)
+////        }
+//    }
 
     /**
     Return the default location to use for the local (hidden) clone of a package.
@@ -136,13 +158,13 @@ class Package {
     */
 
     func link(to existing: URL, removeable: Bool, useLocalName: Bool = false) {
-        self.local = existing
-        self.linked = true
-        self.removeable = removeable
-        if useLocalName {
-            self.name = existing.lastPathComponent
-            self.store = store.deletingLastPathComponent().appendingPathComponent(name)
-        }
+//        self.local = existing
+//        self.linked = true
+//        self.removeable = removeable
+//        if useLocalName {
+//            self.name = existing.lastPathComponent
+//            self.store = store.deletingLastPathComponent().appendingPathComponent(name)
+//        }
     }
 
     /**
@@ -150,9 +172,9 @@ class Package {
     */
 
     func link(into container: URL, removeable: Bool) {
-        self.local = container.appendingPathComponent(name)
-        self.linked = true
-        self.removeable = removeable
+//        self.local = container.appendingPathComponent(name)
+//        self.linked = true
+//        self.removeable = removeable
     }
 
     /**
@@ -160,13 +182,13 @@ class Package {
     */
 
     func save() throws {
-        let encoder = JSONEncoder()
-        let info = PackageInfo(name: name, remote: remote, local: local, linked: linked, removeable: removeable)
-        if let data = try? encoder.encode(info) {
-            try fileManager.createDirectory(at: store, withIntermediateDirectories: true)
-            let infoURL = store.appendingPathComponent("info.json")
-            try data.write(to: infoURL)
-        }
+//        let encoder = JSONEncoder()
+//        let info = PackageInfo(name: name, remote: remote, local: local, linked: linked, removeable: removeable)
+//        if let data = try? encoder.encode(info) {
+//            try fileManager.createDirectory(at: store, withIntermediateDirectories: true)
+//            let infoURL = store.appendingPathComponent("info.json")
+//            try data.write(to: infoURL)
+//        }
     }
 
 
@@ -175,11 +197,11 @@ class Package {
     */
 
     func remove() throws {
-        if removeable && installed {
-            try fileManager.removeItem(at: local)
-        }
-
-        try fileManager.removeItem(at: store)
+//        if removeable && installed {
+//            try fileManager.removeItem(at: local)
+//        }
+//
+//        try fileManager.removeItem(at: store)
     }
 
 
@@ -315,46 +337,46 @@ class Package {
     */
 
     func rename(as newName: String, engine: XPkg) throws {
-        let newStore = store.deletingLastPathComponent().appendingPathComponent(newName)
-        do {
-            try fileManager.moveItem(at: store, to: newStore)
-            self.store = newStore
-        } catch {
-            throw RenameError.renameStore(from: store, to: newStore)
-        }
-
-        let oldLocal: URL
-        let newLocal: URL
-        if linked {
-            // package is linked elsewhere, so we just want to rename it
-            oldLocal = local
-            newLocal = local.deletingLastPathComponent().appendingPathComponent(newName)
-
-        } else {
-            newLocal = Package.defaultLocalURL(for: newName, in: newStore)
-
-            if local.lastPathComponent == name {
-                // package is inside the store, which has already been renamed
-                // but the local folder itself still needs to be renamed
-                oldLocal = Package.defaultLocalURL(for: name, in: newStore)
-
-            } else {
-                // package is inside store, but was previously just in a folder called "local"
-                // we want to fix things up a bit
-                let oldStyleLocal = newStore.appendingPathComponent("local")
-                oldLocal = newStore.appendingPathComponent("temp-rename")
-                try? fileManager.moveItem(at: oldStyleLocal, to: oldLocal)
-                try? fileManager.createDirectory(at: oldStyleLocal, withIntermediateDirectories: true)
-            }
-        }
-
-        do {
-            try fileManager.moveItem(at: oldLocal, to: newLocal)
-            self.local = newLocal
-        } catch {
-            throw RenameError.renameLocal
-        }
-
-        self.name = newName
+//        let newStore = store.deletingLastPathComponent().appendingPathComponent(newName)
+//        do {
+//            try fileManager.moveItem(at: store, to: newStore)
+//            self.store = newStore
+//        } catch {
+//            throw RenameError.renameStore(from: store, to: newStore)
+//        }
+//
+//        let oldLocal: URL
+//        let newLocal: URL
+//        if linked {
+//            // package is linked elsewhere, so we just want to rename it
+//            oldLocal = local
+//            newLocal = local.deletingLastPathComponent().appendingPathComponent(newName)
+//
+//        } else {
+//            newLocal = Package.defaultLocalURL(for: newName, in: newStore)
+//
+//            if local.lastPathComponent == name {
+//                // package is inside the store, which has already been renamed
+//                // but the local folder itself still needs to be renamed
+//                oldLocal = Package.defaultLocalURL(for: name, in: newStore)
+//
+//            } else {
+//                // package is inside store, but was previously just in a folder called "local"
+//                // we want to fix things up a bit
+//                let oldStyleLocal = newStore.appendingPathComponent("local")
+//                oldLocal = newStore.appendingPathComponent("temp-rename")
+//                try? fileManager.moveItem(at: oldStyleLocal, to: oldLocal)
+//                try? fileManager.createDirectory(at: oldStyleLocal, withIntermediateDirectories: true)
+//            }
+//        }
+//
+//        do {
+//            try fileManager.moveItem(at: oldLocal, to: newLocal)
+//            self.local = newLocal
+//        } catch {
+//            throw RenameError.renameLocal
+//        }
+//
+//        self.name = newName
     }
 }
