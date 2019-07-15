@@ -214,14 +214,19 @@ struct Package: Decodable {
     Link package to an existing folder.
     */
 
-    func link(to existing: URL, removeable: Bool, useLocalName: Bool = false) {
-//        self.local = existing
-//        self.linked = true
-//        self.removeable = removeable
-//        if useLocalName {
-//            self.name = existing.lastPathComponent
-//            self.store = store.deletingLastPathComponent().appendingPathComponent(name)
-//        }
+    func link(to url: URL, engine: XPkg) {
+        let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
+        do {
+            let result = try runner.sync(arguments: ["package", "edit", name, "--path", url.path])
+            if result.status != 0 {
+                engine.output.log("Failed to link \(name) into \(url).")
+                engine.verbose.log(result.stderr)
+            }
+        } catch {
+            engine.output.log("Failed to link \(name) into \(url).")
+            engine.verbose.log(error)
+        }
+
     }
 
     /**

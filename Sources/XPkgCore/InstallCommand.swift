@@ -35,8 +35,16 @@ struct InstallCommand: Command {
             output.log("Couldn't add `\(packageSpec)`.")
             return
         }
-        
+
+        // link into project if requested
+        if engine.arguments.flag("project"), let package = resolved.package(withURL: url) {
+            let name = engine.arguments.option("as") ?? package.name
+            let linkURL = engine.projectsURL.appendingPathComponent(name)
+            package.link(to: linkURL, engine: engine)
+        }
+
         // if it wrote ok, run the install actions for any new packages
         engine.processUpdate(from: manifest, to: resolved)
+        
     }
 }

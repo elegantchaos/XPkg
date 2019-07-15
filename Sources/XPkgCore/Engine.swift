@@ -146,7 +146,7 @@ public class XPkg {
     }
     
     internal var projectsURL: URL {
-        return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
+        return URL(fileURLWithPath: ("~/Projects2" as NSString).expandingTildeInPath)
     }
 
     func attempt(action: String, cleanup: (() throws -> Void)? = nil, block: () throws -> ()) {

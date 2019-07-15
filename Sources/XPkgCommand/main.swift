@@ -14,7 +14,7 @@ Cross Platform Package Manager.
 
 Usage:
     xpkg check [<package>]
-    xpkg install <package> [--project] [--as=<name>]
+    xpkg install <package> [--project [--as=<name>]]
     xpkg link [<package> <path>]
     xpkg list [--compact | --verbose | --oneline]
     xpkg path (<package> | --self) [--store]
@@ -25,6 +25,7 @@ Usage:
     xpkg update [<package> | --self]
     xpkg (-h | --help)
     xpkg --version
+    xpkg --logs=<logs>
 
 Arguments:
     <package>                           The package to install/remove/modify.
@@ -33,9 +34,7 @@ Arguments:
 
 Options:
     -h, --help                          Show this text.
-    -logs <logs>                        Specify all log channels to enable.
-    -logs+ <logs>                       Specify additional log channels to enable.
-    -logs- <logs>                       Specify log channels to disable.
+    --logs=<logs>                       Specify all log channels to enable.
     --store                             Use internal store, rather than the package root.
     --compact                           Produces minimal output.
     --oneline                           Produces output on a single line.
