@@ -9,7 +9,8 @@ import Foundation
 
 struct ReinstallCommand: Command {
     func run(engine: XPkg) {
-        let package = engine.existingPackage()
+        let manifest = engine.loadManifest()
+        let package = engine.existingPackage(manifest: manifest)
 
         engine.attempt(action: "Reinstall") {
             try package.run(action: "remove", engine: engine)

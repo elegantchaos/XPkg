@@ -26,17 +26,14 @@ struct InstallCommand: Command {
         
         let package = Package(url: url, version: "1.0.0")
         updatedManifest = manifest
-        updatedManifest.dependencies.append(package)
-        engine.saveManifest(manifest: updatedManifest)
+        updatedManifest.add(package: package)
         
-        updatedManifest = engine.loadManifest()
-        if updatedManifest.dependencies.count <= manifest.dependencies.count {
-            engine.saveManifest(manifest: manifest)
+        guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count > manifest.dependencies.count else {
             output.log("Couldn't add `\(packageSpec)`.")
             return
         }
-
-        if let package = updatedManifest.package(withURL: url) {
+        
+        if let package = resolved.package(withURL: url) {
             let cleanup = {
                 engine.saveManifest(manifest: manifest)
             }

@@ -15,7 +15,8 @@ struct UpdateCommand: Command {
                 package.update(engine: engine)
             }
         } else {
-            let package = engine.existingPackage()
+            let manifest = engine.loadManifest()
+            let package = engine.existingPackage(manifest: manifest)
             package.update(engine: engine)
         }
     }

@@ -11,42 +11,50 @@ import Runner
 struct RemoveCommand: Command {
     func run(engine: XPkg) {
         let output = engine.output
-        let package = engine.existingPackage()
+        
+        let manifest = engine.loadManifest()
+        let package = engine.existingPackage(manifest: manifest)
 
-        var safeToDelete = engine.arguments.flag("force")
+//        var safeToDelete = engine.arguments.flag("force")
+//
+//        // check the git status
+//        if package.installed {
+//            if !safeToDelete {
+//                switch package.status(engine: engine) {
+//                case .unknown:
+//                    output.log("Failed to check \(package.name) status - it might be modified or un-pushed. Use --force to force deletion.")
+//                case .pristine:
+//                    safeToDelete = true
+//                case .modified:
+//                    output.log("Package \(package.name) is modified. Use --force to force deletion.")
+//                case .uncommitted:
+//                    output.log("Package \(package.name) has no commits. Use --force to force deletion.")
+//                case .ahead:
+//                    output.log("Package \(package.name) has un-pushed commits. Use --force to force deletion.")
+//                case .untracked:
+//                    output.log("Package \(package.name) is not tracking remotely or may have un-pushed commits. Use --force to force deletion.")
+//                }
+//            }
+//        } else {
+//            // local directory seems to be missing - also safe to delete in that case
+//            safeToDelete = true
+//        }
+//
+//        if safeToDelete {
 
-        // check the git status
-        if package.installed {
-            if !safeToDelete {
-                switch package.status(engine: engine) {
-                case .unknown:
-                    output.log("Failed to check \(package.name) status - it might be modified or un-pushed. Use --force to force deletion.")
-                case .pristine:
-                    safeToDelete = true
-                case .modified:
-                    output.log("Package \(package.name) is modified. Use --force to force deletion.")
-                case .uncommitted:
-                    output.log("Package \(package.name) has no commits. Use --force to force deletion.")
-                case .ahead:
-                    output.log("Package \(package.name) has un-pushed commits. Use --force to force deletion.")
-                case .untracked:
-                    output.log("Package \(package.name) is not tracking remotely or may have un-pushed commits. Use --force to force deletion.")
-                }
+        engine.attempt(action: "Remove \(package.name)") {
+            try package.run(action:"remove", engine: engine)
+
+            var updatedManifest = manifest
+            updatedManifest.remove(package: package)
+            guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count < manifest.dependencies.count else {
+                output.log("Couldn't remove `\(package.name)`.")
+                return
             }
-        } else {
-            // local directory seems to be missing - also safe to delete in that case
-            safeToDelete = true
-        }
-
-        if safeToDelete {
-            engine.attempt(action: "Remove \(package.name)") {
-                try package.run(action:"remove", engine: engine)
-                try package.remove()
-                if package.linked && !package.removeable {
-                    output.log("Package \(package.name) was linked to a local directory (\(package.local.path)). \nThe package has been uninstalled, but the linked directory was not touched.")
-                } else {
-                    output.log("Package \(package.name) removed.")
-                }
+            if package.linked && !package.removeable {
+                output.log("Package \(package.name) was linked to a local directory (\(package.local.path)). \nThe package has been uninstalled, but the linked directory was not touched.")
+            } else {
+                output.log("Package \(package.name) removed.")
             }
         }
     }

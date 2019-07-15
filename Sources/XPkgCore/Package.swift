@@ -55,14 +55,13 @@ enum PackageStatus {
     case uncommitted
 }
 
-class Package: Decodable {
+struct Package: Decodable {
     let name: String
     let version: String
     let path: String
     let url: String
     var dependencies: [Package]
 
-    
     init(url: URL, version: String) {
         self.name = ""
         self.path = ""
@@ -97,11 +96,20 @@ class Package: Decodable {
         return nil
     }
     
-
+    mutating func add(package: Package) {
+        dependencies.append(package)
+    }
+    
+    mutating func remove(package: Package) {
+        if let index = dependencies.firstIndex(where: { $0.name == package.name }) {
+            dependencies.remove(at: index)
+        }
+    }
+    
     var fileManager: FileManager { return FileManager.default }
-    var linked = false
-    var removeable = false
-    var global = false
+    var linked: Bool { return false }
+    var removeable: Bool { return false }
+    var global: Bool { return false }
     var local: URL { return URL(fileURLWithPath: path) }
     var remote: URL { return URL(string: url)! }
     var store: URL { return URL(fileURLWithPath: path) }

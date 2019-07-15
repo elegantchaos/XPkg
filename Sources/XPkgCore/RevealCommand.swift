@@ -8,7 +8,8 @@ import Foundation
 
 struct RevealCommand: Command {
     func run(engine: XPkg) {
-        let package = engine.existingPackage()
+        let manifest = engine.loadManifest()
+        let package = engine.existingPackage(manifest: manifest)
         let store = engine.arguments.flag("store")
         package.reveal(store: store)
     }

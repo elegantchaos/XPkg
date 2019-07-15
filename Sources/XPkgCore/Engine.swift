@@ -159,18 +159,27 @@ public class XPkg {
         }
     }
 
-    func loadManifest() -> Package {
+    func tryToLoadManifest() -> Package? {
         let runner = Runner(for: swiftURL, cwd: vaultURL)
         if let result = try? runner.sync(arguments: ["package", "show-dependencies", "--format", "json"]) {
             if result.status == 0 {
                 let decode = JSONDecoder()
-                if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(Package.self, from: data) {
-                    return manifest
+                if let data = result.stdout.data(using: .utf8) {
+                    do {
+                        let manifest = try decode.decode(Package.self, from: data)
+                        return manifest
+                    } catch {
+                        print(error)
+                    }
                 }
             }
         }
+        return nil
+    }
 
-        return Package(name: "XPkgVault")
+    func loadManifest() -> Package {
+        let manifest = tryToLoadManifest()
+        return manifest ?? Package(name: "XPkgVault")
     }
     
     func saveManifest(manifest: Package) {
@@ -201,6 +210,17 @@ let package = Package(
         try? manifestText.write(to: url, atomically: true, encoding: .utf8)
     }
     
+    func updateManifest(from: Package, to: Package) -> Package? {
+        saveManifest(manifest: to)
+        if let resolved = tryToLoadManifest() {
+            return resolved
+        }
+            
+        // revert
+        saveManifest(manifest: from)
+        return nil
+    }
+    
     func forEachPackage(_ block: (Package) -> ()) -> Bool {
         let manifest = loadManifest()
         if manifest.dependencies.count == 0 {
@@ -217,14 +237,18 @@ let package = Package(
     an argument.
     */
 
-    func existingPackage(from argument: String = "package") -> Package {
+    func existingPackage(from argument: String = "package", manifest: Package) -> Package {
         let packageName = arguments.argument(argument)
-        let manifest = loadManifest()
         guard let package = manifest.package(named: packageName) else {
             output.log("Package \(packageName) is not installed.")
             exit(1)
         }
 
         return package
+    }
+    
+    func exit(_ code: Int32) -> Never {
+        Logger.defaultManager.flush()
+        Foundation.exit(code)
     }
 }

@@ -6,7 +6,8 @@
 
 struct RenameCommand: Command {
     func run(engine: XPkg) {
-        let package = engine.existingPackage()
+        let manifest = engine.loadManifest()
+        let package = engine.existingPackage(manifest: manifest)
         let oldName = package.name
         if package.installed {
             engine.attempt(action: "Rename") {
