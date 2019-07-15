@@ -72,7 +72,7 @@ public class XPkg {
 
     internal var xpkgURL: URL {
         let fm = FileManager.default
-        let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
+        let localPath = ("~/.local/share/xpkg2" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
         if fm.fileExists(at: localURL) {
@@ -140,6 +140,10 @@ public class XPkg {
         return URL(fileURLWithPath: "/usr/bin/git")
     }
 
+    internal var swiftURL: URL {
+        return URL(fileURLWithPath: "/usr/bin/swift")
+    }
+    
     internal var projectsURL: URL {
         return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
     }
@@ -154,17 +158,91 @@ public class XPkg {
         }
     }
 
-    func forEachPackage(_ block: (Package) -> ()) -> Bool {
-        let fm = FileManager.default
-        let vault = vaultURL
-        guard let items = try? fm.contentsOfDirectory(at: vault, includingPropertiesForKeys: nil), items.count > 0 else {
-            return false
+    struct PackageDependency {
+        let url: String
+        let version: String
+    }
+    
+    struct PackageManifest: Decodable {
+        let name: String
+        let version: String
+        let path: String
+        let url: String
+        var dependencies: [PackageManifest]
+        
+        func package(named name: String) -> PackageManifest? {
+            for package in dependencies {
+                if package.name == name {
+                    return package
+                }
+            }
+            return nil
+        }
+        
+        func package(withURL url: URL) -> PackageManifest? {
+            for package in dependencies {
+                if package.url == url.absoluteString {
+                    return package
+                }
+            }
+            return nil
         }
 
-        for item in items {
-            if let package = Package(name: item.lastPathComponent, vault: vault) {
-                block(package)
+//        func packages() -> [PackageDependency] {
+//            var packages: [PackageDependency] = []
+//            for package in dependencies {
+//                packages.append(PackageDependency(url: package.url, version: package.)
+//            }
+//        }
+    }
+
+    func loadManifest() -> PackageManifest {
+        let runner = Runner(cwd: vaultURL)
+        if let result = try? runner.sync(swiftURL, arguments: ["package", "show-dependencies", "--format", "json"]) {
+            if result.status == 0 {
+                let decode = JSONDecoder()
+                if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(PackageManifest.self, from: data) {
+                    return manifest
+                }
             }
+        }
+
+        return PackageManifest(name: "XPkgVault", version: "1.0.0", path: ".", url: ".", dependencies: [])
+    }
+    
+    func saveManifest(manifest: PackageManifest) {
+        let manifestHead = """
+// swift-tools-version:5.0
+import PackageDescription
+let package = Package(
+    name: "XPkgVault",
+    products: [
+    ],
+    dependencies: [
+
+"""
+            
+        let manifestTail = """
+    ],
+    targets: [
+    ]
+)
+"""
+
+        var manifestText = manifestHead
+        for package in manifest.dependencies {
+            manifestText.append("       .package(url: \"\(package.url)\", from: \"\(package.version)\"),\n")
+        }
+        manifestText.append(manifestTail)
+        let url = vaultURL.appendingPathComponent("Package.swift")
+        try? manifestText.write(to: url, atomically: true, encoding: .utf8)
+    }
+    
+    func forEachPackage(_ block: (Package) -> ()) -> Bool {
+        let manifest = loadManifest()
+        for item in manifest.dependencies {
+            let package = Package(manifest: item)
+            block(package)
         }
         return true
     }

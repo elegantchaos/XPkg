@@ -14,6 +14,17 @@ extension Package {
     */
 
     func run(action: String, engine: XPkg) throws {
+        let runner = Runner(cwd: engine.vaultURL)
+        if let result = try? runner.sync(engine.swiftURL, arguments: ["run", "\(name)-xpkg", action]) {
+            if result.status == 0 {
+                let decode = JSONDecoder()
+                if let data = result.stdout.data(using: .utf8), let manifest = try? decode.decode(PackageManifest.self, from: data) {
+                    return manifest
+                }
+            }
+        }
+
+        
         let url = local.appendingPathComponent(".xpkg.json")
         if fileManager.fileExists(atPath: url.path) {
             let decoder = JSONDecoder()

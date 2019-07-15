@@ -89,6 +89,16 @@ class Package {
         self.fileManager = fileManager
     }
 
+    init(manifest: XPkg.PackageManifest) {
+        self.name = manifest.name
+        self.store = URL(fileURLWithPath: manifest.path)
+        self.remote = URL(fileURLWithPath: manifest.url)
+        self.local = URL(fileURLWithPath: manifest.path)
+        self.linked = false
+        self.removeable = true
+        self.fileManager = FileManager.default
+    }
+    
     /**
     Init a new package record.
     */
