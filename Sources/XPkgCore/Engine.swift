@@ -8,6 +8,7 @@ import Arguments
 import Foundation
 import Logger
 import Runner
+import XPkgAPI
 
 extension URLSession {
     func synchronousDataTask(with request: URLRequest) -> (Data?, URLResponse?, Error?) {
@@ -184,8 +185,14 @@ public class XPkg {
             if result.status == 0 {
                 let decode = JSONDecoder()
                 if let data = result.stdout.data(using: .utf8) {
-                    let manifest = try decode.decode(Package.self, from: data)
-                    return manifest
+                    do {
+                        let manifest = try decode.decode(Package.self, from: data)
+                        return manifest
+                    } catch {
+                        print(error)
+                        print(result.stdout)
+                        print(result.stderr)
+                    }
                 }
             }
         } catch {

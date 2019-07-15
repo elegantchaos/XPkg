@@ -21,7 +21,7 @@ struct InstallCommand: Command {
         let manifest = engine.loadManifest()
         
         // do a quick check first for an existing local package with the name/spec
-        if let package = manifest.package(named: packageSpec) {
+        if let package = manifest.package(matching: packageSpec) {
             output.log("Package `\(package.name)` is already installed.")
             return
         }
@@ -43,11 +43,11 @@ struct InstallCommand: Command {
         }
         
         // link into project if requested
-        let needLink = asProject || (linkTo != nil)
-        if needLink, let package = resolved.package(withURL: url) {
+        if let package = resolved.package(withURL: url) {
+            let specifyLink = asProject || (linkTo != nil)
             let name = asName ?? package.name
-            let linkURL = linkTo ?? engine.projectsURL.appendingPathComponent(name)
-            package.link(to: linkURL, engine: engine)
+            let linkURL = specifyLink ? (linkTo ?? engine.projectsURL.appendingPathComponent(name)) : nil
+            package.edit(at: linkURL, engine: engine)
         }
         
         // if it wrote ok, run the install actions for any new packages

@@ -8,22 +8,10 @@ import Foundation
 import Logger
 import Runner
 
-typealias ManifestCommand = [String]
-typealias ManifestLink = [String]
-
 enum RenameError: Error {
     case renameStore(from: URL, to: URL)
     case renameLocal
     case saveInfo
-}
-
-struct Manifest: Codable {
-    let install: [ManifestCommand]?
-    let remove: [ManifestCommand]?
-    let updating: [ManifestCommand]?
-    let updated: [ManifestCommand]?
-    let links: [ManifestLink]?
-    let dependencies: [String]?
 }
 
 struct PackageInfo: Codable {
@@ -76,6 +64,19 @@ struct Package: Decodable {
         self.url = ""
         self.version = ""
         self.dependencies = []
+    }
+
+    func package(matching spec: String) -> Package? {
+        for package in dependencies {
+            if package.name == spec {
+                return package
+            } else if package.url == spec {
+                return package
+            } else if package.remote.path == spec {
+                return package
+            }
+        }
+        return nil
     }
     
     func package(named name: String) -> Package? {
@@ -214,8 +215,17 @@ struct Package: Decodable {
     Link package to an existing folder.
     */
 
-    func link(to url: URL, engine: XPkg) {
-        let _ = engine.swift(["package", "edit", name, "--path", url.path], failureMessage: "Failed to link \(name) into \(url).")
+    func edit(at url: URL? = nil, engine: XPkg) {
+        var args = ["package", "edit", name]
+        let message: String
+        if let url = url {
+            args.append(contentsOf: ["--path", url.path])
+            message = "Failed to link \(name) into \(url)."
+        } else {
+            message = "Failed to edit \(name)."
+        }
+        
+        let _ = engine.swift(args, failureMessage: message)
     }
 
     /**
@@ -334,19 +344,7 @@ struct Package: Decodable {
         return .unknown
     }
 
-    /**
-    The directory to use for binary links.
-    By default we use the user's local bin.
-    */
 
-    var binURL: URL {
-        if (global) {
-            return URL(fileURLWithPath: "/usr/local/bin")
-        } else {
-            let localBin = "~/.local/bin" as NSString
-            return URL(fileURLWithPath: localBin.expandingTildeInPath)
-        }
-    }
 
     /**
     Clone the package into its local destination.

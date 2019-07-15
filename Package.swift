@@ -23,7 +23,10 @@ let package = Package(
           dependencies: ["XPkgCore"]),
         .target(
             name: "XPkgCore",
-            dependencies: ["Arguments", "Logger", "Runner"]),
+            dependencies: ["Arguments", "Logger", "Runner", "XPkgAPI"]),
+        .target(
+            name: "XPkgAPI",
+            dependencies: ["Logger", "Runner"]),
         .target(
             name: "Configure",
           dependencies: ["BuilderConfiguration"]),

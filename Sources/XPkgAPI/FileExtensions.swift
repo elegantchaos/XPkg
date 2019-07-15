@@ -6,14 +6,14 @@
 
 import Foundation
 
-extension URL {
+public extension URL {
     init(expandedFilePath original: String) {
         let expanded = NSString(string: original).expandingTildeInPath
         self.init(fileURLWithPath: expanded)
     }
 }
 
-extension FileManager {
+public extension FileManager {
     func fileExists(at url: URL) -> Bool {
         return fileExists(atPath: url.path)
     }
