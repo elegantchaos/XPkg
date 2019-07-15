@@ -213,12 +213,32 @@ let package = Package(
     func updateManifest(from: Package, to: Package) -> Package? {
         saveManifest(manifest: to)
         if let resolved = tryToLoadManifest() {
+            processUpdate(from: from, to: resolved)
             return resolved
         }
             
         // revert
         saveManifest(manifest: from)
         return nil
+    }
+    
+    func processUpdate(from: Package, to: Package) {
+        let before = from.allPackages
+        let after = to.allPackages
+        
+        let beforeSet = Set<Package>(before)
+        for package in after {
+            if !beforeSet.contains(package) {
+                print("Appear to have added \(package.name)")
+            }
+        }
+        
+        let afterSet = Set<Package>(after)
+        for package in before {
+            if !afterSet.contains(package) {
+                print("Appear to have removed \(package.name)")
+            }
+        }
     }
     
     func forEachPackage(_ block: (Package) -> ()) -> Bool {

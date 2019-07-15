@@ -96,6 +96,15 @@ struct Package: Decodable {
         return nil
     }
     
+    var allPackages: [Package] {
+        var packages: [Package] = []
+        for package in dependencies {
+            packages.append(package)
+            packages.append(contentsOf: package.allPackages)
+        }
+        return packages
+    }
+    
     mutating func add(package: Package) {
         dependencies.append(package)
     }
@@ -387,4 +396,8 @@ struct Package: Decodable {
 //
 //        self.name = newName
     }
+}
+
+extension Package: Hashable {
+    
 }
