@@ -37,24 +37,22 @@ struct LinkCommand: Command {
             return
         }
 
-        InstallCommand.install(engine: engine, packageSpec: name, linkTo: linkedURL)
-//
-//        let package = Package(remote: engine.remotePackageURL(name), vault: engine.vaultURL)
-//        guard !package.installed else {
-//            output.log("Package `\(name)` is already installed.")
-//            return
-//        }
-//
-//        let linkedURL = URL(fileURLWithPath: linkedPath).absoluteURL
-//        package.link(to: linkedURL, removeable: false, useLocalName: true)
-//        guard package.installed else {
-//            output.log("Local path \(linkedURL) doesn't exist.")
-//            return
-//        }
-//
-//        engine.attempt(action:"Link") {
-//            try package.save()
-//            output.log("Linked \(linkedPath) as \(name).")
-//        }
+        let packageURL = linkedURL.appendingPathComponent("Package.swift")
+        if FileManager.default.fileExists(at: packageURL) {
+            InstallCommand.install(engine: engine, packageSpec: name, linkTo: linkedURL)
+        } else {
+            engine.output.log("Linked \(name) as an alias.")
+            let defaults = UserDefaults.standard
+            var aliases: [String:String]
+            if let current = defaults.dictionary(forKey: "aliases") as? [String:String] {
+                aliases = current
+            } else {
+                aliases = [:]
+            }
+            
+            let key = linkedURL.lastPathComponent
+            aliases[key] = linkedURL.path
+            defaults.set(aliases, forKey: "aliases")
+        }
     }
 }
