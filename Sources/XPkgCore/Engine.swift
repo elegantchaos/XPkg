@@ -101,10 +101,11 @@ public class Engine {
                 return nil
         }
             
-        guard let version = result.stdout.split(separator: "v").last else {
+        guard let tag = result.stdout.split(separator: "/").last else {
             return ""
         }
 
+        let version = tag.replacingOccurrences(of: "v", with: "")
         return String(version.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 

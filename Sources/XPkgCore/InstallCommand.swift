@@ -51,14 +51,21 @@ struct InstallCommand: Command {
         
         // link into project if requested
         guard let installedPackage = resolved.package(withURL: url) else {
-            output.log("Couldn't link package.")
+            output.log("Couldn't find package.")
             return
         }
 
-        engine.verbose.log("Linking package.")
         let specifyLink = asProject || (linkTo != nil)
         let name = asName ?? installedPackage.name
-        let linkURL = specifyLink ? (linkTo ?? engine.projectsURL.appendingPathComponent(name)) : nil
+        var linkURL: URL? = nil
+        if specifyLink {
+            let pathURL = linkTo ?? engine.projectsURL.appendingPathComponent(name)
+            engine.verbose.log("Linking package into \(pathURL.path).")
+            linkURL = pathURL
+        } else {
+            engine.verbose.log("Linking package into Packages/.")
+        }
+        
         installedPackage.edit(at: linkURL, engine: engine)
         
         // if it wrote ok, run the install actions for any new packages
