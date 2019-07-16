@@ -7,7 +7,7 @@
 import Runner
 
 struct UpdateCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         if engine.arguments.flag("self") {
             updateSelf(engine: engine)
         } else if engine.arguments.argument("package") == "" {
@@ -21,7 +21,7 @@ struct UpdateCommand: Command {
         }
     }
 
-    func updateSelf(engine: XPkg) {
+    func updateSelf(engine: Engine) {
         engine.output.log("Updating xpkg.")
         let url = engine.xpkgURL
         let codeURL = url.appendingPathComponent("code")

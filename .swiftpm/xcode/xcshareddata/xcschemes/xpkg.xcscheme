@@ -78,7 +78,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "install"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-logs +output,+verbose"
@@ -93,12 +93,12 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "list --oneline"
-            isEnabled = "NO">
+            argument = "list"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "xpkg-shell"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "shell-hooks"

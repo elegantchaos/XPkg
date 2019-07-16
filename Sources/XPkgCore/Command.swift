@@ -9,5 +9,5 @@ import Logger
 import Foundation
 
 protocol Command {
-    func run(engine: XPkg)
+    func run(engine: Engine)
 }

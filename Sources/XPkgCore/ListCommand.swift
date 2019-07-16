@@ -7,7 +7,7 @@
 import Foundation
 
 struct ListCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         if engine.arguments.flag("oneline") {
           listOneline(engine: engine)
         } else if engine.arguments.flag("compact") {
@@ -19,7 +19,7 @@ struct ListCommand: Command {
         }
     }
 
-    func listOneline(engine: XPkg) {
+    func listOneline(engine: Engine) {
         var output: [String] = []
         let _ = engine.forEachPackage { (package) in
             output.append(package.name)
@@ -27,7 +27,7 @@ struct ListCommand: Command {
         engine.output.log(output.joined(separator: " "))
     }
 
-    func listCompact(engine: XPkg) {
+    func listCompact(engine: Engine) {
         let gotPackages = engine.forEachPackage { (package) in
             engine.output.log("\(package.name)")
         }
@@ -36,7 +36,7 @@ struct ListCommand: Command {
         }
     }
 
-    func listNormal(engine: XPkg) {
+    func listNormal(engine: Engine) {
         var gotLinked = false
         let gotPackages = engine.forEachPackage { (package) in
             let flags = package.linked ? "*" : " "
@@ -54,7 +54,7 @@ struct ListCommand: Command {
         }
     }
 
-    func listVerbose(engine: XPkg) {
+    func listVerbose(engine: Engine) {
         let gotPackages = engine.forEachPackage { (package) in
             let location = package.linked ? " --> \(package.local.path)" : ""
             let status = package.status(engine: engine)

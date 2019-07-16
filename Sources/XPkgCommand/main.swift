@@ -80,6 +80,6 @@ if let name = info["CFBundleDisplayName"], let short = info["CFBundleShortVersio
 
 let filtered = Manager.removeLoggingOptions(from: CommandLine.arguments)
 let arguments = Arguments(documentation: doc, version: version, arguments: filtered)
-let engine = XPkg(arguments: arguments)
+let engine = Engine(arguments: arguments)
 engine.run()
 Logger.defaultManager.flush()

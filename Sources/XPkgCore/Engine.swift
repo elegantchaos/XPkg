@@ -33,10 +33,12 @@ extension URLSession {
     }
 }
 
-public class XPkg {
+public class Engine {
     let arguments: Arguments
     let output = Logger.stdout
     let verbose = Logger("verbose", handlers: [Logger.stdoutHandler])
+    let fileManager = FileManager.default
+
     var defaultOrgs = ["samdeane", "elegantchaos"] // TODO: read from preference
 
     let commands: [String:Command] = [
@@ -73,20 +75,19 @@ public class XPkg {
     }
 
     internal var xpkgURL: URL {
-        let fm = FileManager.default
         let localPath = ("~/.local/share/xpkg-spm" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
-        if fm.fileExists(at: localURL) {
+        if fileManager.fileExists(at: localURL) {
             return localURL
         } else {
             let globalURL = URL(fileURLWithPath: "/usr/local/share/xpkg").resolvingSymlinksInPath()
-            if fm.fileExists(atPath: globalURL.path) {
+            if fileManager.fileExists(atPath: globalURL.path) {
                 return globalURL
             }
         }
 
-        try? FileManager.default.createDirectory(at: localURL, withIntermediateDirectories: true)
+        try? fileManager.createDirectory(at: localURL, withIntermediateDirectories: true)
         return localURL
     }
 
@@ -108,7 +109,7 @@ public class XPkg {
             remote = URL(string: package)
         } else {
             let local = URL(fileURLWithPath: package)
-            if FileManager.default.fileExists(at: local) {
+            if fileManager.fileExists(at: local) {
                 remote = local
             } else if package.contains("/") {
                 remote = URL(string: "git@github.com:\(package)")
@@ -134,7 +135,7 @@ public class XPkg {
     internal var vaultURL: URL {
         let url = xpkgURL.appendingPathComponent("vault")
 
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
 
@@ -258,11 +259,15 @@ let package = Package(
         let url = vaultURL.appendingPathComponent("Package.swift")
         do {
             try manifestText.write(to: url, atomically: true, encoding: .utf8)
-            let cachedURL = vaultURL.appendingPathComponent("Package.json")
-            try? FileManager.default.removeItem(at: cachedURL)
+            removeManifestCache()
         } catch {
             print(error)
         }
+    }
+    
+    func removeManifestCache() {
+        let cachedURL = vaultURL.appendingPathComponent("Package.json")
+        try? fileManager.removeItem(at: cachedURL)
     }
     
     func updateManifest(from: Package, to: Package) -> Package? {
@@ -274,7 +279,7 @@ let package = Package(
         // backup failed manifest for debugging
         let manifestURL = vaultURL.appendingPathComponent("Package.swift")
         let failedURL = vaultURL.appendingPathComponent("Failed Package.swift")
-        try? FileManager.default.moveItem(at: manifestURL, to: failedURL)
+        try? fileManager.moveItem(at: manifestURL, to: failedURL)
 
         // revert
         saveManifest(manifest: from)

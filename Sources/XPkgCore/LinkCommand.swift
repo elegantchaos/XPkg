@@ -9,7 +9,7 @@ import Foundation
 import Runner
 
 struct LinkCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         let output = engine.output
         var name = engine.arguments.argument("package")
         var linkedPath = engine.arguments.argument("path")

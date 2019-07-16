@@ -7,7 +7,7 @@
 import Foundation
 
 struct PathCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         let url: URL
         if engine.arguments.flag("self") {
             url = engine.xpkgCodeURL

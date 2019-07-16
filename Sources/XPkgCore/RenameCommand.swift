@@ -5,17 +5,16 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 struct RenameCommand: Command {
-    func run(engine: XPkg) {
-        let manifest = engine.loadManifest()
-        let package = engine.existingPackage(manifest: manifest)
-        let oldName = package.name
-        if package.installed {
-            engine.attempt(action: "Rename") {
-                let name = try engine.arguments.expectedArgument("name")
-                try package.rename(as: name, engine: engine)
-                try package.save()
-                engine.output.log("Renamed \(oldName) as \(name).")
-            }
-        }
+    func run(engine: Engine) {
+//        let manifest = engine.loadManifest()
+//        let package = engine.existingPackage(manifest: manifest)
+//        let oldName = package.name
+//        if package.installed {
+//            engine.attempt(action: "Rename") {
+//                let name = try engine.arguments.expectedArgument("name")
+//                try package.rename(as: name, engine: engine)
+//                engine.output.log("Renamed \(oldName) as \(name).")
+//            }
+//        }
     }
 }

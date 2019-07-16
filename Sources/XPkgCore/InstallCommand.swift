@@ -8,14 +8,14 @@ import Arguments
 import Foundation
 
 struct InstallCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         let packageSpec = engine.arguments.argument("package")
         let asProject = engine.arguments.flag("project")
         let asName = engine.arguments.option("as")
         InstallCommand.install(engine: engine, packageSpec: packageSpec, asProject: asProject, asName: asName)
     }
     
-    static func install(engine: XPkg, packageSpec: String, asProject: Bool = false, asName: String? = nil, linkTo: URL? = nil) {
+    static func install(engine: Engine, packageSpec: String, asProject: Bool = false, asName: String? = nil, linkTo: URL? = nil) {
         let output = engine.output
         
         let manifest = engine.loadManifest()

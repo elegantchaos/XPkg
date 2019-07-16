@@ -7,6 +7,7 @@
 import Foundation
 import Logger
 import Runner
+import XPkgAPI
 
 enum RenameError: Error {
     case renameStore(from: URL, to: URL)
@@ -158,7 +159,6 @@ struct Package: Decodable {
         }
     }
     
-    var fileManager: FileManager { return FileManager.default }
     var linked: Bool { return false }
     var removeable: Bool { return false }
     var global: Bool { return false }
@@ -166,44 +166,6 @@ struct Package: Decodable {
     var remote: URL { return URL(string: url)! }
     var store: URL { return URL(fileURLWithPath: path) }
 
-    /**
-    Init from an existing entry in the vault.
-
-    Will fail if there is no such entry.
-    */
-//
-//    init?(name: String, vault: URL, fileManager: FileManager = FileManager.default) {
-//        let store = vault.appendingPathComponent(name)
-//        let infoURL = store.appendingPathComponent("info.json")
-//        let decoder = JSONDecoder()
-//
-//        guard let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) else {
-//            return nil
-//        }
-//
-//        self.name = name
-//    }
-    
-    /**
-    Init a new package record.
-    */
-//
-//    init(remote: URL, vault: URL) {
-//        let nameURL = (remote.pathExtension == "git") ? remote.deletingPathExtension() : remote
-//        let name = nameURL.lastPathComponent
-//        self.name = name
-////
-////        // is the package already linked locally?
-////        let infoURL = store.appendingPathComponent("info.json")
-////        let decoder = JSONDecoder()
-////        if let data = try? Data(contentsOf: infoURL), let info = try? decoder.decode(PackageInfo.self, from: data) {
-////            self.local = info.local
-////            self.linked = info.linked
-////            self.removeable = info.removeable
-////        } else {
-////            self.local = Package.defaultLocalURL(for: name, in: store)
-////        }
-//    }
 
     /**
     Return the default location to use for the local (hidden) clone of a package.
@@ -217,7 +179,7 @@ struct Package: Decodable {
     Link package to an existing folder.
     */
 
-    func edit(at url: URL? = nil, engine: XPkg) {
+    func edit(at url: URL? = nil, engine: Engine) {
         var args = ["package", "edit", name]
         let message: String
         if let url = url {
@@ -227,6 +189,7 @@ struct Package: Decodable {
             message = "Failed to edit \(name)."
         }
         
+        engine.removeManifestCache()
         let _ = engine.swift(args, failureMessage: message)
     }
 
@@ -234,7 +197,8 @@ struct Package: Decodable {
      Link package to an existing folder.
      */
     
-    func unlink(engine: XPkg) -> Bool {
+    func unedit(engine: Engine) -> Bool {
+        engine.removeManifestCache()
         guard let result = engine.swift(["package", "unedit", name]) else {
             engine.output.log("Failed to unlink \(name) from \(path).")
             return false
@@ -243,29 +207,6 @@ struct Package: Decodable {
         return result.status == 0 || result.stderr.contains("not in edit mode")
     }
 
-//    /**
-//    Link package into an external container.
-//    */
-//
-//    func link(into container: URL, removeable: Bool) {
-////        self.local = container.appendingPathComponent(name)
-////        self.linked = true
-////        self.removeable = removeable
-//    }
-
-    /**
-    Save the package info locally.
-    */
-
-    func save() throws {
-//        let encoder = JSONEncoder()
-//        let info = PackageInfo(name: name, remote: remote, local: local, linked: linked, removeable: removeable)
-//        if let data = try? encoder.encode(info) {
-//            try fileManager.createDirectory(at: store, withIntermediateDirectories: true)
-//            let infoURL = store.appendingPathComponent("info.json")
-//            try data.write(to: infoURL)
-//        }
-    }
 
 
     /**
@@ -296,27 +237,27 @@ struct Package: Decodable {
         #endif
     }
 
-    /**
-    Does the store contain an entry for this package?
-    */
+//    /**
+//    Does the store contain an entry for this package?
+//    */
+//
+//    var registered: Bool {
+//        return fileManager.fileExists(at: store)
+//    }
 
-    var registered: Bool {
-        return fileManager.fileExists(at: store)
-    }
-
-    /**
-    Does the package exist locally?
-    */
-
-    var installed: Bool {
-        return fileManager.fileExists(at: local)
-    }
+//    /**
+//    Does the package exist locally?
+//    */
+//
+//    var installed: Bool {
+//        return fileManager.fileExists(at: local)
+//    }
 
     /**
     What state is the local package in?
      */
 
-    func status(engine: XPkg) -> PackageStatus {
+    func status(engine: Engine) -> PackageStatus {
         let runner = Runner(for: engine.gitURL, cwd: local)
         if let result = try? runner.sync(arguments: ["status", "--porcelain", "--branch"]) {
             engine.verbose.log(result.stdout)
@@ -347,32 +288,11 @@ struct Package: Decodable {
     }
 
 
-
-    /**
-    Clone the package into its local destination.
-    */
-
-    func clone(engine: XPkg) throws {
-        let container = local.deletingLastPathComponent()
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-
-        let runner = Runner(for: engine.gitURL, cwd: container)
-        let gitArgs = ["clone", remote.absoluteString, local.path]
-        let result = try runner.sync(arguments: gitArgs)
-        if result.status == 0 {
-            engine.output.log("Package \(name) installed.")
-        } else {
-            engine.output.log("Failed to install \(name).")
-            engine.verbose.log("\(result.status) \(result.stdout) \(result.stderr)")
-            throw PackageError.failedToClone(repo: remote.absoluteString)
-        }
-    }
-
     /**
     Update the package.
     */
 
-    func update(engine: XPkg) {
+    func update(engine: Engine) {
         let runner = Runner(for: engine.gitURL, cwd: local)
         if let result = try? runner.sync(arguments: ["pull", "--ff-only"]) {
             if result.status == 0 {
@@ -393,15 +313,15 @@ struct Package: Decodable {
     Check that the package information seems to be valid.
     */
 
-    func check(engine: XPkg) -> Bool {
-        return fileManager.fileExists(at: local)
+    func check(engine: Engine) -> Bool {
+        return engine.fileManager.fileExists(at: local)
     }
 
     /**
     Rename the package. If it's a project, we also rename the project folder.
     */
 
-    func rename(as newName: String, engine: XPkg) throws {
+    func rename(as newName: String, engine: Engine) throws {
 //        let newStore = store.deletingLastPathComponent().appendingPathComponent(newName)
 //        do {
 //            try fileManager.moveItem(at: store, to: newStore)
@@ -444,6 +364,23 @@ struct Package: Decodable {
 //
 //        self.name = newName
     }
+    
+    func run(action: String, engine: Engine) throws {
+        let configURL = local.appendingPathComponent(".xpkg.json")
+        if engine.fileManager.fileExists(atPath: configURL.path) {
+            let installed = InstalledPackage(local: local, output: engine.output, verbose: engine.verbose)
+            try installed.run(legacyAction: action, config: configURL)
+        } else {
+            let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
+            if let result = try? runner.sync(arguments: ["run", "\(name)-xpkg-hooks", action]) {
+                print(result.stdout)
+                if result.status != 0 {
+                    engine.output.log("Couldn't run action \(action).")
+                }
+            }
+        }
+    }
+
 }
 
 extension Package: Hashable {

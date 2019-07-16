@@ -13,7 +13,7 @@ import Arguments
 class XPkgTests: XCTestCase {
     func testName() {
         let arguments = Arguments(program: "xpkg")
-        let engine = XPkg(arguments: arguments)
+        let engine = Engine(arguments: arguments)
         engine.defaultOrgs = ["testorg"]
         let remote = engine.remotePackageURL("test", skipValidation: true)
         XCTAssertEqual(remote, URL(string: "git@github.com:testorg/test"))
@@ -21,14 +21,14 @@ class XPkgTests: XCTestCase {
 
     func testNameOrg() {
         let arguments = Arguments(program: "xpkg")
-        let engine = XPkg(arguments: arguments)
+        let engine = Engine(arguments: arguments)
         let remote = engine.remotePackageURL("someorg/someproj")
         XCTAssertEqual(remote, URL(string: "git@github.com:someorg/someproj"))
     }
 
     func testRepo() {
         let arguments = Arguments(program: "xpkg")
-        let engine = XPkg(arguments: arguments)
+        let engine = Engine(arguments: arguments)
         let remote = engine.remotePackageURL("git@mygit.com:someorg/someproj")
         XCTAssertEqual(remote, URL(string: "git@mygit.com:someorg/someproj"))
     }

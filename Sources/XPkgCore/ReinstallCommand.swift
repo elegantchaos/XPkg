@@ -8,7 +8,7 @@ import Arguments
 import Foundation
 
 struct ReinstallCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         let manifest = engine.loadManifest()
         let package = engine.existingPackage(manifest: manifest)
 

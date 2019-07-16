@@ -7,7 +7,7 @@
 import Foundation
 
 struct CheckCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         let _ = engine.forEachPackage { (package) in
             if package.check(engine: engine) {
                 engine.output.log("\(package.name) ok.")

@@ -9,7 +9,7 @@ import Foundation
 import Runner
 
 struct RemoveCommand: Command {
-    func run(engine: XPkg) {
+    func run(engine: Engine) {
         let output = engine.output
         
         let manifest = engine.loadManifest()
@@ -35,7 +35,7 @@ struct RemoveCommand: Command {
 
         // try to unlink the package
         if safeToDelete {
-            safeToDelete = package.unlink(engine: engine)
+            safeToDelete = package.unedit(engine: engine)
         }
 
         if safeToDelete {
