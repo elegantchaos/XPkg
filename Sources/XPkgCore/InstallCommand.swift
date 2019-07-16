@@ -30,7 +30,7 @@ struct InstallCommand: Command {
         output.log("Searching for package \(packageSpec)...")
         let (url, version) = engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
-        if let version = version {
+        if let version = version, !version.isEmpty {
             engine.output.log("Installing \(url.path) \(version).")
         } else {
             engine.output.log("Installing \(url.path).")

@@ -106,6 +106,10 @@ public class Engine {
             return ""
         }
 
+        guard tag.contains(".") else {
+            return ""
+        }
+        
         let version = tag.replacingOccurrences(of: "v", with: "")
         return String(version.trimmingCharacters(in: .whitespacesAndNewlines))
     }
@@ -252,10 +256,11 @@ let package = Package(
 
         var manifestText = manifestHead
         for package in manifest.dependencies {
-            if package.version == "unspecified" {
+            let version = package.version
+            if version.isEmpty || version == "unspecified" {
                 manifestText.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
             } else {
-                manifestText.append("       .package(url: \"\(package.url)\", from:\"\(package.version)\"),\n")
+                manifestText.append("       .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
             }
         }
         

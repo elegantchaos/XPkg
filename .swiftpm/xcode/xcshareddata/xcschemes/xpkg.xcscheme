@@ -59,8 +59,8 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
-      customWorkingDirectory = "/Users/sam/Projects2/wibble"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Users/developer/Projects/Agenda"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -78,15 +78,15 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "install"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-logs +output,+verbose"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "link"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "remove"
@@ -102,7 +102,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "Builder"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "shell-hooks"
@@ -110,7 +110,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--project"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--as=wibble"
