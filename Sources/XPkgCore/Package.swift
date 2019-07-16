@@ -93,12 +93,20 @@ struct Package: Decodable {
         return nil
     }
     
+    func normalize(url: URL) -> String {
+        let urlNoGitExtension = url.pathExtension == "git" ? url.deletingPathExtension() : url
+        let normalised = urlNoGitExtension.absoluteString.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
+        return normalised
+    }
+    
     func package(withURL url: URL) -> Package? {
-        let normalised = url.absoluteString.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
+        let normalised = normalize(url: url)
         for package in dependencies {
-            let packageNormalised = package.url.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
-            if packageNormalised == normalised {
-                return package
+            if let packageURL = URL(string: package.url) {
+                let packageNormalised = normalize(url: packageURL)
+                if packageNormalised == normalised {
+                    return package
+                }
             }
         }
         return nil

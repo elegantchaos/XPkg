@@ -37,9 +37,10 @@ public class Engine {
     let arguments: Arguments
     let output = Logger.stdout
     let verbose = Logger("verbose", handlers: [Logger.stdoutHandler])
+    let jsonChannel = Logger("json", handlers: [Logger.stdoutHandler])
     let fileManager = FileManager.default
 
-    var defaultOrgs = ["samdeane", "elegantchaos"] // TODO: read from preference
+    var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
 
     let commands: [String:Command] = [
         "check": CheckCommand(),
@@ -203,7 +204,7 @@ public class Engine {
                     json.removeSubrange(json.startIndex ..< index)
                 }
 
-                verbose.log("***\n\(json)\n***\n\n")
+                jsonChannel.log(json)
                 verbose.log(showResult.stderr)
 
                 try? json.write(to: cachedURL, atomically: true, encoding: .utf8)

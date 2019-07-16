@@ -52,6 +52,7 @@ struct InstallCommand: Command {
         // link into project if requested
         guard let installedPackage = resolved.package(withURL: url) else {
             output.log("Couldn't find package.")
+            engine.verbose.log(resolved.dependencies.map({ $0.url }))
             return
         }
 

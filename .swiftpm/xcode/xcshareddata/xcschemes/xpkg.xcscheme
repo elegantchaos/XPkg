@@ -98,6 +98,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "xpkg-shell"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "Builder"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -106,7 +110,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--project"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--as=wibble"
