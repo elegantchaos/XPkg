@@ -338,21 +338,25 @@ struct Package: Decodable {
     }
     
     func run(action: String, engine: Engine) throws {
-        let configURL = local.appendingPathComponent(".xpkg.json")
-        if engine.fileManager.fileExists(atPath: configURL.path) {
-            let installed = InstalledPackage(local: local, output: engine.output, verbose: engine.verbose)
-            try installed.run(legacyAction: action, config: configURL)
-        } else {
+        do {
             let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
-            if let result = try? runner.sync(arguments: ["run", "\(name)-xpkg-hooks", action]) {
-                print(result.stdout)
-                if result.status != 0 {
-                    engine.output.log("Couldn't run action \(action).")
+            let result = try runner.sync(arguments: ["run", "\(name)-xpkg-hooks", name, path, action])
+            if result.status != 0 {
+                engine.verbose.log("Couldn't run action \(action) - trying fallback.")
+                
+                // fallback to old method?
+                let configURL = local.appendingPathComponent(".xpkg.json")
+                if engine.fileManager.fileExists(atPath: configURL.path) {
+                    let installed = InstalledPackage(local: local, output: engine.output, verbose: engine.verbose)
+                    try installed.run(legacyAction: action, config: configURL)
                 }
             }
+        } catch {
+            engine.output.log("Couldn't run action \(action).")
+            engine.verbose.log(error)
+            throw error
         }
     }
-
 }
 
 extension Package: Hashable {
