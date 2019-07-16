@@ -9,6 +9,10 @@ import Logger
 import Runner
 import XPkgAPI
 
+#if canImport(AppKit)
+import AppKit
+#endif
+
 enum RenameError: Error {
     case renameStore(from: URL, to: URL)
     case renameLocal
@@ -208,50 +212,18 @@ struct Package: Decodable {
     }
 
 
-
-    /**
-    Remove the package.
-    */
-
-    func remove() throws {
-//        if removeable && installed {
-//            try fileManager.removeItem(at: local)
-//        }
-//
-//        try fileManager.removeItem(at: store)
-    }
-
-
     /**
     Reveal the package in the Finder/Desktop.
     */
 
-    func reveal(store showStore: Bool) {
-        let container = showStore ? store : local
-
-        #if canImport(NSApplication)
-        // TODO: use NSWorkspace on the Mac
+    func reveal() {
+        #if canImport(AppKit)
+            NSWorkspace.shared.open([local], withAppBundleIdentifier: nil, options: .async, additionalEventParamDescriptor: nil, launchIdentifiers: nil)
         #else
-        let runner = Runner(for: URL(fileURLWithPath: "/usr/bin/env"), cwd: container)
-        let _ = try? runner.sync(arguments: ["xdg-open", "."])
+            let runner = Runner(for: URL(fileURLWithPath: "/usr/bin/env"), cwd: local)
+            let _ = try? runner.sync(arguments: ["xdg-open", "."])
         #endif
     }
-
-//    /**
-//    Does the store contain an entry for this package?
-//    */
-//
-//    var registered: Bool {
-//        return fileManager.fileExists(at: store)
-//    }
-
-//    /**
-//    Does the package exist locally?
-//    */
-//
-//    var installed: Bool {
-//        return fileManager.fileExists(at: local)
-//    }
 
     /**
     What state is the local package in?

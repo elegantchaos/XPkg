@@ -10,7 +10,10 @@ struct RevealCommand: Command {
     func run(engine: Engine) {
         let manifest = engine.loadManifest()
         let package = engine.existingPackage(manifest: manifest)
-        let store = engine.arguments.flag("store")
-        package.reveal(store: store)
+        if engine.arguments.flag("path") {
+            engine.output.log(package.path)
+        } else {
+            package.reveal()
+        }
     }
 }

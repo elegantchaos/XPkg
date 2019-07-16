@@ -21,7 +21,7 @@ Usage:
     xpkg reinstall <package>
     xpkg remove <package> [--force] [--verbose]
     xpkg rename <package> <name>
-    xpkg reveal <package> [--store] [--path]
+    xpkg reveal <package> [--path]
     xpkg update [<package> | --self]
     xpkg (-h | --help)
     xpkg --version
