@@ -37,7 +37,7 @@ public class XPkg {
     let arguments: Arguments
     let output = Logger.stdout
     let verbose = Logger("verbose", handlers: [Logger.stdoutHandler])
-    var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
+    var defaultOrgs = ["samdeane", "elegantchaos"] // TODO: read from preference
 
     let commands: [String:Command] = [
         "check": CheckCommand(),

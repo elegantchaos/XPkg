@@ -98,11 +98,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "xpkg-shell"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "shell-hooks"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--project"

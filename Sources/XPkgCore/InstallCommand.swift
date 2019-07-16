@@ -21,8 +21,8 @@ struct InstallCommand: Command {
         let manifest = engine.loadManifest()
         
         // do a quick check first for an existing local package with the name/spec
-        if let package = manifest.package(matching: packageSpec) {
-            output.log("Package `\(package.name)` is already installed.")
+        if let existingPackage = manifest.package(matching: packageSpec) {
+            output.log("Package `\(existingPackage.name)` is already installed.")
             return
         }
         
@@ -33,27 +33,31 @@ struct InstallCommand: Command {
         
         // add the package to the manifest
         engine.verbose.log("Adding package to manifest.")
-        let package = Package(url: url, version: "1.0.0")
+        let newPackage = Package(url: url, version: "1.0.0")
         updatedManifest = manifest
-        updatedManifest.add(package: package)
+        updatedManifest.add(package: newPackage)
         
         // try to write the update
-        engine.verbose.log("Adding package to manifest.")
+        engine.verbose.log("Writing manifest.")
         guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count > manifest.dependencies.count else {
             output.log("Couldn't add `\(packageSpec)`.")
             return
         }
         
         // link into project if requested
-        if let package = resolved.package(withURL: url) {
-            engine.verbose.log("Linking package.")
-            let specifyLink = asProject || (linkTo != nil)
-            let name = asName ?? package.name
-            let linkURL = specifyLink ? (linkTo ?? engine.projectsURL.appendingPathComponent(name)) : nil
-            package.edit(at: linkURL, engine: engine)
+        guard let installedPackage = resolved.package(withURL: url) else {
+            output.log("Couldn't link package.")
+            return
         }
+
+        engine.verbose.log("Linking package.")
+        let specifyLink = asProject || (linkTo != nil)
+        let name = asName ?? installedPackage.name
+        let linkURL = specifyLink ? (linkTo ?? engine.projectsURL.appendingPathComponent(name)) : nil
+        installedPackage.edit(at: linkURL, engine: engine)
         
         // if it wrote ok, run the install actions for any new packages
+        engine.verbose.log("Running actions for new packages.")
         engine.processUpdate(from: manifest, to: resolved)
         
     }
