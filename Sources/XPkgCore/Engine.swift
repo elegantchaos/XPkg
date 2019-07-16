@@ -36,7 +36,7 @@ extension URLSession {
 public class XPkg {
     let arguments: Arguments
     let output = Logger.stdout
-    let verbose = Logger("verbose")
+    let verbose = Logger("verbose", handlers: [Logger.stdoutHandler])
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
 
     let commands: [String:Command] = [
@@ -180,25 +180,33 @@ public class XPkg {
 
     func tryToLoadManifest() -> Package? {
         do {
-            let runner = Runner(for: swiftURL, cwd: vaultURL)
-            let result = try runner.sync(arguments: ["package", "show-dependencies", "--format", "json"])
-            if result.status == 0 {
-                let decode = JSONDecoder()
-                if let data = result.stdout.data(using: .utf8) {
-                    do {
-                        let manifest = try decode.decode(Package.self, from: data)
-                        return manifest
-                    } catch {
-                        print(error)
-                        print(result.stdout)
-                        print(result.stderr)
-                    }
+            verbose.log("Loading manifest from \(vaultURL).")
+            
+            guard let resolveResult = swift(["package", "resolve"]), resolveResult.status == 0 else {
+                verbose.log("Failed to resolve.")
+                return nil
+            }
+
+            guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
+                verbose.log("Failed to fetch dependencies.")
+                return nil
+            }
+            
+            verbose.log(showResult.stdout)
+            verbose.log(showResult.stderr)
+            let decode = JSONDecoder()
+            if let data = showResult.stdout.data(using: .utf8) {
+                do {
+                    let manifest = try decode.decode(Package.self, from: data)
+                    return manifest
                 }
             }
+            verbose.log("Failed to decode manifest.")
         } catch {
-            print(error)
+            verbose.log(error)
         }
         
+        verbose.log("Failed to load manifest.")
         return nil
     }
 

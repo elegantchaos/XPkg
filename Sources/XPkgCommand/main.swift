@@ -25,7 +25,6 @@ Usage:
     xpkg update [<package> | --self]
     xpkg (-h | --help)
     xpkg --version
-    xpkg --logs=<logs>
 
 Arguments:
     <package>                           The package to install/remove/modify.
