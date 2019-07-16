@@ -180,22 +180,27 @@ public class XPkg {
 
     func tryToLoadManifest() -> Package? {
         do {
-            verbose.log("Loading manifest from \(vaultURL).")
             
+            verbose.log("Resolving manifest at \(vaultURL).")
             guard let resolveResult = swift(["package", "resolve"]), resolveResult.status == 0 else {
                 verbose.log("Failed to resolve.")
                 return nil
             }
 
+            verbose.log("Loading manifest from \(vaultURL).")
             guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
                 verbose.log("Failed to fetch dependencies.")
                 return nil
             }
             
-            verbose.log(showResult.stdout)
+            var json = showResult.stdout
+            if let index = json.firstIndex(of: "{") {
+                json.removeSubrange(json.startIndex ..< index)
+            }
+            verbose.log("***\n\(json)\n***\n\n")
             verbose.log(showResult.stderr)
             let decode = JSONDecoder()
-            if let data = showResult.stdout.data(using: .utf8) {
+            if let data = json.data(using: .utf8) {
                 do {
                     let manifest = try decode.decode(Package.self, from: data)
                     return manifest
@@ -236,7 +241,7 @@ let package = Package(
 
         var manifestText = manifestHead
         for package in manifest.dependencies {
-            manifestText.append("       .package(url: \"\(package.url)\", .branch(\"master\")),\n")
+            manifestText.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
         }
         manifestText.append(manifestTail)
         let url = vaultURL.appendingPathComponent("Package.swift")
@@ -252,7 +257,12 @@ let package = Package(
         if let resolved = tryToLoadManifest() {
             return resolved
         }
-            
+
+        // backup failed manifest for debugging
+        let manifestURL = vaultURL.appendingPathComponent("Package.swift")
+        let failedURL = vaultURL.appendingPathComponent("Failed Package.swift")
+        try? FileManager.default.moveItem(at: manifestURL, to: failedURL)
+
         // revert
         saveManifest(manifest: from)
         return nil
