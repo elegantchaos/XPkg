@@ -9,6 +9,7 @@ let package = Package(
     ],
     products: [
       .executable(name: "xpkg", targets: ["XPkgCommand"]),
+      .library(name: "XPkgAPI", targets: ["XPkgAPI"])
     ],
     dependencies: [
         .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.3.7"),

@@ -356,5 +356,11 @@ struct Package: Decodable {
 }
 
 extension Package: Hashable {
+    func hash(into hasher: inout Hasher) {
+        url.hash(into: &hasher)
+    }
     
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.url == rhs.url
+    }
 }
