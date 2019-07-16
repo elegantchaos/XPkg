@@ -75,7 +75,7 @@ public class Engine {
     }
 
     internal var xpkgURL: URL {
-        let localPath = ("~/.local/share/xpkg-spm" as NSString).expandingTildeInPath as String
+        let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
 
         if fileManager.fileExists(at: localURL) {
@@ -150,7 +150,7 @@ public class Engine {
     }
     
     internal var projectsURL: URL {
-        return URL(fileURLWithPath: ("~/Projects2" as NSString).expandingTildeInPath)
+        return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
     }
 
     func swift(_ arguments: [String], failureMessage: @autoclosure () -> String = "") -> Runner.Result? {
