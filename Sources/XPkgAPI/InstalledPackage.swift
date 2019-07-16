@@ -57,14 +57,14 @@ public struct InstalledPackage {
      If both paths are supplied, we expand ~ etc in the link file path.
      */
     
-    func resolve(link spec: [String]) -> (String, URL, URL) {
+    public func resolve(link spec: [String]) -> (String, URL, URL) {
         let name = spec[0]
         let linked = local.appendingPathComponent(name)
         let link = (spec.count > 1) ? URL(expandedFilePath: spec[1]) : binURL.appendingPathComponent(name)
         return (name, link, linked)
     }
 
-    func attempt(action: String, cleanup: (() throws -> Void)? = nil, block: () throws -> ()) {
+    public func attempt(action: String, cleanup: (() throws -> Void)? = nil, block: () throws -> ()) {
         verbose.log(action)
         do {
             try block()
@@ -78,7 +78,7 @@ public struct InstalledPackage {
      Run through a list of linkSpecs and create each one.
      */
     
-    func links(create links:[ManifestLink]?) {
+    public func links(create links:[ManifestLink]?) {
         let fileManager = FileManager.default
         if let links = links {
             for link in links {
@@ -101,7 +101,7 @@ public struct InstalledPackage {
      Run through a list of linkSpecs and remove each one.
      */
     
-    func links(remove links:[ManifestLink]?) {
+    public func links(remove links:[ManifestLink]?) {
         let fileManager = FileManager.default
         if let links = links {
             for link in links {
@@ -174,7 +174,7 @@ public struct InstalledPackage {
      Run a list of commands.
      */
     
-    func run(commands: [ManifestCommand]?) throws {
+    public func run(commands: [ManifestCommand]?) throws {
         if let commands = commands {
             for command in commands {
                 if command.count > 0 {
