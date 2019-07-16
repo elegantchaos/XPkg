@@ -297,7 +297,7 @@ let package = Package(
             if !beforeSet.contains(package) {
                 do {
                     if try package.run(action: "install", engine: self) {
-                        output.log("Added \(package.name)")
+                        output.log("Added \(package.name).")
                     }
                 } catch {
                     output.log("Install action for \(package.name) failed.")

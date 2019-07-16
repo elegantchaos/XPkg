@@ -30,7 +30,12 @@ struct InstallCommand: Command {
         output.log("Searching for package \(packageSpec)...")
         let (url, version) = engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
-        
+        if let version = version {
+            engine.output.log("Installing \(url.path) \(version).")
+        } else {
+            engine.output.log("Installing \(url.path).")
+        }
+
         // add the package to the manifest
         engine.verbose.log("Adding package to manifest.")
         let newPackage = Package(url: url, version: version ?? "")
@@ -57,8 +62,10 @@ struct InstallCommand: Command {
         installedPackage.edit(at: linkURL, engine: engine)
         
         // if it wrote ok, run the install actions for any new packages
+        // we need to reload the package once again as it has moved
+        let reloadedManifest = engine.loadManifest()
         engine.verbose.log("Running actions for new packages.")
-        engine.processUpdate(from: manifest, to: resolved)
+        engine.processUpdate(from: manifest, to: reloadedManifest)
         
     }
     
