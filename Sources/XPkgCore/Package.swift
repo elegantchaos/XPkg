@@ -337,27 +337,37 @@ struct Package: Decodable {
 //        self.name = newName
     }
     
-    func run(action: String, engine: Engine) throws {
+    func run(action: String, engine: Engine) throws -> Bool {
         do {
+            // run as a new-style package
             let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
             let result = try runner.sync(arguments: ["run", "\(name)-xpkg-hooks", name, path, action])
-            engine.verbose.log(result.stdout)
-            if result.status != 0 {
-                engine.verbose.log(result.stderr)
-                engine.verbose.log("Couldn't run action \(action) - trying fallback.")
-
-                // fallback to old method?
-                let configURL = local.appendingPathComponent(".xpkg.json")
-                if engine.fileManager.fileExists(atPath: configURL.path) {
-                    let installed = InstalledPackage(local: local, output: engine.output, verbose: engine.verbose)
-                    try installed.run(legacyAction: action, config: configURL)
-                }
+            if result.status == 0 {
+                return true
             }
+            
+            if !result.stdout.contains("no exexcutable product") {
+                engine.verbose.log("Failed to run \(action) hooks for \(name).")
+                engine.verbose.log(result.stdout)
+                engine.verbose.log(result.stderr)
+            }
+            
+            // fallback to old method?
+            let configURL = local.appendingPathComponent(".xpkg.json")
+            if engine.fileManager.fileExists(atPath: configURL.path) {
+                let installed = InstalledPackage(local: local, output: engine.output, verbose: engine.verbose)
+                try installed.run(legacyAction: action, config: configURL)
+                return true
+            }
+
         } catch {
             engine.output.log("Couldn't run action \(action).")
             engine.verbose.log(error)
             throw error
         }
+        
+        engine.verbose.log("Ignoring \(name) as it isn't an xpkg package.")
+        return false
     }
 }
 

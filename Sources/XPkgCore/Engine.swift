@@ -95,41 +95,43 @@ public class Engine {
         return xpkgURL.appendingPathComponent("code")
     }
 
-    internal func remoteExists(_ remote: String) -> Bool {
+    internal func latestVersion(_ url: URL) -> String? {
         let runner = Runner(for: gitURL)
-        if let result = try? runner.sync(arguments: ["ls-remote", remote, "--exit-code"]) {
-            return result.status == 0
+        guard let result = try? runner.sync(arguments: ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]), result.status == 0 else {
+                return nil
         }
-        return false
+            
+        guard let version = result.stdout.split(separator: "v").last else {
+            return ""
+        }
+
+        return String(version.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
-    internal func remotePackageURL(_ package: String, skipValidation: Bool = false) -> URL {
-        let remote : URL?
-        if package.contains("git@") {
-            remote = URL(string: package)
-        } else {
-            let local = URL(fileURLWithPath: package)
-            if fileManager.fileExists(at: local) {
-                remote = local
-            } else if package.contains("/") {
-                remote = URL(string: "git@github.com:\(package)")
+    internal func remotePackageURL(_ package: String, skipValidation: Bool = false) -> (URL, String?) {
+        func validate(_ remote: URL) -> String? {
+            if skipValidation {
+                return nil
             } else {
-                // iterate default orgs, looking for a repo that exists
-                // if we don't find any, we just default to the unqualified package - knowing that it's probably wrong
-                var found: URL? = nil
-                for org in defaultOrgs {
-                    let repo = "git@github.com:\(org)/\(package)"
-                    if skipValidation || remoteExists(repo) {
-                        found = URL(string: repo)
-                        output.log("Found remote package \(org)/\(package).")
-                        break
-                    }
-                }
-                remote = found ?? URL(string: "git@github.com:\(package)")
+                return latestVersion(remote)
             }
         }
-
-        return remote! // assertion is that this can't fail for a properly formed package name...
+        
+        if let remote = URL(string: package), let version = validate(remote) {
+            return (remote, version)
+        }
+        
+        if let remote = URL(string: "git@github.com:\(package)"), let version = validate(remote) {
+            return (remote, version)
+        }
+        
+        for org in defaultOrgs {
+            if let remote = URL(string: "git@github.com:\(org)/\(package)"), let version = validate(remote) {
+                return (remote, version)
+            }
+        }
+        
+        return (URL(string: "git@github.com:\(package)")!, nil)
     }
 
     internal var vaultURL: URL {
@@ -261,7 +263,7 @@ let package = Package(
             try manifestText.write(to: url, atomically: true, encoding: .utf8)
             removeManifestCache()
         } catch {
-            print(error)
+            verbose.log(error)
         }
     }
     
@@ -294,10 +296,11 @@ let package = Package(
         for package in after {
             if !beforeSet.contains(package) {
                 do {
-                    try package.run(action: "install", engine: self)
-                    print("Added \(package.name)")
+                    if try package.run(action: "install", engine: self) {
+                        output.log("Added \(package.name)")
+                    }
                 } catch {
-                    print("Install action for \(package.name) failed.")
+                    output.log("Install action for \(package.name) failed.")
                 }
             }
         }
@@ -306,10 +309,11 @@ let package = Package(
         for package in before {
             if !afterSet.contains(package) {
                 do {
-                    try package.run(action:"remove", engine: self)
-                    print("Removed \(package.name).")
+                    if try package.run(action:"remove", engine: self) {
+                        output.log("Removed \(package.name).")
+                    }
                 } catch {
-                    print("Remove action for \(package.name) failed.")
+                    output.log("Remove action for \(package.name) failed.")
                 }
             }
         }

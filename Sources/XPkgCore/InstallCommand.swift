@@ -26,14 +26,14 @@ struct InstallCommand: Command {
             return
         }
         
-        // resolve the spec to a full url
+        // resolve the spec to a full url and a version
         output.log("Searching for package \(packageSpec)...")
-        let url = engine.remotePackageURL(packageSpec)
+        let (url, version) = engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
         
         // add the package to the manifest
         engine.verbose.log("Adding package to manifest.")
-        let newPackage = Package(url: url, version: "1.0.0")
+        let newPackage = Package(url: url, version: version ?? "")
         updatedManifest = manifest
         updatedManifest.add(package: newPackage)
         

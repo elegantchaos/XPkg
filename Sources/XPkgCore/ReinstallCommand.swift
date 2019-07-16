@@ -15,9 +15,13 @@ struct ReinstallCommand: Command {
         engine.attempt(action: "Reinstalling \(package.name).") {
             do {
                 engine.verbose.log("Uninstalling \(package.name)")
-                try package.run(action: "remove", engine: engine)
+                if try package.run(action: "remove", engine: engine) {
+                    engine.output.log("Removed \(package.name).")
+                }
                 engine.verbose.log("Installing \(package.name)")
-                try package.run(action: "install", engine: engine)
+                if try package.run(action: "install", engine: engine) {
+                    engine.output.log("Reinstalled \(package.name).")
+                }
             } catch {
                 engine.output.log("Reinstall of \(package.name) failed.")
                 engine.verbose.log(error)
