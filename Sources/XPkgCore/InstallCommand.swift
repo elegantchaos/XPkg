@@ -32,11 +32,13 @@ struct InstallCommand: Command {
         var updatedManifest = manifest
         
         // add the package to the manifest
+        engine.verbose.log("Adding package to manifest.")
         let package = Package(url: url, version: "1.0.0")
         updatedManifest = manifest
         updatedManifest.add(package: package)
         
         // try to write the update
+        engine.verbose.log("Adding package to manifest.")
         guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count > manifest.dependencies.count else {
             output.log("Couldn't add `\(packageSpec)`.")
             return
@@ -44,6 +46,7 @@ struct InstallCommand: Command {
         
         // link into project if requested
         if let package = resolved.package(withURL: url) {
+            engine.verbose.log("Linking package.")
             let specifyLink = asProject || (linkTo != nil)
             let name = asName ?? package.name
             let linkURL = specifyLink ? (linkTo ?? engine.projectsURL.appendingPathComponent(name)) : nil

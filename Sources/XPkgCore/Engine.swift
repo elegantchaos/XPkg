@@ -180,25 +180,31 @@ public class XPkg {
 
     func tryToLoadManifest() -> Package? {
         do {
+            let cachedURL = vaultURL.appendingPathComponent("Package.json")
+            var json = ""
+            if let cached = try? String(contentsOf: cachedURL, encoding: .utf8) {
+                verbose.log("Loading cached manifest.")
+                json = cached
+            }
             
-            verbose.log("Resolving manifest at \(vaultURL).")
-            guard let resolveResult = swift(["package", "resolve"]), resolveResult.status == 0 else {
-                verbose.log("Failed to resolve.")
-                return nil
+            if json.isEmpty {
+                verbose.log("Loading manifest from \(vaultURL).")
+                guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
+                    verbose.log("Failed to fetch dependencies.")
+                    return nil
+                }
+                
+                json = showResult.stdout
+                if let index = json.firstIndex(of: "{") {
+                    json.removeSubrange(json.startIndex ..< index)
+                }
+
+                verbose.log("***\n\(json)\n***\n\n")
+                verbose.log(showResult.stderr)
+
+                try? json.write(to: cachedURL, atomically: true, encoding: .utf8)
             }
 
-            verbose.log("Loading manifest from \(vaultURL).")
-            guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
-                verbose.log("Failed to fetch dependencies.")
-                return nil
-            }
-            
-            var json = showResult.stdout
-            if let index = json.firstIndex(of: "{") {
-                json.removeSubrange(json.startIndex ..< index)
-            }
-            verbose.log("***\n\(json)\n***\n\n")
-            verbose.log(showResult.stderr)
             let decode = JSONDecoder()
             if let data = json.data(using: .utf8) {
                 do {
@@ -241,12 +247,19 @@ let package = Package(
 
         var manifestText = manifestHead
         for package in manifest.dependencies {
-            manifestText.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
+            if package.version == "unspecified" {
+                manifestText.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
+            } else {
+                manifestText.append("       .package(url: \"\(package.url)\", from:\"\(package.version)\"),\n")
+            }
         }
+        
         manifestText.append(manifestTail)
         let url = vaultURL.appendingPathComponent("Package.swift")
         do {
             try manifestText.write(to: url, atomically: true, encoding: .utf8)
+            let cachedURL = vaultURL.appendingPathComponent("Package.json")
+            try? FileManager.default.removeItem(at: cachedURL)
         } catch {
             print(error)
         }

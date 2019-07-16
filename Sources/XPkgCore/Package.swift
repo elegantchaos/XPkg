@@ -89,8 +89,9 @@ struct Package: Decodable {
     }
     
     func package(withURL url: URL) -> Package? {
+        let normalised = url.absoluteString.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
         for package in dependencies {
-            if package.url == url.absoluteString {
+            if package.url == normalised {
                 return package
             }
         }
