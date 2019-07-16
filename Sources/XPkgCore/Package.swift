@@ -341,9 +341,11 @@ struct Package: Decodable {
         do {
             let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
             let result = try runner.sync(arguments: ["run", "\(name)-xpkg-hooks", name, path, action])
+            engine.verbose.log(result.stdout)
             if result.status != 0 {
+                engine.verbose.log(result.stderr)
                 engine.verbose.log("Couldn't run action \(action) - trying fallback.")
-                
+
                 // fallback to old method?
                 let configURL = local.appendingPathComponent(".xpkg.json")
                 if engine.fileManager.fileExists(atPath: configURL.path) {

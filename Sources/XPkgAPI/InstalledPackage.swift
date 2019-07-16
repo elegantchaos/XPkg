@@ -32,6 +32,38 @@ public struct InstalledPackage {
         self.verbose = verbose
     }
     
+    public init(fromCommandLine arguments: [String]) {
+        guard arguments.count > 3 else {
+            exit(1)
+        }
+        
+//        let command = arguments[0]
+//        let name = arguments[1]
+
+        let localPath = arguments[2]
+        let localURL = URL(fileURLWithPath: localPath)
+        
+        self.local = localURL
+        self.output = Logger.stdout
+        self.verbose = Channel("verbose")
+    }
+    
+    public func performAction(fromCommandLine arguments: [String], links: [ManifestLink], commands: [ManifestLink] = []) throws {
+        let action = arguments[3]
+        switch action {
+        case "install":
+            manageLinks(creating: links)
+            try run(commands: commands)
+
+        case "remove":
+            try run(commands: commands)
+            manageLinks(removing: links)
+            
+        default:
+            output.log("Unrecognised action \(action).")
+        }
+
+    }
     /**
      The directory to use for binary links.
      By default we use the user's local bin.
@@ -78,7 +110,7 @@ public struct InstalledPackage {
      Run through a list of linkSpecs and create each one.
      */
     
-    public func links(create links:[ManifestLink]?) {
+    public func manageLinks(creating links:[ManifestLink]?) {
         let fileManager = FileManager.default
         if let links = links {
             for link in links {
@@ -101,7 +133,7 @@ public struct InstalledPackage {
      Run through a list of linkSpecs and remove each one.
      */
     
-    public func links(remove links:[ManifestLink]?) {
+    public func manageLinks(removing links:[ManifestLink]?) {
         let fileManager = FileManager.default
         if let links = links {
             for link in links {
@@ -155,12 +187,12 @@ public struct InstalledPackage {
         if let manifest = try? decoder.decode(Manifest.self, from: Data(contentsOf: url)) {
             switch (action) {
             case "install":
-                links(create: manifest.links)
+                manageLinks(creating: manifest.links)
                 try run(commands: manifest.install)
                 
             case "remove":
                 try run(commands: manifest.remove)
-                links(remove: manifest.links)
+                manageLinks(removing: manifest.links)
                 
             default:
                 output.log("Unknown action \(action).")
@@ -181,8 +213,8 @@ public struct InstalledPackage {
                     let tool = command[0]
                     let arguments = Array(command.dropFirst())
                     switch(tool) {
-                    case "link":    links(create: [arguments])
-                    case "unlink":  links(remove: [arguments])
+                    case "link":    manageLinks(creating: [arguments])
+                    case "unlink":  manageLinks(removing: [arguments])
                     default:        try external(command: tool, arguments: arguments)
                     }
                 }
