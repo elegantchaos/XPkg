@@ -16,11 +16,11 @@ LOCAL="$HOME/.local"
 echo "Installing links."
 if [[ -e "$LOCAL" ]]
 then
-    STARTUP="$LOCAL/share/bash-hooks/startup"
+    STARTUP="$LOCAL/share/shell-hooks/startup"
     BIN="$LOCAL/bin"
     SUDO=
 else
-    STARTUP="/usr/local/share/bash-hooks/startup"
+    STARTUP="/usr/local/share/shell-hooks/startup"
     BIN="/usr/local/bin"
     SUDO=sudo
 fi
@@ -34,7 +34,7 @@ ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
 echo "Installing essential packages."
 
-~/.local/bin/xpkg install elegantchaos/bash-hooks
+~/.local/bin/xpkg install elegantchaos/shell-hooks
 ~/.local/bin/xpkg install samdeane/settings-shell
 
 echo "Done."
