@@ -10,7 +10,6 @@ import Runner
 struct InitCommand: Command {
 
     func run(engine: Engine) {
-        engine.output.log("Initing")
         let fm = FileManager.default
 
         var name = engine.remoteNameForCwd()
@@ -24,12 +23,8 @@ struct InitCommand: Command {
             name = root.lastPathComponent
         }
         
-        let user = engine.gitUserName() ?? ProcessInfo.processInfo.environment["USER"] ?? "Unknown"
-        let manifest = manifestSource(for: name)
-        let main = mainSource(for: name, user: user, date: Date())
-        
         do {
-            try writeFiles(manifest: manifest, main: main, to: root, engine: engine)
+            try writeFiles(for: name, to: root, engine: engine)
             engine.output.log("Inited package \(name).")
         } catch {
             engine.output.log("Failed to init package \(name).")
@@ -37,7 +32,11 @@ struct InitCommand: Command {
         }
     }
     
-    fileprivate func writeFiles(manifest: String, main: String, to root: URL, engine: Engine) throws {
+    fileprivate func writeFiles(for name: String, to root: URL, engine: Engine) throws {
+        let user = engine.gitUserName() ?? ProcessInfo.processInfo.environment["USER"] ?? "Unknown"
+        let now = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
+        let manifest = manifestSource(for: name, user: user, date: now)
+        let main = mainSource(for: name, user: user, date: now)
         let runner = Runner(for: engine.gitURL)
         let fm = FileManager.default
 
@@ -45,7 +44,7 @@ struct InitCommand: Command {
         try manifest.write(to: root.appendingPathComponent("Package.swift"), atomically: true, encoding: .utf8)
         
         // create source
-        let source = root.appendingPathComponent(".xpkg")
+        let source = root.appendingPathComponent("Sources/\(name)-xpkg-hooks")
         try? fm.createDirectory(at: source, withIntermediateDirectories: true, attributes: nil)
         try main.write(to: source.appendingPathComponent("main.swift"), atomically: true, encoding: .utf8)
         
@@ -63,44 +62,51 @@ struct InitCommand: Command {
         }
     }
     
-    func manifestSource(for name: String) -> String {
+    func manifestSource(for name: String, user: String, date: String) -> String {
         return """
-        let package = Package(
-            name: "\(name)",
-            platforms: [
-                .macOS(.v10_13)
-            ],
-            products: [
-                .executable(name: "\(name)-xpkg-hooks", targets: ["\(name)-xpkg-hooks"]),
-            ],
-            dependencies: [
-                .package(url: "https://github.com/elegantchaos/XPkgPackage", from:"1.0.0"),
-            ],
-            targets: [
-                .target(
-                    name: "\(name)-xpkg-hooks",
-                    dependencies: ["XPkgPackage"]
-                    path: ".xpkg"),
-            ]
-        )
+// swift-tools-version:5.0
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// \(name) - An XPkg package.
+// Created by \(user), \(date).
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+import PackageDescription
+
+let package = Package(
+    name: "\(name)",
+    platforms: [
+        .macOS(.v10_13)
+    ],
+    products: [
+        .executable(name: "\(name)-xpkg-hooks", targets: ["\(name)-xpkg-hooks"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/elegantchaos/XPkgPackage", from:"1.0.0"),
+    ],
+    targets: [
+        .target(
+            name: "\(name)-xpkg-hooks",
+            dependencies: ["XPkgPackage"]),
+    ]
+)
 """
     }
     
-    func mainSource(for name: String, user: String, date: Date) -> String {
-        let formattedDate = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .none)
+    func mainSource(for name: String, user: String, date: String) -> String {
         return """
-        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-        // \(name) - An XPgk package.
-        // Created by \(user), \(formattedDate).
-        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// \(name) - An XPkg package.
+// Created by \(user), \(date).
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-        import XPkgPackage
+import XPkgPackage
 
-        let links: [InstalledPackage.ManifestLink] = []
+let links: [InstalledPackage.ManifestLink] = []
 
-        let package = InstalledPackage(fromCommandLine: CommandLine.arguments)
-        try! package.performAction(fromCommandLine: CommandLine.arguments, links: links)
-        """
+let package = InstalledPackage(fromCommandLine: CommandLine.arguments)
+try! package.performAction(fromCommandLine: CommandLine.arguments, links: links)
+"""
 
     }
 }
