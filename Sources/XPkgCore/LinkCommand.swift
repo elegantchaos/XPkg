@@ -12,27 +12,17 @@ struct LinkCommand: Command {
     func run(engine: Engine) {
         let output = engine.output
         var name = engine.arguments.argument("package")
-        var linkedPath = engine.arguments.argument("path")
+        var path = engine.arguments.argument("path")
 
-        let runner = Runner(for: engine.gitURL)
         if name == "" {
-            // try to figure out the name from the current directory
-            if let result = try? runner.sync(arguments: ["remote", "get-url", "origin"]) {
-                if result.status == 0 {
-                    name = result.stdout.trimmingCharacters(in: CharacterSet.newlines)
-                }
-            }
+            name = engine.remoteNameForCwd()
         }
         
-        if linkedPath == "" {
-            if let result2 = try? runner.sync(arguments: ["rev-parse", "--show-toplevel"]) {
-                if result2.status == 0 {
-                    linkedPath = result2.stdout.trimmingCharacters(in: CharacterSet.newlines)
-                }
-            }
+        if path == "" {
+            path = engine.localRepoForCwd()
         }
 
-        guard name != "", let linkedURL = URL(string: linkedPath) else {
+        guard name != "", let linkedURL = URL(string: path) else {
             output.log("Couldn't infer package name/path.")
             return
         }

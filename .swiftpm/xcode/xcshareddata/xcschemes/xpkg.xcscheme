@@ -60,7 +60,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/developer/Projects/Agenda"
+      customWorkingDirectory = "/Users/developer/Projects/xpkg-coding-fonts"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -78,11 +78,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "install"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-logs +output,+verbose"
-            isEnabled = "NO">
+            argument = "init"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "link"
@@ -97,8 +97,8 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "samdeane/xpkg-shell"
-            isEnabled = "YES">
+            argument = "https://github.com/samdeane/xpkg-shell"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "Builder"
@@ -114,6 +114,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--as=wibble"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-logs +output,+verbose"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -43,6 +43,7 @@ public class Engine {
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
 
     let commands: [String:Command] = [
+        "init": InitCommand(),
         "check": CheckCommand(),
         "install": InstallCommand(),
         "link": LinkCommand(),
@@ -355,5 +356,25 @@ let package = Package(
     func exit(_ code: Int32) -> Never {
         Logger.defaultManager.flush()
         Foundation.exit(code)
+    }
+    
+    func remoteNameForCwd() -> String {
+        let runner = Runner(for: gitURL)
+        if let result = try? runner.sync(arguments: ["remote", "get-url", "origin"]) {
+            if result.status == 0 {
+                return result.stdout.trimmingCharacters(in: CharacterSet.newlines)
+            }
+        }
+        return ""
+    }
+    
+    func localRepoForCwd()-> String {
+        let runner = Runner(for: gitURL)
+        if let result = try? runner.sync(arguments: ["rev-parse", "--show-toplevel"]) {
+            if result.status == 0 {
+                return result.stdout.trimmingCharacters(in: CharacterSet.newlines)
+            }
+        }
+        return ""
     }
 }

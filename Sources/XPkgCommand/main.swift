@@ -14,10 +14,11 @@ Cross Platform Package Manager.
 
 Usage:
     xpkg check [<package>]
+    xpkg init
     xpkg install <package> [--project [--as=<name>]]
     xpkg link [<package> <path>]
-    xpkg list [--compact | --verbose | --oneline]
-    xpkg path (<package> | --self) [--store]
+    xpkg list [--compact | --full | --oneline]
+    xpkg path (<package> | --self)
     xpkg reinstall <package>
     xpkg remove <package> [--force] [--verbose]
     xpkg rename <package> <name>
@@ -37,7 +38,7 @@ Options:
     --store                             Use internal store, rather than the package root.
     --compact                           Produces minimal output.
     --oneline                           Produces output on a single line.
-    --verbose                           Produces extra output.
+    --full                              Produces output with extra details.
     --rerun                             Re-run the install actions, even if already installed.
     --self                              Perform the action on xpkg itself, rather than an installed package.
 

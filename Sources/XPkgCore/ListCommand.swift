@@ -12,8 +12,8 @@ struct ListCommand: Command {
           listOneline(engine: engine)
         } else if engine.arguments.flag("compact") {
             listCompact(engine: engine)
-        } else if engine.arguments.flag("verbose") {
-            listVerbose(engine: engine)
+        } else if engine.arguments.flag("full") {
+            listFull(engine: engine)
         } else {
             listNormal(engine: engine)
         }
@@ -55,7 +55,7 @@ struct ListCommand: Command {
         }
     }
 
-    func listVerbose(engine: Engine) {
+    func listFull(engine: Engine) {
         let gotPackages = engine.forEachPackage { (package) in
             let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
             let location = linked ? " --> \(package.local.path)" : ""
