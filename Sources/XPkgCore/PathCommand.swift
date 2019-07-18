@@ -14,8 +14,7 @@ struct PathCommand: Command {
         } else {
             let manifest = engine.loadManifest()
             let package = engine.existingPackage(manifest: manifest)
-            let store = engine.arguments.flag("store")
-            url = store ? package.store : package.local
+            url = package.local
         }
         engine.output.log(url.path)
     }

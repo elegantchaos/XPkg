@@ -39,8 +39,9 @@ struct ListCommand: Command {
     func listNormal(engine: Engine) {
         var gotLinked = false
         let gotPackages = engine.forEachPackage { (package) in
-            let flags = package.linked ? "*" : " "
-            gotLinked = gotLinked || package.linked
+            let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
+            let flags = linked ? "*" : " "
+            gotLinked = gotLinked || linked
             let status = package.status(engine: engine)
             let statusString = status == .pristine ? "" : " (\(status))"
             engine.output.log("\(flags) \(package.name)\(statusString)")
@@ -56,10 +57,11 @@ struct ListCommand: Command {
 
     func listVerbose(engine: Engine) {
         let gotPackages = engine.forEachPackage { (package) in
-            let location = package.linked ? " --> \(package.local.path)" : ""
+            let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
+            let location = linked ? " --> \(package.local.path)" : ""
             let status = package.status(engine: engine)
             let statusString = status == .pristine ? "" : " (\(status))"
-            engine.output.log("\(package.name)\(statusString)\(location)")
+            engine.output.log("\(package.name): \(package.url) \(statusString)\(location)")
         }
 
         if !gotPackages {

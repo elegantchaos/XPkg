@@ -55,8 +55,15 @@ struct Package: Decodable {
     let url: String
     var dependencies: [Package]
 
+    static func normalize(url: URL) -> URL {
+        let urlNoGitExtension = url.pathExtension == "git" ? url.deletingPathExtension() : url
+        let string = urlNoGitExtension.absoluteString.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
+        return URL(string: string)!
+    }
+
+    
     init(url: URL, version: String) {
-        self.name = ""
+        self.name = url.lastPathComponent
         self.path = ""
         self.url = url.absoluteString
         self.version = version
@@ -71,13 +78,32 @@ struct Package: Decodable {
         self.dependencies = []
     }
 
+    
+    var global: Bool { return false }
+    var local: URL { return URL(fileURLWithPath: path) }
+    
+    lazy var remote: URL = {
+        return URL(string: url)!
+    }()
+
+    lazy var normalized: URL = {
+        return Package.normalize(url: self.remote)
+    }()
+    
+    lazy var qualified: String = {
+        let components = normalized.pathComponents
+        return components[1...].joined(separator: "/")
+    }()
+
     func package(matching spec: String) -> Package? {
-        for package in dependencies {
+        let url = URL(string:spec)
+        let normalised = url == nil ? spec : Package.normalize(url: url!).absoluteString
+        for var package in dependencies {
             if package.name == spec {
                 return package
-            } else if package.url == spec {
+            } else if package.qualified == spec {
                 return package
-            } else if package.remote.path == spec {
+            } else if package.normalized.absoluteString == normalised {
                 return package
             }
         }
@@ -93,20 +119,11 @@ struct Package: Decodable {
         return nil
     }
     
-    func normalize(url: URL) -> String {
-        let urlNoGitExtension = url.pathExtension == "git" ? url.deletingPathExtension() : url
-        let normalised = urlNoGitExtension.absoluteString.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
-        return normalised
-    }
-    
     func package(withURL url: URL) -> Package? {
-        let normalised = normalize(url: url)
-        for package in dependencies {
-            if let packageURL = URL(string: package.url) {
-                let packageNormalised = normalize(url: packageURL)
-                if packageNormalised == normalised {
-                    return package
-                }
+        let normalised = Package.normalize(url: url)
+        for var package in dependencies {
+            if package.normalized == normalised {
+                return package
             }
         }
         return nil
@@ -170,14 +187,7 @@ struct Package: Decodable {
             dependencies.remove(at: index)
         }
     }
-    
-    var linked: Bool { return false }
-    var removeable: Bool { return false }
-    var global: Bool { return false }
-    var local: URL { return URL(fileURLWithPath: path) }
-    var remote: URL { return URL(string: url)! }
-    var store: URL { return URL(fileURLWithPath: path) }
-
+ 
 
     /**
     Return the default location to use for the local (hidden) clone of a package.

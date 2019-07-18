@@ -78,15 +78,15 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "install"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-logs +output,+verbose"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "link"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "remove"
@@ -97,8 +97,8 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "xpkg-shell"
-            isEnabled = "NO">
+            argument = "samdeane/xpkg-shell"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "Builder"
