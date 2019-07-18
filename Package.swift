@@ -9,9 +9,9 @@ let package = Package(
     ],
     products: [
       .executable(name: "xpkg", targets: ["XPkgCommand"]),
-      .library(name: "XPkgAPI", targets: ["XPkgAPI"])
     ],
     dependencies: [
+        .package(url: "https://github.com/elegantchaos/XpkgPackage.git", from: "1.0.0"),
         .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.3.7"),
         .package(url: "https://github.com/elegantchaos/Arguments.git", from: "1.0.4"),
         .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.0.1"),
@@ -24,10 +24,7 @@ let package = Package(
           dependencies: ["XPkgCore"]),
         .target(
             name: "XPkgCore",
-            dependencies: ["Arguments", "Logger", "Runner", "XPkgAPI"]),
-        .target(
-            name: "XPkgAPI",
-            dependencies: ["Logger", "Runner"]),
+            dependencies: ["Arguments", "Logger", "Runner", "XPkgPackage"]),
         .target(
             name: "Configure",
           dependencies: ["BuilderConfiguration"]),

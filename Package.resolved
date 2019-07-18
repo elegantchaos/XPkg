@@ -54,6 +54,15 @@
           "revision": "292c94f8613ddd72d45f3bb1f503dceec3b83e44",
           "version": "1.0.3"
         }
+      },
+      {
+        "package": "XPkgPackage",
+        "repositoryURL": "https://github.com/elegantchaos/XpkgPackage.git",
+        "state": {
+          "branch": null,
+          "revision": "56c85587114fdcb108ad7edffc31d8bfb5eb6afe",
+          "version": "1.0.0"
+        }
       }
     ]
   },

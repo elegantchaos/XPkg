@@ -8,7 +8,7 @@ import Arguments
 import Foundation
 import Logger
 import Runner
-import XPkgAPI
+import XPkgPackage
 
 extension URLSession {
     func synchronousDataTask(with request: URLRequest) -> (Data?, URLResponse?, Error?) {
@@ -376,5 +376,15 @@ let package = Package(
             }
         }
         return ""
+    }
+    
+    func gitUserName() -> String? {
+        let runner = Runner(for: gitURL)
+        if let result = try? runner.sync(arguments: ["config", "--global", "user.name"]) {
+            if result.status == 0 {
+                return result.stdout.trimmingCharacters(in: CharacterSet.newlines)
+            }
+        }
+        return nil
     }
 }

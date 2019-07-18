@@ -7,7 +7,7 @@
 import Foundation
 import Logger
 import Runner
-import XPkgAPI
+import XPkgPackage
 
 #if canImport(AppKit)
 import AppKit
