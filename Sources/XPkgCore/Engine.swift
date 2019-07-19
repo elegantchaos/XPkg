@@ -349,13 +349,21 @@ let package = Package(
     }
 
     /**
+    Return a package structure for an existing package, if it exists
+    */
+
+    func possiblePackage(named name: String, manifest: Package) -> Package? {
+        return manifest.package(named: name) ?? manifest.package(named: "xpkg-\(name)")
+    }
+    
+    /**
     Return a package structure for an existing package that was specified as
     an argument.
     */
 
     func existingPackage(from argument: String = "package", manifest: Package) -> Package {
         let packageName = arguments.argument(argument)
-        guard let package = manifest.package(named: packageName) ?? manifest.package(named: "xpkg-\(packageName)") else {
+        guard let package = possiblePackage(named: packageName, manifest: manifest) else {
             output.log("Package \(packageName) is not installed.")
             exit(1)
         }

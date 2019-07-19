@@ -8,16 +8,26 @@ import Foundation
 
 struct PathCommand: Command {
     func run(engine: Engine) {
-        let url: URL
+        var url: URL? = nil
+        
         if engine.arguments.flag("self") {
             url = engine.xpkgCodeURL
         } else if engine.arguments.flag("vault") {
             url = engine.vaultURL
         } else {
-            let manifest = engine.loadManifest()
-            let package = engine.existingPackage(manifest: manifest)
-            url = package.local
+            let name = engine.arguments.argument("package")
+            if let package = engine.possiblePackage(named: name, manifest: engine.loadManifest()) {
+                url = package.local
+            } else {
+                let project = engine.projectsURL.appendingPathComponent(name)
+                if FileManager.default.fileExists(at: project) {
+                    url = project
+                }
+            }
         }
-        engine.output.log(url.path)
+        
+        if let found = url {
+            engine.output.log(found.path)
+        }
     }
 }
