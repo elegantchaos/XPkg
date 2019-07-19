@@ -11,7 +11,7 @@ let package = Package(
       .executable(name: "xpkg", targets: ["XPkgCommand"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/elegantchaos/XpkgPackage.git", from: "1.0.0"),
+        .package(url: "https://github.com/elegantchaos/XpkgPackage.git", from: "1.0.2"),
         .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.3.7"),
         .package(url: "https://github.com/elegantchaos/Arguments.git", from: "1.0.4"),
         .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.0.1"),

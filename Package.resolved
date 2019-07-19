@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/elegantchaos/XpkgPackage.git",
         "state": {
           "branch": null,
-          "revision": "56c85587114fdcb108ad7edffc31d8bfb5eb6afe",
-          "version": "1.0.0"
+          "revision": "b86eeea14aa0905c8812fa219865e20424faff59",
+          "version": "1.0.2"
         }
       }
     ]

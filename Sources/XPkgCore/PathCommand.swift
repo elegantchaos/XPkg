@@ -11,6 +11,8 @@ struct PathCommand: Command {
         let url: URL
         if engine.arguments.flag("self") {
             url = engine.xpkgCodeURL
+        } else if engine.arguments.flag("vault") {
+            url = engine.vaultURL
         } else {
             let manifest = engine.loadManifest()
             let package = engine.existingPackage(manifest: manifest)

@@ -18,7 +18,7 @@ Usage:
     xpkg install <package> [--project [--as=<name>]]
     xpkg link [<package> <path>]
     xpkg list [--compact | --full | --oneline]
-    xpkg path (<package> | --self)
+    xpkg path (<package> | --self | --vault)
     xpkg reinstall <package>
     xpkg remove <package> [--force] [--verbose]
     xpkg rename <package> <name>
@@ -41,6 +41,7 @@ Options:
     --full                              Produces output with extra details.
     --rerun                             Re-run the install actions, even if already installed.
     --self                              Perform the action on xpkg itself, rather than an installed package.
+    --vault                             Show the vault path.
 
 Examples:
     xpkg install MyPackage              # Install a package from the default github org
