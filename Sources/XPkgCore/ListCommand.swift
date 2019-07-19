@@ -58,11 +58,11 @@ struct ListCommand: Command {
     func listFull(engine: Engine) {
         let gotPackages = engine.forEachPackage { (package) in
             let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
-//            let location = linked ? " --> \(package.local.path)" : ""
+            let location = linked ? "\(package.local.path) (linked)" : package.local.path
             let status = package.status(engine: engine)
             let version = package.currentVersion(engine: engine)
-            let statusString = status == .pristine ? "" : " (\(status))"
-            engine.output.log("\(package.name): \(version) \(package.url) \(statusString)\(package.path)")
+            let statusString = status == .pristine ? "" : " (\(status))\n"
+            engine.output.log("\n\(package.name) (\(version))\n---------------------\n\(package.url)\n\(location)\n\(statusString)")
         }
 
         if !gotPackages {

@@ -355,7 +355,7 @@ let package = Package(
 
     func existingPackage(from argument: String = "package", manifest: Package) -> Package {
         let packageName = arguments.argument(argument)
-        guard let package = manifest.package(named: packageName) else {
+        guard let package = manifest.package(named: packageName) ?? manifest.package(named: "xpkg-\(packageName)") else {
             output.log("Package \(packageName) is not installed.")
             exit(1)
         }
