@@ -117,6 +117,13 @@ public class Engine {
         return String(tag.trimmingCharacters(in: .whitespacesAndNewlines))
     }
     
+    typealias RepoValidator = (URL) -> String?
+    
+    func validate(_ remote: URL) -> String? {
+         let version = latestVersion(remote)
+         return version?.replacingOccurrences(of: "v", with: "")
+     }
+    
     /// Given a package spec, try to find a URL and latest version for the package.
     /// The spec can be one of:
     /// - a full URL - which is used directly
@@ -124,15 +131,8 @@ public class Engine {
     /// - a qualified org/package page - we try to make this into a github URL
     /// - Parameter package: the package spec
     /// - Parameter skipValidation: whether to perform online validation; provided for testing
-    internal func remotePackageURL(_ package: String, skipValidation: Bool = false) -> (URL, String?) {
-        func validate(_ remote: URL) -> String? {
-            if skipValidation {
-                return nil
-            } else {
-                let version = latestVersion(remote)
-                return version?.replacingOccurrences(of: "v", with: "")
-            }
-        }
+    internal func remotePackageURL(_ package: String, validator: RepoValidator? = nil) -> (URL, String?) {
+        let validate = validator ?? { url in self.validate(url) }
         
         if let remote = URL(string: package), let version = validate(remote) {
             return (remote, version)
