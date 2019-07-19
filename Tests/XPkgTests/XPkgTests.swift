@@ -11,10 +11,14 @@ import Arguments
 
 
 class XPkgTests: XCTestCase {
-    func validator(matching: String) -> Engine.RepoValidator {
+    var matched = false
+    
+    func validator(expecting: String) -> Engine.RepoValidator {
+        self.matched = false
         return { url in
-            if url.absoluteString == matching {
-              return "matched"
+            if url.absoluteString == expecting {
+                self.matched = true
+              return "1.0.0"
             } else {
                 return nil
             }
@@ -25,27 +29,21 @@ class XPkgTests: XCTestCase {
         let arguments = Arguments(program: "xpkg")
         let engine = Engine(arguments: arguments)
         engine.defaultOrgs = ["testorg"]
-        let (_, version) = engine.remotePackageURL("test", validator: validator(matching: "git@github.com:testorg/test"))
-        XCTAssertEqual(version, "matched")
+        let _ = engine.remotePackageURL("test", validator: validator(expecting: "git@github.com:testorg/test"))
+        XCTAssertTrue(self.matched)
     }
 
     func testNameOrg() {
         let arguments = Arguments(program: "xpkg")
         let engine = Engine(arguments: arguments)
-        let (_, version) = engine.remotePackageURL("someorg/someproj", validator: validator(matching: "git@github.com:someorg/someproj"))
-        XCTAssertEqual(version, "matched")
+        let _ = engine.remotePackageURL("someorg/someproj", validator: validator(expecting: "git@github.com:someorg/someproj"))
+        XCTAssertTrue(self.matched)
     }
 
     func testRepo() {
         let arguments = Arguments(program: "xpkg")
         let engine = Engine(arguments: arguments)
-        let (_, version) = engine.remotePackageURL("git@mygit.com:someorg/someproj", validator: validator(matching: "git@mygit.com:someorg/someproj"))
-        XCTAssertEqual(version, "matched")
+        let _ = engine.remotePackageURL("git@mygit.com:someorg/someproj", validator: validator(expecting: "git@mygit.com:someorg/someproj"))
+        XCTAssertTrue(self.matched)
     }
-
-    static var allTests = [
-        ("testName", testName),
-        ("testNameOrg", testNameOrg),
-        ("testRepo", testRepo),
-    ]
 }
