@@ -11,13 +11,22 @@ struct UpdateCommand: Command {
         if engine.arguments.flag("self") {
             updateSelf(engine: engine)
         } else if engine.arguments.argument("package") == "" {
+            engine.output.log("Checking all packages for updates...")
             let _ = engine.forEachPackage { (package) in
-                package.update(engine: engine)
+                if let newerVersion = package.needsUpdate(engine: engine) {
+                    package.update(to: newerVersion, engine: engine)
+                } else {
+                    engine.output.log("Package \(package.name) was unchanged.")
+                }
             }
+            engine.output.log("Done.")
         } else {
             let manifest = engine.loadManifest()
             let package = engine.existingPackage(manifest: manifest)
-            package.update(engine: engine)
+            if let newerVersion = package.needsUpdate(engine: engine) {
+                package.update(to: newerVersion, engine: engine)
+                engine.output.log("Package \(package.name) was unchanged.")
+            }
         }
     }
 

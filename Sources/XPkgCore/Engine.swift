@@ -96,7 +96,10 @@ public class Engine {
     internal var xpkgCodeURL: URL {
         return xpkgURL.appendingPathComponent("code")
     }
-
+    
+    /// Returns the latest semantic version tag for the remote repo.
+    /// If the tag contains a "v", we return it along with the number.
+    /// - Parameter url: the url of the repo
     internal func latestVersion(_ url: URL) -> String? {
         let runner = Runner(for: gitURL)
         guard let result = try? runner.sync(arguments: ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]), result.status == 0 else {
@@ -111,16 +114,23 @@ public class Engine {
             return ""
         }
         
-        let version = tag.replacingOccurrences(of: "v", with: "")
-        return String(version.trimmingCharacters(in: .whitespacesAndNewlines))
+        return String(tag.trimmingCharacters(in: .whitespacesAndNewlines))
     }
-
+    
+    /// Given a package spec, try to find a URL and latest version for the package.
+    /// The spec can be one of:
+    /// - a full URL - which is used directly
+    /// - an unqualified package name - we try to make a github URL using one of the default organisations
+    /// - a qualified org/package page - we try to make this into a github URL
+    /// - Parameter package: the package spec
+    /// - Parameter skipValidation: whether to perform online validation; provided for testing
     internal func remotePackageURL(_ package: String, skipValidation: Bool = false) -> (URL, String?) {
         func validate(_ remote: URL) -> String? {
             if skipValidation {
                 return nil
             } else {
-                return latestVersion(remote)
+                let version = latestVersion(remote)
+                return version?.replacingOccurrences(of: "v", with: "")
             }
         }
         

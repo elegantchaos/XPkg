@@ -277,28 +277,120 @@ struct Package: Decodable {
         return .unknown
     }
 
+    
+    /// Returns the version of the package, according to `git describe`
+    /// - Parameter engine: The current engine.
+    func currentVersion(engine: Engine) -> String {
+        let runner = Runner(for: engine.gitURL, cwd: local)
+        if let result = try? runner.sync(arguments: ["describe"]) {
+            if result.status == 0 {
+                return result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        }
+        return ""
+    }
+    
+    /// Returns the name of the branch that the package is on, or nil if it isn't on a branch.
+    /// - Parameter engine: The current engine.
+    func currentBranch(engine: Engine) -> String? {
+        let runner = Runner(for: engine.gitURL, cwd: local)
+        if let result = try? runner.sync(arguments: ["rev-parse", "--abbrev-ref", "HEAD"]) {
+            engine.verbose.log(result.stdout)
+            if result.status == 0 {
+                let branch = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+                if branch != "HEAD" {
+                    return branch
+                }
+            }
+        }
+        return nil
+    }
 
+    /// Returns the latest version of the package, according to the server.
+    /// - Parameter engine: the engine
+    func latestVersion(engine: Engine) -> String? {
+        return engine.latestVersion(URL(string:url)!)
+    }
+    
+    /// Does the package need updating?
+    /// If it's on a version tag, and there's a newer version available, we return the newer version.
+    /// If it's on the latest version tag, or checked out to a branch, we return nil.
+    /// - Parameter engine: The current context.
+    func needsUpdate(engine: Engine) -> String? {
+        let branch = currentBranch(engine: engine)
+        guard branch == nil else {
+            engine.verbose.log("\(name) is on branch \(branch!)")
+            return nil
+        }
+        
+        let current = currentVersion(engine: engine)
+        guard !current.contains("-") else {
+            engine.verbose.log("\(name) is modified.")
+            return nil
+        }
+        
+        guard let latest = latestVersion(engine: engine) else {
+            engine.verbose.log("\(name) couldn't fetch latest version.")
+            return nil
+        }
+        
+        guard let sCurrent = SemanticVersion(current), let sLatest = SemanticVersion(latest) else {
+            engine.verbose.log("\(name) couldn't parse versions.")
+            return nil
+        }
+        
+        engine.verbose.log("\(name) \(current) \(latest)")
+        return sCurrent < sLatest ? latest : nil
+    }
+    
+    /// Checkout the package to a given branch, tag or other ref.
+    /// - Parameter ref: the branch, tag, commit or ref to check out to
+    /// - Parameter engine: the context
+    func checkout(to ref: String, engine: Engine) {
+        let runner = Runner(for: engine.gitURL, cwd: local)
+        if let result = try? runner.sync(arguments: ["checkout", ref]) {
+            engine.verbose.log(result.stdout)
+            engine.verbose.log(result.stderr)
+            if result.status == 0 {
+                return
+            }
+        }
+        
+        engine.output.log("Couldn't update package \(name) to \(ref).")
+    }
+
+    /// Fetch the latest commits.
+    /// - Parameter engine: the context
+    func fetch(engine: Engine) {
+        let runner = Runner(for: engine.gitURL, cwd: local)
+        if let result = try? runner.sync(arguments: ["fetch"]) {
+            engine.verbose.log(result.stdout)
+            engine.verbose.log(result.stderr)
+        }
+    }
+    
     /**
     Update the package.
     */
 
-    func update(engine: Engine) {
-        let runner = Runner(for: engine.gitURL, cwd: local)
-        if let result = try? runner.sync(arguments: ["pull", "--ff-only"]) {
-            if result.status == 0 {
-                if result.stdout == "Already up-to-date.\n" {
-                    engine.output.log("Package \(name) unchanged.")
-                } else {
-                    engine.output.log("Package \(name) updated.")
-                }
-            } else {
-                engine.output.log("Failed to update \(name).\n\n\(result.status) \(result.stdout) \(result.stderr)")
-            }
-        } else {
-            engine.output.log("Failed to launch git whilst updating \(name).")
+    func update(to version: String, engine: Engine) {
+        engine.output.log("Updating \(name) to \(version).")
+
+        engine.verbose.log("Uninstalling \(name).")
+        if let ok = try? run(action: "remove", engine: engine), ok {
+            engine.verbose.log("Removed \(name).")
+        }
+        
+        engine.verbose.log("Updating \(name).")
+        fetch(engine: engine)
+        checkout(to: version, engine: engine)
+        
+        engine.verbose.log("Installing \(name).")
+        if let ok = try? run(action: "install", engine: engine), ok {
+            engine.verbose.log("Reinstalled \(name).")
         }
     }
-
+    
     /**
     Check that the package information seems to be valid.
     */
