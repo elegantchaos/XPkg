@@ -10,6 +10,10 @@ import Logger
 import Runner
 import XPkgPackage
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 extension URLSession {
     func synchronousDataTask(with request: URLRequest) -> (Data?, URLResponse?, Error?) {
         var data: Data?
