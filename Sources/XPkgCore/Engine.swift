@@ -61,10 +61,10 @@ public class Engine {
     }
 
     public func run() {
-        if arguments.flag("verbose") {
-            verbose.enabled = true
-        }
-        
+        // ignore the normal Logger preferences, and set the enabled
+        // state of the verbose channel purely based on the --verbose argument
+        verbose.enabled = arguments.flag("verbose")
+            
         if let command = getCommand() {
             command.run(engine: self)
         }
@@ -106,10 +106,11 @@ public class Engine {
     /// - Parameter url: the url of the repo
     internal func latestVersion(_ url: URL) -> String? {
         let runner = Runner(for: gitURL)
-        guard let result = try? runner.sync(arguments: ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]), result.status == 0 else {
+        let arguments = ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]
+        guard let result = try? runner.sync(arguments: arguments, passthrough: false), result.status == 0 else {
                 return nil
         }
-            
+        
         guard let tag = result.stdout.split(separator: "/").last else {
             return ""
         }
