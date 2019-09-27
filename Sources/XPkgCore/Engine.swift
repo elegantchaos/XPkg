@@ -61,6 +61,10 @@ public class Engine {
     }
 
     public func run() {
+        if arguments.flag("verbose") {
+            verbose.enabled = true
+        }
+        
         if let command = getCommand() {
             command.run(engine: self)
         }

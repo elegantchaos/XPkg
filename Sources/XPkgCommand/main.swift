@@ -13,17 +13,17 @@ let doc = """
 Cross Platform Package Manager.
 
 Usage:
-    xpkg check [<package>]
-    xpkg init
+    xpkg check [<package>] [--verbose]
+    xpkg init [--verbose]
     xpkg install <package> [--project [--as=<name>]]
-    xpkg link [<package> <path>]
-    xpkg list [--compact | --full | --oneline]
-    xpkg path (<package> | --self | --vault)
-    xpkg reinstall <package>
+    xpkg link [<package> <path>] [--verbose]
+    xpkg list [--compact | --full | --oneline] [--verbose]
+    xpkg path (<package> | --self | --vault) [--verbose]
+    xpkg reinstall <package> [--verbose]
     xpkg remove <package> [--force] [--verbose]
-    xpkg rename <package> <name>
-    xpkg reveal <package> [--path]
-    xpkg update [<package> | --self]
+    xpkg rename <package> <name> [--verbose]
+    xpkg reveal <package> [--path] [--verbose]
+    xpkg update [<package> | --self] [--verbose]
     xpkg (-h | --help)
     xpkg --version
 
@@ -42,6 +42,7 @@ Options:
     --rerun                             Re-run the install actions, even if already installed.
     --self                              Perform the action on xpkg itself, rather than an installed package.
     --vault                             Show the vault path.
+    --verbose                           Enable additional logging.
 
 Examples:
     xpkg install MyPackage              # Install a package from the default github org
