@@ -54,6 +54,7 @@ Examples:
 """
 
 func infoPlist() -> [String:String] {
+    #if os(macOS) || os(iOS)
     if let handle = dlopen(nil, RTLD_LAZY) {
         defer { dlclose(handle) }
         
@@ -70,6 +71,7 @@ func infoPlist() -> [String:String] {
             }
         }
     }
+    #endif
     return [:]
 }
 
