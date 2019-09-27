@@ -7,7 +7,7 @@ script:
 matrix:
   include:
   - os: linux
-    dist: trusty
+    dist: bionic
     language: generic
     sudo: required
     install:
@@ -15,8 +15,8 @@ matrix:
       - SWIFT_VERSION=swift-5.1-RELEASE
       - sudo apt-get install clang libicu-dev
       - mkdir swift
-      - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar xz -C swift &> /dev/null
-      - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+      - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1804/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu18.04.tar.gz -s | tar xz -C swift &> /dev/null
+      - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu18.04/usr/bin:$PATH"
   - os: osx
     osx_image: xcode11
     language: swift
