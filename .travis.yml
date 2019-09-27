@@ -1,8 +1,8 @@
 script:
     - swift build --product builder
-    - ".build/debug/builder build"
-    - ".build/debug/xpkg --version"
-    - ".build/debug/builder test"
+    - .build/debug/builder build
+    - .build/debug/xpkg --version
+    - .build/debug/builder test
 
 matrix:
   include:
@@ -11,8 +11,8 @@ matrix:
     language: generic
     sudo: required
     install:
-      - SWIFT_BRANCH=swift-5.0.1-release
-      - SWIFT_VERSION=swift-5.0.1-RELEASE
+      - SWIFT_BRANCH=swift-5.1-release
+      - SWIFT_VERSION=swift-5.1-RELEASE
       - sudo apt-get install clang libicu-dev
       - mkdir swift
       - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar xz -C swift &> /dev/null
