@@ -1,8 +1,3 @@
-script:
-    - swift build --product builder
-    - .build/debug/builder build
-    - .build/debug/xpkg --version
-    - .build/debug/builder test
 
 matrix:
   include:
@@ -17,11 +12,20 @@ matrix:
       - mkdir swift
       - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1804/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu18.04.tar.gz -s | tar xz -C swift &> /dev/null
       - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu18.04/usr/bin:$PATH"
+    script:
+    - swift build
+    - .build/debug/xpkg --version
+    - swift test
   - os: osx
     osx_image: xcode11
     language: swift
     install:
       - sudo gem install xcpretty-travis-formatter
+    script:
+    - swift build --product builder
+    - .build/debug/builder build
+    - .build/debug/xpkg --version
+    - .build/debug/builder test
 
 
 notifications:
