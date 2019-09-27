@@ -451,18 +451,20 @@ struct Package: Decodable {
         do {
             // run as a new-style package
             let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
-            let result = try runner.sync(arguments: ["run", "\(name)-xpkg-hooks", name, path, action])
+            let hooks = "\(name)-xpkg-hooks"
+            let arguments = ["run", hooks, name, path, action]
+            let result = try runner.sync(arguments: arguments)
+            engine.verbose.log("\n> \(hooks) \(name) \(path) \(action)")
             if result.status == 0 {
-                engine.verbose.log("Ran \(action) hooks for \(name).")
-                engine.verbose.log(result.stdout)
-                engine.verbose.log(result.stderr)
+                engine.verbose.log("stdout: \(result.stdout)")
+                engine.verbose.log("stderr: \(result.stderr)\n")
                 return true
             }
             
             if !result.stdout.contains("no exexcutable product") {
-                engine.verbose.log("Failed to run \(action) hooks for \(name).")
-                engine.verbose.log(result.stdout)
-                engine.verbose.log(result.stderr)
+                engine.verbose.log("failure: \(result.status)")
+                engine.verbose.log("stdout: \(result.stdout)")
+                engine.verbose.log("stderr: \(result.stderr)\n")
             }
             
             // fallback to old method?

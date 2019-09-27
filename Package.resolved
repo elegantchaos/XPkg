@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Runner.git",
         "state": {
           "branch": null,
-          "revision": "292c94f8613ddd72d45f3bb1f503dceec3b83e44",
-          "version": "1.0.3"
+          "revision": "54889ffb68a12f3bb166ddc501cae5a83fd89bf4",
+          "version": "1.0.4"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/elegantchaos/XPkgPackage.git",
         "state": {
           "branch": null,
-          "revision": "b7c421f7e6832c2cd01bf4dd178deb95d23acb3d",
-          "version": "1.0.3"
+          "revision": "cad1f898e01e53c000cad54c843a2be79ae5a5bf",
+          "version": "1.0.6"
         }
       }
     ]
