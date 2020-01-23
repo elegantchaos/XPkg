@@ -174,8 +174,24 @@ I'm slowly converting over my tangle of old scripts and links to packages, and h
 Many of these are in private repos, because they're basically _my_ settings, but you'll find a few public on github. I will try to open up more over time, I just need to make sure that they don't accidentally contain private tokens or other stuff not-for-general-consumption.
 
 
-- https://github.com/samdeane/xpkg-travis
--
+## How It Works
+
+XPkg basically creates a local swift package in a hidden directory, and maintains a `Package.swift` file in there.
+
+When you install a package, XPkg adds it to the `Package.swift` file, and uses `swift update` to resolve it and fetch the dependencies.
+
+It then spots any packages that got added as a result of this, and tries to build and run the installer for them.
+
+Package removal works in a similar way, in reverse.
+
+There's a bit more to it than that, but that's the basic idea.
+
+Using SPM to do all the dependency resolution and fetching seemed like a good way to get a lot of fuctionality for not a lot of work!
+
+The idea is potentially pretty solid I think, and would be purely an implementation detail if it weren't for the fact that the use of SPM is exposed as a way to provide the installers. In theory other installer mechanisms could be provided instead / as well.
+
+  During development, I've found that occasionally bugs in XPkg itself can cause the auto-generated `Package.swift` to become corrupted and need hand editing. This is obviously not ideal for something that other people would use, but it should be possible to prevent this corruption from happening when XPkg itself settles down.
+
 
 ## Future Plans
 
