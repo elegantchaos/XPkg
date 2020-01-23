@@ -41,9 +41,11 @@ This will clone the package into a hidden location, then run its installer.
 
 You can also specify a full repo URL if it's not on github.
 
-To remove a package, `xpkg remove <package>`
+To remove a package, `xpkg remove <package>`.
 
-To list the installed packages `xpkg list`
+To list the installed packages `xpkg list`.
+
+To navigate to a package directory (using `pushd`), type `xg <package>`.
 
 For other commands, see `xpkg help`.
 
@@ -61,8 +63,8 @@ There are two nice aspects of this design choice:
 
 - Your installer can do whatever it wants when it is run; it's just code!
 - We get dependency management for free
-  - the installer can list other XPkg packages as dependencies, and use them when its run
-  - it can also list other _SPM_ packages as dependencies; SPM will pull them in, and XPkg will notice that they've been pulled in and install them!
+  - the installer can list other SPM packages as dependencies, and use them when its run
+  - it can also list other _XPkg_ packages as dependencies; SPM will pull them in, and XPkg will notice that they've been pulled in and install them!
 
 Of course, there are some things that you commonly want to do when installing a package, such as creating symbolic links to places like `/usr/local/bin`, running other scripts, etc.
 
