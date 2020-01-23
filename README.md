@@ -24,9 +24,7 @@ In a nutshell, that's what XPkg does.
 
 ## Installation
 
-**Disclaimer:** XPkg was developed purely for my own use. It is under active development and probably has bugs in it. It will modify your `.bashrc`, `.zshrc` etc scripts, and although it backs them up, it may break things. Please do tell me if it does something wrong, but I can't guarantee to support you, and I definitely won't be held responsible for any damage it does. Use XPkg at your own risk!
-
----
+**Disclaimer: XPkg was developed purely for my own use. It is under active development and probably has bugs in it. It will modify your `.bashrc`, `.zshrc` etc scripts, and although it backs them up, it may break things. Please do tell me if it does something wrong, but I can't guarantee to support you, and I definitely won't be held responsible for any damage it does. Use XPkg at your own risk!**
 
 Running `curl https://raw.githubusercontent.com/elegantchaos/XPkg/master/.bin/bootstrap | bash` should get you up and running.
 
