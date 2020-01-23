@@ -53,7 +53,7 @@ At their most basic, packages are just git repositories, which contain a payload
 
 XPkg was designed to be cross-platform (this is what the "X" stands for), and is written in Swift. It should work on any platform that has a working Swift compiler and standard libraries. Since Swift is a requirement for XPkg itself, I decided to also make it a requirement for the installer.[^1]
 
-In fact, XPkg packages are also SPM (Swift Package Manager) packages.
+In fact, XPkg packages are also Swift Package Manager (SPM) packages.
 
 When you install a package with XPkg, it clones the corresponding repository, then uses SPM to build and run the installer (a product with a special name, currently `<your-package-name>-xpkg-hooks`) in your package, passing it a known set of arguments and environment variables.
 
@@ -130,7 +130,26 @@ This uses the functionality provided by XPkgPackage to install a link `my-comman
 
 XPkg has undergone a major redesign, and the terminology hasn't caught up yet.
 
-Previously we had packages and manifests. Now we have packages and installers. I plan to rename a lot of things to reflect the new reality.
+Previously we had packages and manifests. Now we have packages and installers.
+
+I plan to rename a lot of things to reflect the new reality:
+
+  - `xpkg-hooks` will probably become `xpkg-installer`
+  - `XPkgPackage` will probably become `XPkgInstaller`
+
+### Hooking Into Shell Startup
+
+Something that many packages need to do is to hook into the shell startup process (be it .bashrc, .zshrc, or whatever), in order to set environment variables, aliases, and so on.
+
+Rather than have each package modify these init files, which could get messy, I decided to have one package install itself into this startup process, and have this package provide a flexible way to install other hooks.
+
+This package is called `shell-hooks` (https://github.com/elegantchaos/shell-hooks), and is installed by default when you install XPkg itself.
+
+It hooks itself into the startup process for Bash, Zsh, and Fish. At startup, it scans `~/.config/shell-hooks/` and runs any files that it finds there. It actually uses subdirectories and pattern matching to choose exactly which files to run, depending on what platform you're on, and whether this is an interative or non-interactive session.
+
+The standard installer support package `XpkgPackage` knows about shell-hooks, and provides support for installing symbolic links into its directories. This makes it really simple for Xpkg packages to insert themselves into the shell startup process.
+
+
 
 
 ## Future Plans
