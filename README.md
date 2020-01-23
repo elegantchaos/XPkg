@@ -76,7 +76,7 @@ To avoid every installer having to write that code every time, we just put them 
 
 [^2]: Note that the package can be a real swift package, designed for use in building Swift products, and with a other products and targets. It doesn't have to be, but it can be.
 
-### Example
+### Example
 
 A simple package might consist of the following files:
 
@@ -197,12 +197,12 @@ The idea is potentially pretty solid I think, and would be purely an implementat
 
 ## Future Plans
 
-There are lots of things not done / not working. right now.
+As well as supporting installation, XPkg was originally intended to help with some other things:
 
-Some planned improvements:
+- installing and navigating to work projects on my machine (eg being able to type `xg MyProject` and cd to my working directory for MyProject)
+- automatically fetching / pull a list of tracked git repos (both packages and projects)
+- automatically backing up / pushing a list of tracked git repos (both packages and projects)
 
-- updating packages (using git pull)
-- specifying versions of package
-- installing multiple packages at once (a la npm/bundle/brew/etc)
-- bootstrapping the install of xpkg
-- updating xpkg
+This is all intended to help support an existence where you are working on multiple machines at the same time / moving regularly between machines.
+
+Some of these features are in the pipeline, or may be added at a later date.
