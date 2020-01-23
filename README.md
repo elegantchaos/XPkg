@@ -47,56 +47,71 @@ To link an existing (local) directory as if it is a package: `xpkg link <package
 
 For other commands, see `xpkg help`.
 
-## Manifest
+## Writing Packages
 
-The manifest file is a json file, located at the root of the package repo, called `.xpkg.json`.
+At their most basic, packages are just git repositories, which contain a payload (whatever files you want to install or hook into your system), plus a manifest (that tells XPkg how to install/uninstall the payload).
 
-If present, this file is examined for commands to execute at install/removal time.
+In the first iteration of XPkg, the manifest was a hidden json file called `.xpkg.json` which sat at the root of package and described sybolic links to create, and scripts to run, in order to do the installation.
 
+This was lightweight, but a little inflexible. You could run code by invoking shell scripts, but you couldn't specify a requirement for other packages as dependencies, and the manifest syntax was a little bit gnarly.
 
-Currently there are two events supported: `install` and `remove`. For each of these you can list commands to execute:
+In the current version of XPkg, package manifests are actually written in Swift. In fact, XPkg packages _are_ Swift Package Manager packages. When you install a package with XPkg, it uses the swift package manager to build and run a product with a special name (currently `xpkg-<your-package-name>`) in your package, passing it a known set of arguments and environment variables.
 
-```
-{
-    "install": [
-        ["link", "file-from-repo", "path-to-link"],
-        ["/some/other/binary", "some-argument"]
+Your manifest product can do whatever it wants when it is run. There are some things that you commonly want to do (such as creating symbolic links to places like `/usr/local/bin`, running other scripts, etc). To make this simple, there is another Swift package called `XpkgPackage` which your package can import and use.
+
+### Example
+
+A simple package might consist of the following files:
+
+    my-package/
+      Package.swift
+      Sources/xpkg-my-package/
+        main.swift
+      Payload/
+        my-command.sh
+
+The `Package.swift` file might look like this:
+
+```Swift
+
+// swift-tools-version:5.0
+
+import PackageDescription
+
+let package = Package(
+    name: "my-package",
+    platforms: [
+        .macOS(.v10_13)
     ],
-    "remove": [
-        ["unlink", "file-from-repo", "path-to-link"]
+    products: [
+        .executable(name: "my-package-xpkg-hooks", targets: ["my-package-xpkg-hooks"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/elegantchaos/XPkgPackage", from:"1.0.5"),
+    ],
+    targets: [
+        .target(
+            name: "my-package-xpkg-hooks",
+            dependencies: ["XPkgPackage"]),
     ]
-}
+)
 ```
 
-Two internal commands are supported: `link` and `unlink`. Any other command name will be treated as an external binary, and run accordingly with the given arguments. *NB*: this is obviously powerful, but dangerous. Be careful with running arbitrary commands as you can obviously make a mess if you get them wrong.
+The `main.swift` file might look like this:
 
-The `link` / `unlink` commands take one or two arguments.
+```Swift
+import XPkgPackage
 
-The first argument is the location of a file in the repo, to make a link for. If this is the only argument supplied, by default it will be linked into `~/.local/bin/`.
+let links = [
+    ["Payload/my-command.sh"]
+]
 
-If you supply a second argument, you can instead link somewhere else.
+let arguments = CommandLine.arguments
+let package = InstalledPackage(fromCommandLine: arguments)
+try! package.performAction(fromCommandLine: CommandLine.arguments, links: links, commands: [])
+```
 
-
-## Additional Use Case
-
-In addition to storing settings and helper scripts in packages, I have a second use case for XPkg.
-
-Pretty much every project I work on also resides in a git repo somewhere.
-
-Previously I used to keep pretty much everything that I was working on in a `Work/` directory, organised in a kind of reverse-dns style. Again, this became unwieldy as the amount of projects grew over time.
-
-Having a nested structure made it tricky to see what was there.
-
-Because everything was theoretically in git, it should have been safe to remove things that weren't currently needed, but doing everything manually made this a bit risky: it was necessary to check first to make sure that all local changes had been committed and pushed, and that there weren't things that only existed locally.
-
-So my second use case is to manage adding/removing projects so that I can work on them when I need to, and safely remove them from a local machine when I don't.
-
-Each project is just a package (a git repo, in other words). The only difference from the normal workflow is that when I install one, rather than hiding the local copy away somewhere, I want it to be placed into a visible location that I can point my editor/ide/tools at.
-
-The way to do this right now is: `xpkg install <repo> --project`. This fetches the project repo and puts it into `~/Projects/<package>`, where I can work on it.
-
-In theory, when I want to remove it, I can then do `xpkg remove <package>` and XPkg will check first to see if there are any outstanding changes. I say "in theory" because this stuff is not completed yet, and definitely not fully tested, so may well not work properly. I certainly wouldn't trust it!
-
+This uses the functionality provided by XPkgPackage to install a link `my-command` into `/usr/local/bin`, which points to the file `Payload/my-command.sh` in the cached version of the package on the disk.
 
 
 ## Future Plans
