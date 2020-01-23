@@ -152,7 +152,30 @@ It hooks itself into the startup process for Bash, Zsh, and Fish. At startup, it
 The standard installer support package `XpkgPackage` knows about shell-hooks, and provides support for installing symbolic links into its directories. This makes it really simple for Xpkg packages to insert themselves into the shell startup process.
 
 
+## Existing Packages
 
+I'm slowly converting over my tangle of old scripts and links to packages, and have a bunch that I've made, supporting things like:
+
+- Atom setup
+- Travis helpers
+- Git configs and helpers
+- Terminal setup
+- Xcode templates
+- Coding fonts
+- Homebrew installation
+- Swift helpers
+- Mouse helpers (for Linux)
+- Tabtab support (for Linux)
+- Keyboard support (for Linux)
+- VIM settings
+- Appledoc helpers
+- Conky settings
+
+Many of these are in private repos, because they're basically _my_ settings, but you'll find a few public on github. I will try to open up more over time, I just need to make sure that they don't accidentally contain private tokens or other stuff not-for-general-consumption.
+
+
+- https://github.com/samdeane/xpkg-travis
+-
 
 ## Future Plans
 
