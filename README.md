@@ -206,3 +206,5 @@ As well as supporting installation, XPkg was originally intended to help with so
 This is all intended to help support an existence where you are working on multiple machines at the same time / moving regularly between machines.
 
 Some of these features are in the pipeline, or may be added at a later date.
+
+XPkg also used to install itself into `/usr/local/share`, and install links etc into `/usr/local/bin`. At some point I moved over into using `~/.local/` instead. At some point I intend to make it support either, depending on a configuration flag. At some point. Maybe...
