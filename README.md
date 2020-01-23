@@ -37,27 +37,40 @@ What this does is:
 
 To install a package from Github: `xpkg install <user/repo>`.
 
-This will clone the package into a hidden location, then run any install scripts it finds in the manifest.
+This will clone the package into a hidden location, then run its installer.
 
 You can also specify a full repo URL if it's not on github.
 
 To remove a package, `xpkg remove <package>`
 
-To link an existing (local) directory as if it is a package: `xpkg link <package> <path>`.
+To list the installed packages `xpkg list`
 
 For other commands, see `xpkg help`.
 
 ## Writing Packages
 
-At their most basic, packages are just git repositories, which contain a payload (whatever files you want to install or hook into your system), plus a manifest (that tells XPkg how to install/uninstall the payload).
+At their most basic, packages are just git repositories, which contain a payload (whatever files you want to install or hook into your system), plus an installer (that tells XPkg how to install/uninstall the payload).
 
-In the first iteration of XPkg, the manifest was a hidden json file called `.xpkg.json` which sat at the root of package and described sybolic links to create, and scripts to run, in order to do the installation.
+XPkg was designed to be cross-platform (this is what the "X" stands for), and is written in Swift. It should work on any platform that has a working Swift compiler and standard libraries. Since Swift is a requirement for XPkg itself, I decided to also make it a requirement for the installer.[^1]
 
-This was lightweight, but a little inflexible. You could run code by invoking shell scripts, but you couldn't specify a requirement for other packages as dependencies, and the manifest syntax was a little bit gnarly.
+In fact, XPkg packages are also SPM (Swift Package Manager) packages.
 
-In the current version of XPkg, package manifests are actually written in Swift. In fact, XPkg packages _are_ Swift Package Manager packages. When you install a package with XPkg, it uses the swift package manager to build and run a product with a special name (currently `xpkg-<your-package-name>`) in your package, passing it a known set of arguments and environment variables.
+When you install a package with XPkg, it clones the corresponding repository, then uses SPM to build and run the installer (a product with a special name, currently `<your-package-name>-xpkg-hooks`) in your package, passing it a known set of arguments and environment variables.
 
-Your manifest product can do whatever it wants when it is run. There are some things that you commonly want to do (such as creating symbolic links to places like `/usr/local/bin`, running other scripts, etc). To make this simple, there is another Swift package called `XpkgPackage` which your package can import and use.
+There are two nice aspects of this design choice:
+
+- Your installer can do whatever it wants when it is run; it's just code!
+- We get dependency management for free
+  - the installer can list other XPkg packages as dependencies, and use them when its run
+  - it can also list other _SPM_ packages as dependencies; SPM will pull them in, and XPkg will notice that they've been pulled in and install them!
+
+Of course, there are some things that you commonly want to do when installing a package, such as creating symbolic links to places like `/usr/local/bin`, running other scripts, etc.
+
+To avoid every installer having to write that code every time, we just put them in another Swift package (currently called `XpkgPackage`) which all installers can import and use.
+
+[^1]: The first iteration of XPkg didn't have installers, it had manifests. The manifest was a hidden json file called `.xpkg.json` which sat at the root of package and described how to install/uninstall the package. This was lightweight, but a little inflexible, since it was up to XPkg to interpret the manifest. You could run code by invoking shell scripts, but you couldn't specify a requirement for other packages as dependencies.
+
+[^2]: Note that the package can be a real swift package, designed for use in building Swift products, and with a other products and targets. It doesn't have to be, but it can be.
 
 ### Example
 
@@ -112,6 +125,12 @@ try! package.performAction(fromCommandLine: CommandLine.arguments, links: links,
 ```
 
 This uses the functionality provided by XPkgPackage to install a link `my-command` into `/usr/local/bin`, which points to the file `Payload/my-command.sh` in the cached version of the package on the disk.
+
+### A Note About Terminology
+
+XPkg has undergone a major redesign, and the terminology hasn't caught up yet.
+
+Previously we had packages and manifests. Now we have packages and installers. I plan to rename a lot of things to reflect the new reality.
 
 
 ## Future Plans
