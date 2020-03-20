@@ -1,5 +1,5 @@
 
-if [[ "$source_hook" == "" ]]
+if [[ "$SHELL_HOOKS_RC" == "" ]]
 then
 
 export SHELL_HOOKS_SHELL="bash"
