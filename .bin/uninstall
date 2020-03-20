@@ -1,0 +1,5 @@
+
+ROOT="$HOME/.local/share/xpkg"
+$SUDO "$ROOT/code/.bin/shell-hooks/install" "uninstall"
+rm -rf ~/.local/share/shell-hooks
+rm -rf ~/.local/share/xpkg

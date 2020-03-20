@@ -1,29 +1,35 @@
 
 function install_link() {
-
-  if [[ "$3" != "--no-backup" ]]
+  if [[ "$ROOT" == "uninstall" ]]
   then
-    if [[ -e "$2" ]]
+    echo "Removing $2."
+    rm "$2"
+  else
+    if [[ "$3" != "--no-backup" ]]
     then
-      if [[ ! -e "$2.backup" ]]
+      if [[ -e "$2" ]]
       then
-        echo "Backing up $2."
-        mv "$2" "$2.backup"
+        if [[ ! -e "$2.backup" ]]
+        then
+          echo "Backing up $2."
+          mv "$2" "$2.backup"
+        fi
+        rm "$2"
       fi
-      rm "$2"
     fi
+
+    absolute="$ROOT/code/.bin/shell-hooks/$1"
+    echo "Linking $(basename $2) to $absolute."
+    mkdir -p "$(dirname $2)"
+    ln -sf "$absolute" "$2"
   fi
 
-  absolute="$ROOT/code/.bin/shell-hooks/$1"
-  echo "Linking $(basename $2) to $absolute."
-  mkdir -p "$(dirname $2)"
-  ln -sf "$absolute" "$2"
-  #ls -l "$2"
 }
 
 #set -e
 ROOT=$1
-if [[ ! -e "$ROOT" ]]
+
+if [[ (! -e "$ROOT") && ("$ROOT" != "uninstall") ]]
 then
   echo "Root directory is missing. $ROOT"
   exit 1
