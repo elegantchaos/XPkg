@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Arguments.git",
         "state": {
           "branch": null,
-          "revision": "e17c144eb00b6d9e500c34eb09de265add523de2",
-          "version": "1.1.0"
+          "revision": "580f0f7886f1ac2c94358dbf042c5e00a93d69c8",
+          "version": "1.1.1"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Builder.git",
         "state": {
           "branch": null,
-          "revision": "71f5ac1a13a7825268bd4c8a21515d63c6e4001c",
-          "version": "1.1.1"
+          "revision": "58b7446a08fc84661f9beb8b12fcf5ddf2f1395c",
+          "version": "1.2.0"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/elegantchaos/docopt.swift.git",
         "state": {
           "branch": null,
-          "revision": "fa71fca4b4e7411c70a21ef89256cd04a64c6dda",
-          "version": "0.6.11"
+          "revision": "fe5bebd9829d1cf56bf062bca70809a09b7144b6",
+          "version": "0.6.12"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Logger.git",
         "state": {
           "branch": null,
-          "revision": "c101ca48876adabeb25848f5fe0efba748c24d73",
-          "version": "1.3.7"
+          "revision": "cd67757f696ce6c8353d874d867a49b8e2306e2f",
+          "version": "1.5.3"
         }
       },
       {
@@ -53,6 +53,15 @@
           "branch": null,
           "revision": "394f2a5a92ac6b81215a3eeaec5ee4c8227a4a47",
           "version": "1.0.5"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "35b76bf577d3cc74820f8991894ce3bcdf024ddc",
+          "version": "0.0.2"
         }
       },
       {
