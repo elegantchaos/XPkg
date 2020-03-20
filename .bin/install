@@ -39,7 +39,7 @@ mkdir -p "$FISH"
 ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
 echo "Installing shell startup hooks."
-$SUDO "$ROOT/code/.bin/shell-hooks/install"
+$SUDO "$ROOT/code/.bin/shell-hooks/install" "$STARTUP"
 
 
 echo "Installing essential packages."

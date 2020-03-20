@@ -1,18 +1,40 @@
 
 function install_link() {
-  echo "install $1 into $2"
-  # absolute=$(readlink "$1")
-  # container=$(dirname "$absolute")
-  # pushd "$container" > /dev/null
-  # source "$absolute"
-  # popd > /dev/null
+
+  if [[ "$3" != "--no-backup" ]]
+  then
+    if [[ -e "$2" ]]
+    then
+      if [[ ! -e "$2.backup" ]]
+      then
+        echo "Backing up $2."
+        mv "$2" "$2.backup"
+      fi
+      rm "$2"
+    fi
+  fi
+
+  absolute="$ROOT/$1"
+  echo "Linking $(basename $2) to $absolute."
+  mkdir -p "$(dirname $2)"
+  ln -sf "$absolute" "$2"
+  #ls -l "$2"
 }
 
-install_link "bashrc", "~/.bashrc"
-install_link "bash_profile", "~/.bash_profile"
-install_link "shell-hooks.sh", "~/.local/bin/hooks"
-install_link "zshenv", "~/.zshenv"
-install_link "zshrc", "~/.zshrc"
-install_link "zshlogin", "~/.zshlogin"
-install_link "zshlogout", "~/.zshlogout"
-install_link "fish", "~/.config/fish/config.fish"
+#set -e
+ROOT=$1
+if [[ ! -e "$ROOT" ]]
+then
+  echo "Root directory is missing. $ROOT"
+  exit 1
+fi
+
+install_link "bashrc" ~/.bashrc
+install_link "bash_profile" ~/.bash_profile
+install_link "zshenv" ~/.zshenv
+install_link "zshrc" ~/.zshrc
+install_link "zshlogin" ~/.zshlogin
+install_link "zshlogout" ~/.zshlogout
+
+install_link "shell-hooks.sh" ~/.local/bin/hooks --no-backup
+install_link "fish" ~/.config/fish/config.fish --no-backup
