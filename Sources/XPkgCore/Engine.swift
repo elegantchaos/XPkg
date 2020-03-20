@@ -262,11 +262,11 @@ public class Engine {
         for package in manifest.dependencies {
             let version = package.version
             if version.isEmpty || version == "unspecified" {
-                dependencies.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
+                dependencies.append("        .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
             } else {
-                dependencies.append("       .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
+                dependencies.append("        .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
             }
-            products.append("                .product(name: \"\(package.name)-xpkg-hooks\", package: \"\(package.name))\")")
+            products.append("              .product(name: \"\(package.name)-xpkg-hooks\", package: \"\(package.name)\")")
         }
         
         let manifestText = """
@@ -281,14 +281,13 @@ public class Engine {
                 products: [
                 ],
                 dependencies: [
-                    \(dependencies)
+            \(dependencies)
                 ],
                 targets: [
                   .target(
                       name: "Installed",
                       dependencies: [
-                        \(products)
-                        .product(name: "xpkg-shell-xpkg-hooks", package: "xpkg-shell")
+            \(products)
                         ]
                   ),
                 ]

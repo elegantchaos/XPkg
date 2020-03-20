@@ -15,7 +15,7 @@ Cross Platform Package Manager.
 Usage:
     xpkg check [<package>] [--verbose]
     xpkg init [--verbose]
-    xpkg install <package> [--project [--as=<name>]]
+    xpkg install <package> [--project [--as=<name>]] [--verbose]
     xpkg link [<package> <path>] [--verbose]
     xpkg list [--compact | --full | --oneline] [--verbose]
     xpkg path (<package> | --self | --vault) [--verbose]
