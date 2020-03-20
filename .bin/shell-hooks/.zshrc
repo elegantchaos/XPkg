@@ -4,12 +4,17 @@
 # For licensing terms, see http://elegantchaos.com/license/liberal/.
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-export BASH_HOOKS_INTERACTIVE=1
-source_hooks "$BASH_HOOKS_ROOT/interactive"
-source_hooks "$BASH_HOOKS_ROOT/interactive-$BASH_HOOKS_PLATFORM"
+if [[ "$SHELL_HOOKS_RC" == "" ]]
+then
+
+export SHELL_HOOKS_RC=1
+export BASH_HOOKS_INTERACTIVE=1 #legacy
+source_hooks "$SHELL_HOOKS_ROOT/interactive"
+source_hooks "$SHELL_HOOKS_ROOT/interactive-$BASH_HOOKS_PLATFORM"
 
 
 if [[ -e "$HOME/.zshrc.backup" ]]
 then
     source "$HOME/.zshrc.backup"
+fi
 fi

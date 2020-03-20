@@ -4,6 +4,8 @@
 # For licensing terms, see http://elegantchaos.com/license/liberal/.
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+echo "login"
+
 if [[ "$SHELL_HOOKS_LOGIN" == "" ]]
 then
 
