@@ -14,7 +14,7 @@ function install_link() {
     fi
   fi
 
-  absolute="$ROOT/$1"
+  absolute="$ROOT/code/.bin/shell-hooks/$1"
   echo "Linking $(basename $2) to $absolute."
   mkdir -p "$(dirname $2)"
   ln -sf "$absolute" "$2"
