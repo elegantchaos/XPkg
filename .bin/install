@@ -44,6 +44,6 @@ $SUDO "$ROOT/code/.bin/shell-hooks/install" "$ROOT"
 
 echo "Installing essential packages."
 
-~/.local/bin/xpkg install samdeane/settings-shell
+~/.local/bin/xpkg install samdeane/xpkg-shell
 
 echo "Done."

@@ -86,6 +86,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "update"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "reinstall xpkg-shell"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

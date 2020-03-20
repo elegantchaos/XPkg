@@ -256,42 +256,60 @@ public class Engine {
     }
     
     func saveManifest(manifest: Package) {
-        let manifestHead = """
-// swift-tools-version:5.0
-import PackageDescription
-let package = Package(
-    name: "XPkgVault",
-    products: [
-    ],
-    dependencies: [
-
-"""
-            
-        let manifestTail = """
-    ],
-    targets: [
-    ]
-)
-"""
-
-        var manifestText = manifestHead
+        var dependencies = ""
+        var products = ""
+        
         for package in manifest.dependencies {
             let version = package.version
             if version.isEmpty || version == "unspecified" {
-                manifestText.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
+                dependencies.append("       .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
             } else {
-                manifestText.append("       .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
+                dependencies.append("       .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
             }
+            products.append("                .product(name: \"\(package.name)-xpkg-hooks\", package: \"\(package.name))\")")
         }
         
-        manifestText.append(manifestTail)
+        let manifestText = """
+            // swift-tools-version:5.2
+
+            import PackageDescription
+            let package = Package(
+                name: "XPkgVault",
+                platforms: [
+                     .macOS(.v10_15)
+                 ],
+                products: [
+                ],
+                dependencies: [
+                    \(dependencies)
+                ],
+                targets: [
+                  .target(
+                      name: "Installed",
+                      dependencies: [
+                        \(products)
+                        .product(name: "xpkg-shell-xpkg-hooks", package: "xpkg-shell")
+                        ]
+                  ),
+                ]
+            )
+            """
+
         let url = vaultURL.appendingPathComponent("Package.swift")
         do {
+            try createInstalledSourceStub()
             try manifestText.write(to: url, atomically: true, encoding: .utf8)
             removeManifestCache()
         } catch {
             verbose.log(error)
         }
+    }
+    
+    func createInstalledSourceStub() throws {
+        let sourcesURL = vaultURL.appendingPathComponent("Sources").appendingPathComponent("Installed")
+        try? fileManager.createDirectory(at: sourcesURL, withIntermediateDirectories: true, attributes: nil)
+        let mainURL = sourcesURL.appendingPathComponent("main.swift")
+        try "".write(to: mainURL, atomically: true, encoding: .utf8)
     }
     
     func removeManifestCache() {
