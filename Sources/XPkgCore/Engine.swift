@@ -266,7 +266,7 @@ public class Engine {
             } else {
                 dependencies.append("        .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
             }
-            products.append("              .product(name: \"\(package.name)-xpkg-hooks\", package: \"\(package.name)\")")
+            products.append("              .product(name: \"\(package.name)-xpkg-hooks\", package: \"\(package.name)\"),\n")
         }
         
         let manifestText = """
