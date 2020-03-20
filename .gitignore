@@ -2,3 +2,6 @@
 /.build
 /Packages
 xcuserdata
+.bin/shell-hooks/.zcompdump
+.bin/shell-hooks/.zsh_history
+
