@@ -11,7 +11,7 @@ else
     echo "Downloading xpkg."
     mkdir -p "$ROOT"
     cd "$ROOT"
-    git clone https://github.com/elegantchaos/xpkg.git code
+    git clone https://github.com/elegantchaos/Xpkg.git code
     cd code
 fi
 
