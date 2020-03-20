@@ -1,9 +1,8 @@
-If installed with [xpkg](https://github.com/elegantchaos/xpkg), this package hooks into the bash/zsh/fish startup process in a way that's extensible.
+These scripts hook into the bash/zsh/fish startup process in a way that's extensible.
 
 ### BASH
 
-It replaces the existing bashrc and bash_profile with versions that scan the `~/.config/shell-hooks/startup/` and `~/.config/shell-hooks/login/` folders, and source anything
-that they find in there.
+It replaces the existing `.bashrc` and `.bash_profile` with versions that scan the `~/.config/shell-hooks/startup/` and `~/.config/shell-hooks/login/` folders, and source anything that they find in there.
 
 They then execute the original `bashrc` and/or `bash_profile` files, which will have been backed up as `~/.bashrc.backup` and `~/.bash_profile.backup` respectively.
 

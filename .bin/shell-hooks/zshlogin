@@ -4,6 +4,9 @@
 # For licensing terms, see http://elegantchaos.com/license/liberal/.
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+if [[ "$SHELL_HOOKS_LOGIN" == "" ]]
+then
+
 export SHELL_HOOKS_LOGIN=1
 export BASH_HOOKS_LOGIN=1 # legacy
 
@@ -13,4 +16,6 @@ source_hooks "$SHELL_HOOKS_ROOT/login-$SHELL_HOOKS_PLATFORM"
 if [[ -e "$HOME/.zshlogin.backup" ]]
 then
     source "$HOME/.zshlogin.backup"
+fi
+
 fi
