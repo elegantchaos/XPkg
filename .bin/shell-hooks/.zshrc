@@ -13,8 +13,8 @@ source_hooks "$SHELL_HOOKS_ROOT/interactive"
 source_hooks "$SHELL_HOOKS_ROOT/interactive-$BASH_HOOKS_PLATFORM"
 
 
-if [[ -e "$HOME/.zshrc.backup" ]]
+if [[ -e "$HOME/.zshrc" ]]
 then
-    source "$HOME/.zshrc.backup"
+    source "$HOME/.zshrc"
 fi
 fi

@@ -15,9 +15,9 @@ export BASH_HOOKS_LOGIN=1 # legacy
 source_hooks "$SHELL_HOOKS_ROOT/login"
 source_hooks "$SHELL_HOOKS_ROOT/login-$SHELL_HOOKS_PLATFORM"
 
-if [[ -e "$HOME/.zshlogin.backup" ]]
+if [[ -e "$HOME/.zshlogin" ]]
 then
-    source "$HOME/.zshlogin.backup"
+    source "$HOME/.zshlogin"
 fi
 
 fi
