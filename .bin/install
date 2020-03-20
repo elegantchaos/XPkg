@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 ROOT="$HOME/.local/share/xpkg"
 
 echo "Building."
@@ -16,14 +17,19 @@ LOCAL="$HOME/.local"
 echo "Installing links."
 if [[ -e "$LOCAL" ]]
 then
-    STARTUP="$LOCAL/share/shell-hooks/startup"
-    BIN="$LOCAL/bin"
-    SUDO=
+    echo "Performing local installation."
+    export STARTUP="$LOCAL/share/shell-hooks/startup"
+    export BIN="$LOCAL/bin"
+    export SUDO=
 else
-    STARTUP="/usr/local/share/shell-hooks/startup"
-    BIN="/usr/local/bin"
-    SUDO=sudo
+    echo "Performing global installation (requires sudo)."
+    export STARTUP="/usr/local/share/shell-hooks/startup"
+    export BIN="/usr/local/bin"
+    export SUDO=sudo
 fi
+
+echo "bin is $BIN."
+echo "startup is $STARTUP."
 
 $SUDO mkdir -p "$STARTUP"
 $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
@@ -32,9 +38,12 @@ $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
 mkdir -p "$FISH"
 ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
+echo "Installing shell startup hooks."
+$SUDO "$ROOT/code/.bin/shell-hooks/install"
+
+
 echo "Installing essential packages."
 
-~/.local/bin/xpkg install elegantchaos/shell-hooks
 ~/.local/bin/xpkg install samdeane/settings-shell
 
 echo "Done."
