@@ -8,6 +8,11 @@ import Foundation
 import Runner
 
 public struct InitCommand: ParsableCommand {
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "init",
+        abstract: "Create a new package."
+    )
+    
     public init() {
     }
     

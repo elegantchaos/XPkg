@@ -4,10 +4,4 @@
    <FileRef
       location = "container:">
    </FileRef>
-   <FileRef
-      location = "group:../../../../../../Volumes/caconym/Users/sam/Projects/SemanticVersion">
-   </FileRef>
-   <FileRef
-      location = "group:../../../../../../Volumes/caconym/Users/sam/Projects/CommandShell">
-   </FileRef>
 </Workspace>

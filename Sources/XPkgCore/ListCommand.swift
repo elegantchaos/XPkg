@@ -9,10 +9,15 @@ import Foundation
 
 
 public struct ListCommand: ParsableCommand {
-    @Flag(help: "") var oneline: Bool
-    @Flag(help: "") var compact: Bool
-    @Flag(help: "") var full: Bool
+    @Flag(help: "Produces output on a single line.") var oneline: Bool
+    @Flag(help: "Produces minimal output.") var compact: Bool
+    @Flag(help: "Produces output with extra details.") var full: Bool
     
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "list",
+        abstract: "List the installed packages."
+    )
+
     public init() {
     }
     

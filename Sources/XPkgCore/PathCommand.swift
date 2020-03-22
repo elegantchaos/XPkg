@@ -8,10 +8,15 @@ import ArgumentParser
 import Foundation
 
 public struct PathCommand: ParsableCommand {
-    @Argument(help: "") var package: String
-    @Flag(name: .customLong("self"), help: "") var asSelf: Bool
-    @Flag(help: "") var vault: Bool
+    @Argument(help: "The package to show.") var packageName: String
+    @Flag(name: .customLong("self"), help: "Perform the action on xpkg itself, rather than an installed package.") var asSelf: Bool
+    @Flag(help: "Show the path to the vault.") var vault: Bool
     
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "path"
+        abstract: "Show the path of a package."
+    )
+
     public init() {
     }
     
@@ -23,7 +28,7 @@ public struct PathCommand: ParsableCommand {
         } else if vault {
             url = engine.vaultURL
         } else {
-            let name = package
+            let name = packageName
             if let package = engine.possiblePackage(named: name, manifest: engine.loadManifest()) {
                 url = package.local
             } else {

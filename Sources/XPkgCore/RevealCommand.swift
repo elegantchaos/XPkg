@@ -7,9 +7,14 @@
 import ArgumentParser
 
 public struct RevealCommand: ParsableCommand {
-    @Flag(help: "") var path: Bool
-    @Argument(help: "") var packageName: String
-    
+    @Argument(help: "The package to reveal.") var packageName: String
+    @Flag(help: "Print the package path.") var path: Bool
+
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "reveal",
+        abstract: "Reveal a package in the finder."
+    )
+
     public init() {
     }
     

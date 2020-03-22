@@ -8,9 +8,14 @@ import ArgumentParser
 import Runner
 
 public struct UpdateCommand: ParsableCommand {
-    @Flag(name: .customLong("self"), help: "") var updateSelf: Bool
-    @Argument(help: "") var packageName: String
+    @Flag(name: .customLong("self"), help: "Update xpkg itself.") var updateSelf: Bool
+    @Argument(help: "The package to update.") var packageName: String
     
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "update",
+        abstract: "Update a package to the latest version."
+    )
+
     public init() {
     }
     

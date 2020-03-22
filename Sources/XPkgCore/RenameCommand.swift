@@ -7,6 +7,12 @@
 import ArgumentParser
 
 public struct RenameCommand: ParsableCommand {
+    
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "rename",
+        abstract: "Rename a package."
+    )
+
     public init() {
     }
     

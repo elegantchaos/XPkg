@@ -9,16 +9,21 @@ import Foundation
 import Runner
 
 public struct LinkCommand: ParsableCommand {
-    @Argument(help: "the package to link") var package: String
-    @Argument(help: "the path to link to") var path: String
+    @Argument(help: "The name of the package to link to.") var packageName: String
+    @Argument(help: "The path to the package.") var packagePath: String
     
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "link",
+        abstract: "Link an existing folder as a package."
+    )
+
     public init() {
     }
     
     public func run() throws {
         let output = engine.output
-        var package = self.package
-        var path = self.path
+        var package = self.packageName
+        var path = self.packagePath
 
         if package == "" {
             package = engine.remoteNameForCwd()

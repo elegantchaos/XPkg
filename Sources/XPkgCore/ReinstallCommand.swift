@@ -8,8 +8,13 @@ import ArgumentParser
 import Foundation
 
 public struct ReinstallCommand: ParsableCommand {
-    @Argument(help: "") var packageName: String
+    @Argument(help: "The package to reinstall.") var packageName: String
     
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "reinstall",
+        abstract: "Re-install the package. This is the equivalent of doing remove <package> followed by install <package>."
+    )
+
     public init() {
     }
     

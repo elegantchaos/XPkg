@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "CommandShell",
+        "repositoryURL": "https://github.com/elegantchaos/CommandShell",
+        "state": {
+          "branch": null,
+          "revision": "1b5ca2b535401cbd458f41401f1199656efea2ee",
+          "version": "2.0.0"
+        }
+      },
+      {
         "package": "Logger",
         "repositoryURL": "https://github.com/elegantchaos/Logger.git",
         "state": {
@@ -35,6 +44,15 @@
           "branch": null,
           "revision": "394f2a5a92ac6b81215a3eeaec5ee4c8227a4a47",
           "version": "1.0.5"
+        }
+      },
+      {
+        "package": "SemanticVersion",
+        "repositoryURL": "https://github.com/elegantchaos/SemanticVersion.git",
+        "state": {
+          "branch": null,
+          "revision": "928a0ab25d43f1c4b02b6679aa109e3cdad08a93",
+          "version": "1.0.1"
         }
       },
       {

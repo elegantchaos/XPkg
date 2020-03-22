@@ -9,8 +9,13 @@ import Foundation
 import Runner
 
 public struct RemoveCommand: ParsableCommand {
-    @Flag(help: "") var force: Bool
-    @Argument(help: "") var packageName: String
+    @Argument(help: "The package to remove.") var packageName: String
+    @Flag(help: "Force the removal of the package even if there are local changes.") var force: Bool
+    
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "remove",
+        abstract: "Remove a package."
+    )
 
     public init() {
     }

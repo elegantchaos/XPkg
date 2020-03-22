@@ -8,16 +8,33 @@ import ArgumentParser
 import Foundation
 
 public struct CheckCommand: ParsableCommand {
+    static public var configuration: CommandConfiguration = CommandConfiguration(
+        name: "check",
+        abstract: "Check that an installed package is ok."
+    )
+    
+    @Argument(help: "The package to check.") var packageName: String
+    
     public init() {
     }
     
     public func run(engine: Engine) {
-        let _ = engine.forEachPackage { (package) in
-            if package.check(engine: engine) {
-                engine.output.log("\(package.name) ok.")
-            } else {
-                engine.output.log("\(package.name) missing.")
+        if packageName == "" {
+            let _ = engine.forEachPackage { (package) in
+                check(package: package)
             }
+        } else {
+            let manifest = engine.loadManifest()
+            let package = engine.existingPackage(from: packageName, manifest: manifest)
+            check(package: package)
+        }
+    }
+    
+    func check(package: Package) {
+        if package.check(engine: engine) {
+            engine.output.log("\(package.name) ok.")
+        } else {
+            engine.output.log("\(package.name) missing.")
         }
     }
 }
