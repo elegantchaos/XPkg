@@ -4,14 +4,18 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Arguments
+import ArgumentParser
 import Foundation
 
-struct InstallCommand: Command {
-    func run(engine: Engine) {
-        let packageSpec = engine.arguments.argument("package")
-        let asProject = engine.arguments.flag("project")
-        let asName = engine.arguments.option("as")
+public struct InstallCommand: ParsableCommand {
+    @Argument(help: "") var packageSpec: String
+    @Flag(name: .customLong("project"), help: "") var asProject: Bool
+    @Option(name: .customLong("as"), help: "") var asName: String
+    
+    public init() {
+    }
+    
+    public func run() throws {
         InstallCommand.install(engine: engine, packageSpec: packageSpec, asProject: asProject, asName: asName)
     }
     

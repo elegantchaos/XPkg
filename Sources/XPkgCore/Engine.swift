@@ -4,7 +4,6 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Arguments
 import Foundation
 import Logger
 import Runner
@@ -38,51 +37,14 @@ extension URLSession {
 }
 
 public class Engine {
-    let arguments: Arguments
+    static let shared = Engine()
+
     let output = Logger.stdout
     let verbose = Logger("verbose", handlers: [Logger.stdoutHandler])
     let jsonChannel = Logger("json", handlers: [Logger.stdoutHandler])
     let fileManager = FileManager.default
 
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
-
-    let commands: [String:Command] = [
-        "init": InitCommand(),
-        "check": CheckCommand(),
-        "install": InstallCommand(),
-        "link": LinkCommand(),
-        "list": ListCommand(),
-        "path": PathCommand(),
-        "reinstall": ReinstallCommand(),
-        "remove": RemoveCommand(),
-        "rename": RenameCommand(),
-        "reveal": RevealCommand(),
-        "update": UpdateCommand(),
-    ]
-
-    public init(arguments: Arguments) {
-        self.arguments = arguments
-    }
-
-    public func run() {
-        // ignore the normal Logger preferences, and set the enabled
-        // state of the verbose channel purely based on the --verbose argument
-        verbose.enabled = arguments.flag("verbose")
-            
-        if let command = getCommand() {
-            command.run(engine: self)
-        }
-    }
-
-    internal func getCommand() -> Command? {
-        for command in commands {
-            if arguments.command(command.key) {
-                return command.value
-            }
-        }
-
-        return nil
-    }
 
     internal var xpkgURL: URL {
         let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
@@ -387,8 +349,7 @@ public class Engine {
     an argument.
     */
 
-    func existingPackage(from argument: String = "package", manifest: Package) -> Package {
-        let packageName = arguments.argument(argument)
+    func existingPackage(from packageName: String, manifest: Package) -> Package {
         guard let package = possiblePackage(named: packageName, manifest: manifest) else {
             output.log("Package \(packageName) is not installed.")
             exit(1)
@@ -431,4 +392,10 @@ public class Engine {
         }
         return nil
     }
+}
+
+import ArgumentParser
+
+extension ParsableCommand {
+    var engine: Engine { return Engine.shared }
 }

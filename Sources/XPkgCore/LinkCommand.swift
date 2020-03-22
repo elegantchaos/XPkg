@@ -4,34 +4,40 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Arguments
+import ArgumentParser
 import Foundation
 import Runner
 
-struct LinkCommand: Command {
-    func run(engine: Engine) {
+public struct LinkCommand: ParsableCommand {
+    @Argument(help: "the package to link") var package: String
+    @Argument(help: "the path to link to") var path: String
+    
+    public init() {
+    }
+    
+    public func run() throws {
         let output = engine.output
-        var name = engine.arguments.argument("package")
-        var path = engine.arguments.argument("path")
+        var package = self.package
+        var path = self.path
 
-        if name == "" {
-            name = engine.remoteNameForCwd()
+        if package == "" {
+            package = engine.remoteNameForCwd()
         }
         
         if path == "" {
             path = engine.localRepoForCwd()
         }
 
-        guard name != "", let linkedURL = URL(string: path) else {
+        guard package != "", let linkedURL = URL(string: path) else {
             output.log("Couldn't infer package name/path.")
             return
         }
 
         let packageURL = linkedURL.appendingPathComponent("Package.swift")
         if FileManager.default.fileExists(at: packageURL) {
-            InstallCommand.install(engine: engine, packageSpec: name, linkTo: linkedURL)
+            InstallCommand.install(engine: engine, packageSpec: package, linkTo: linkedURL)
         } else {
-            engine.output.log("Linked \(name) as an alias.")
+            engine.output.log("Linked \(package) as an alias.")
             let defaults = UserDefaults.standard
             var aliases: [String:String]
             if let current = defaults.dictionary(forKey: "aliases") as? [String:String] {

@@ -4,10 +4,14 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import ArgumentParser
 import Foundation
 
-struct CheckCommand: Command {
-    func run(engine: Engine) {
+public struct CheckCommand: ParsableCommand {
+    public init() {
+    }
+    
+    public func run(engine: Engine) {
         let _ = engine.forEachPackage { (package) in
             if package.check(engine: engine) {
                 engine.output.log("\(package.name) ok.")

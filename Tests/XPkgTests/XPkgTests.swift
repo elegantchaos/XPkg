@@ -6,9 +6,7 @@
 
 
 import XCTest
-import Arguments
 @testable import XPkgCore
-
 
 class XPkgTests: XCTestCase {
     var matched = false
@@ -26,23 +24,20 @@ class XPkgTests: XCTestCase {
     }
     
     func testName() {
-        let arguments = Arguments(program: "xpkg")
-        let engine = Engine(arguments: arguments)
+        let engine = Engine()
         engine.defaultOrgs = ["testorg"]
         let _ = engine.remotePackageURL("test", validator: validator(expecting: "git@github.com:testorg/test"))
         XCTAssertTrue(self.matched)
     }
 
     func testNameOrg() {
-        let arguments = Arguments(program: "xpkg")
-        let engine = Engine(arguments: arguments)
+        let engine = Engine()
         let _ = engine.remotePackageURL("someorg/someproj", validator: validator(expecting: "git@github.com:someorg/someproj"))
         XCTAssertTrue(self.matched)
     }
 
     func testRepo() {
-        let arguments = Arguments(program: "xpkg")
-        let engine = Engine(arguments: arguments)
+        let engine = Engine()
         let _ = engine.remotePackageURL("git@mygit.com:someorg/someproj", validator: validator(expecting: "git@mygit.com:someorg/someproj"))
         XCTAssertTrue(self.matched)
     }

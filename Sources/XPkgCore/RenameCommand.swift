@@ -4,8 +4,13 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-struct RenameCommand: Command {
-    func run(engine: Engine) {
+import ArgumentParser
+
+public struct RenameCommand: ParsableCommand {
+    public init() {
+    }
+    
+    public func run(engine: Engine) {
 //        let manifest = engine.loadManifest()
 //        let package = engine.existingPackage(manifest: manifest)
 //        let oldName = package.name

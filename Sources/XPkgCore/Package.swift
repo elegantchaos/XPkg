@@ -8,6 +8,7 @@ import Foundation
 import Logger
 import Runner
 import XPkgPackage
+import SemanticVersion
 
 #if canImport(AppKit)
 import AppKit

@@ -4,13 +4,18 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Arguments
+import ArgumentParser
 import Foundation
 
-struct ReinstallCommand: Command {
-    func run(engine: Engine) {
+public struct ReinstallCommand: ParsableCommand {
+    @Argument(help: "") var packageName: String
+    
+    public init() {
+    }
+    
+    public func run() throws {
         let manifest = engine.loadManifest()
-        let package = engine.existingPackage(manifest: manifest)
+        let package = engine.existingPackage(from: packageName, manifest: manifest)
 
         engine.attempt(action: "Reinstalling \(package.name).") {
             do {

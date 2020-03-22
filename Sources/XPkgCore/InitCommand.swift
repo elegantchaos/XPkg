@@ -3,13 +3,15 @@
 //  All code (c) 2019 - present day, Elegant Chaos Limited.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Arguments
+import ArgumentParser
 import Foundation
 import Runner
 
-struct InitCommand: Command {
-
-    func run(engine: Engine) {
+public struct InitCommand: ParsableCommand {
+    public init() {
+    }
+    
+    public func run() throws {
         let fm = FileManager.default
 
         var name = engine.remoteNameForCwd()

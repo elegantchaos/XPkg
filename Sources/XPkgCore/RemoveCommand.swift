@@ -4,18 +4,24 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Arguments
+import ArgumentParser
 import Foundation
 import Runner
 
-struct RemoveCommand: Command {
-    func run(engine: Engine) {
+public struct RemoveCommand: ParsableCommand {
+    @Flag(help: "") var force: Bool
+    @Argument(help: "") var packageName: String
+
+    public init() {
+    }
+    
+    public func run() throws {
         let output = engine.output
         
         let manifest = engine.loadManifest()
-        let package = engine.existingPackage(manifest: manifest)
+        let package = engine.existingPackage(from: packageName, manifest: manifest)
 
-        var safeToDelete = engine.arguments.flag("force")
+        var safeToDelete = force
         if !safeToDelete {
             switch package.status(engine: engine) {
             case .unknown:

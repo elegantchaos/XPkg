@@ -4,15 +4,24 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import ArgumentParser
 import Foundation
 
-struct ListCommand: Command {
-    func run(engine: Engine) {
-        if engine.arguments.flag("oneline") {
+
+public struct ListCommand: ParsableCommand {
+    @Flag(help: "") var oneline: Bool
+    @Flag(help: "") var compact: Bool
+    @Flag(help: "") var full: Bool
+    
+    public init() {
+    }
+    
+    public func run() throws {
+        if oneline {
           listOneline(engine: engine)
-        } else if engine.arguments.flag("compact") {
+        } else if compact {
             listCompact(engine: engine)
-        } else if engine.arguments.flag("full") {
+        } else if full {
             listFull(engine: engine)
         } else {
             listNormal(engine: engine)

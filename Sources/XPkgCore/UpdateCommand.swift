@@ -4,13 +4,20 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import ArgumentParser
 import Runner
 
-struct UpdateCommand: Command {
-    func run(engine: Engine) {
-        if engine.arguments.flag("self") {
+public struct UpdateCommand: ParsableCommand {
+    @Flag(name: .customLong("self"), help: "") var updateSelf: Bool
+    @Argument(help: "") var packageName: String
+    
+    public init() {
+    }
+    
+    public func run() throws {
+        if updateSelf {
             updateSelf(engine: engine)
-        } else if engine.arguments.argument("package") == "" {
+        } else if packageName == "" {
             engine.output.log("Checking all packages for updates...")
             let _ = engine.forEachPackage { (package) in
                 if let newerVersion = package.needsUpdate(engine: engine) {
@@ -22,7 +29,7 @@ struct UpdateCommand: Command {
             engine.output.log("Done.")
         } else {
             let manifest = engine.loadManifest()
-            let package = engine.existingPackage(manifest: manifest)
+            let package = engine.existingPackage(from: packageName, manifest: manifest)
             if let newerVersion = package.needsUpdate(engine: engine) {
                 package.update(to: newerVersion, engine: engine)
                 engine.output.log("Package \(package.name) was unchanged.")

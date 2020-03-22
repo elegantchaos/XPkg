@@ -4,13 +4,19 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-import Foundation
+import ArgumentParser
 
-struct RevealCommand: Command {
-    func run(engine: Engine) {
+public struct RevealCommand: ParsableCommand {
+    @Flag(help: "") var path: Bool
+    @Argument(help: "") var packageName: String
+    
+    public init() {
+    }
+    
+    public func run() throws {
         let manifest = engine.loadManifest()
-        let package = engine.existingPackage(manifest: manifest)
-        if engine.arguments.flag("path") {
+        let package = engine.existingPackage(from: packageName, manifest: manifest)
+        if path {
             engine.output.log(package.path)
         } else {
             package.reveal()

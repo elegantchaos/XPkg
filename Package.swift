@@ -13,10 +13,11 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/elegantchaos/XPkgPackage.git", from: "1.0.6"),
         .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.5.3"),
-        .package(url: "https://github.com/elegantchaos/Arguments.git", from: "1.1.1"),
         .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.0.5"),
         .package(url: "https://github.com/elegantchaos/BuilderConfiguration.git", from: "1.1.3"),
         .package(url: "https://github.com/elegantchaos/Builder.git", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.2"),
+        .package(url: "https://github.com/elegantchaos/CommandShell", from: "1.1.3"),
         ],
     targets: [
       .target(
@@ -24,7 +25,13 @@ let package = Package(
           dependencies: ["XPkgCore"]),
         .target(
             name: "XPkgCore",
-            dependencies: ["Arguments", "Logger", "Runner", "XPkgPackage"]),
+            dependencies: [
+                "Logger",
+                "Runner",
+                "XPkgPackage",
+                "CommandShell",
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+        ]),
         .target(
             name: "Configure",
           dependencies: ["BuilderConfiguration"]),

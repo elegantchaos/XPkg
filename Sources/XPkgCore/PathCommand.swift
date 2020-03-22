@@ -4,18 +4,26 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import ArgumentParser
 import Foundation
 
-struct PathCommand: Command {
-    func run(engine: Engine) {
+public struct PathCommand: ParsableCommand {
+    @Argument(help: "") var package: String
+    @Flag(name: .customLong("self"), help: "") var asSelf: Bool
+    @Flag(help: "") var vault: Bool
+    
+    public init() {
+    }
+    
+    public func run() throws {
         var url: URL? = nil
         
-        if engine.arguments.flag("self") {
+        if asSelf {
             url = engine.xpkgCodeURL
-        } else if engine.arguments.flag("vault") {
+        } else if vault {
             url = engine.vaultURL
         } else {
-            let name = engine.arguments.argument("package")
+            let name = package
             if let package = engine.possiblePackage(named: name, manifest: engine.loadManifest()) {
                 url = package.local
             } else {
