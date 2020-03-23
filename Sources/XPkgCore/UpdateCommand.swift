@@ -9,7 +9,7 @@ import Runner
 
 public struct UpdateCommand: ParsableCommand {
     @Flag(name: .customLong("self"), help: "Update xpkg itself.") var updateSelf: Bool
-    @Argument(help: "The package to update.") var packageName: String
+    @Argument(help: "The package to update.") var packageName: String?
     
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "update",
@@ -22,7 +22,14 @@ public struct UpdateCommand: ParsableCommand {
     public func run() throws {
         if updateSelf {
             updateSelf(engine: engine)
-        } else if packageName == "" {
+        } else if let packageName = packageName {
+            let manifest = engine.loadManifest()
+            let package = engine.existingPackage(from: packageName, manifest: manifest)
+            if let newerVersion = package.needsUpdate(engine: engine) {
+                package.update(to: newerVersion, engine: engine)
+                engine.output.log("Package \(package.name) was unchanged.")
+            }
+        } else {
             engine.output.log("Checking all packages for updates...")
             let _ = engine.forEachPackage { (package) in
                 if let newerVersion = package.needsUpdate(engine: engine) {
@@ -32,13 +39,6 @@ public struct UpdateCommand: ParsableCommand {
                 }
             }
             engine.output.log("Done.")
-        } else {
-            let manifest = engine.loadManifest()
-            let package = engine.existingPackage(from: packageName, manifest: manifest)
-            if let newerVersion = package.needsUpdate(engine: engine) {
-                package.update(to: newerVersion, engine: engine)
-                engine.output.log("Package \(package.name) was unchanged.")
-            }
         }
     }
 
