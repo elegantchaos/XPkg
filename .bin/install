@@ -33,8 +33,11 @@ echo "startup is $STARTUP."
 
 $SUDO mkdir -p "$STARTUP"
 $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
+
 $SUDO mkdir -p "$BIN"
 $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
+$SUDO ln -sf "$ROOT/code/.bin/uninstall" "$BIN/xpkg-uninstall"
+
 mkdir -p "$FISH"
 ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
