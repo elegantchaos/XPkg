@@ -6,11 +6,13 @@
 
 import ArgumentParser
 import Runner
+import CommandShell
 
 public struct UpdateCommand: ParsableCommand {
     @Flag(name: .customLong("self"), help: "Update xpkg itself.") var updateSelf: Bool
     @Argument(help: "The package to update.") var packageName: String?
-    
+    @OptionGroup() var common: CommandShellOptions
+
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "update",
         abstract: "Update a package to the latest version."
@@ -20,6 +22,7 @@ public struct UpdateCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         if updateSelf {
             updateSelf(engine: engine)
         } else if let packageName = packageName {

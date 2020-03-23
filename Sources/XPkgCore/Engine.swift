@@ -4,6 +4,8 @@
 // For licensing terms, see http://elegantchaos.com/license/liberal/.
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
+import ArgumentParser
+import CommandShell
 import Foundation
 import Logger
 import Runner
@@ -36,16 +38,39 @@ extension URLSession {
     }
 }
 
-public class Engine {
-    static let shared = Engine()
-
-    let output = Logger.stdout
-    let verbose = Logger("verbose", handlers: [Logger.stdoutHandler])
-    let jsonChannel = Logger("json", handlers: [Logger.stdoutHandler])
+public class Engine: CommandEngine {
+    let jsonChannel: Channel
     let fileManager = FileManager.default
 
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
 
+    public required init(options: CommandShellOptions) {
+        jsonChannel = Logger("json", handlers: [Logger.stdoutHandler])
+        super.init(options: options)
+    }
+    
+    public override class var configuration: CommandConfiguration {
+        return CommandConfiguration(
+            commandName: CommandShell._commandName,
+            abstract: "Cross Platform Package Manager.",
+            discussion: "",
+            subcommands: [
+                InitCommand.self,
+                CheckCommand.self,
+                InstallCommand.self,
+                LinkCommand.self,
+                ListCommand.self,
+                PathCommand.self,
+                ReinstallCommand.self,
+                RemoveCommand.self,
+                RenameCommand.self,
+                RevealCommand.self,
+                UpdateCommand.self,
+            ],
+            defaultSubcommand: nil
+        )
+
+    }
     internal var xpkgURL: URL {
         let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
@@ -392,10 +417,4 @@ public class Engine {
         }
         return nil
     }
-}
-
-import ArgumentParser
-
-extension ParsableCommand {
-    var engine: Engine { return Engine.shared }
 }

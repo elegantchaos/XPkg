@@ -4,21 +4,25 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 import Foundation
 import Runner
+
 
 public struct InitCommand: ParsableCommand {
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "init",
         abstract: "Create a new package."
     )
+
+    @OptionGroup() var common: CommandShellOptions
     
     public init() {
     }
     
     public func run() throws {
         let fm = FileManager.default
-
+        let engine: Engine = common.loadEngine()
         var name = engine.remoteNameForCwd()
         var path = engine.localRepoForCwd()
         if path.isEmpty {

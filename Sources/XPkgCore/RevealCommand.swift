@@ -5,10 +5,12 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 
 public struct RevealCommand: ParsableCommand {
     @Argument(help: "The package to reveal.") var packageName: String
     @Flag(help: "Print the package path.") var path: Bool
+    @OptionGroup() var common: CommandShellOptions
 
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "reveal",
@@ -19,6 +21,7 @@ public struct RevealCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         let manifest = engine.loadManifest()
         let package = engine.existingPackage(from: packageName, manifest: manifest)
         if path {

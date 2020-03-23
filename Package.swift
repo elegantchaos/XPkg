@@ -16,8 +16,8 @@ let package = Package(
         .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.0.5"),
         .package(url: "https://github.com/elegantchaos/BuilderConfiguration.git", from: "1.1.3"),
         .package(url: "https://github.com/elegantchaos/Builder.git", from: "1.2.0"),
+        .package(url: "https://github.com/elegantchaos/CommandShell", from: "2.1.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.2"),
-        .package(url: "https://github.com/elegantchaos/CommandShell", from: "2.0.0"),
         ],
     targets: [
       .target(

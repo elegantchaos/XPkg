@@ -5,6 +5,7 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 import Foundation
 
 
@@ -12,7 +13,8 @@ public struct ListCommand: ParsableCommand {
     @Flag(help: "Produces output on a single line.") var oneline: Bool
     @Flag(help: "Produces minimal output.") var compact: Bool
     @Flag(help: "Produces output with extra details.") var full: Bool
-    
+    @OptionGroup() var common: CommandShellOptions
+
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "list",
         abstract: "List the installed packages."
@@ -22,6 +24,7 @@ public struct ListCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         if oneline {
           listOneline(engine: engine)
         } else if compact {

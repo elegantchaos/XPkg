@@ -16,7 +16,7 @@ public struct RenameCommand: ParsableCommand {
     public init() {
     }
     
-    public func run(engine: Engine) {
+    public func run() throws {
 //        let manifest = engine.loadManifest()
 //        let package = engine.existingPackage(manifest: manifest)
 //        let oldName = package.name

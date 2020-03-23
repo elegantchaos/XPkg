@@ -5,13 +5,15 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 import Foundation
 
 public struct PathCommand: ParsableCommand {
     @Argument(help: "The package to show.") var packageName: String?
     @Flag(name: .customLong("self"), help: "Perform the action on xpkg itself, rather than an installed package.") var asSelf: Bool
     @Flag(help: "Show the path to the vault.") var vault: Bool
-    
+    @OptionGroup() var common: CommandShellOptions
+
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "path",
         abstract: "Show the path of a package."
@@ -21,6 +23,7 @@ public struct PathCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         var url: URL? = nil
         
         if asSelf {

@@ -5,11 +5,13 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 import Foundation
 
 public struct ReinstallCommand: ParsableCommand {
     @Argument(help: "The package to reinstall.") var packageName: String
-    
+    @OptionGroup() var common: CommandShellOptions
+
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "reinstall",
         abstract: "Re-install the package. This is the equivalent of doing remove <package> followed by install <package>."
@@ -19,6 +21,7 @@ public struct ReinstallCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         let manifest = engine.loadManifest()
         let package = engine.existingPackage(from: packageName, manifest: manifest)
 

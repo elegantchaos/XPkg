@@ -5,13 +5,15 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 import Foundation
 import Runner
 
 public struct RemoveCommand: ParsableCommand {
     @Argument(help: "The package to remove.") var packageName: String
     @Flag(help: "Force the removal of the package even if there are local changes.") var force: Bool
-    
+    @OptionGroup() var common: CommandShellOptions
+
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "remove",
         abstract: "Remove a package."
@@ -21,6 +23,7 @@ public struct RemoveCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         let output = engine.output
         
         let manifest = engine.loadManifest()

@@ -5,13 +5,15 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import ArgumentParser
+import CommandShell
 import Foundation
 import Runner
 
 public struct LinkCommand: ParsableCommand {
     @Argument(help: "The name of the package to link to.") var packageName: String
     @Argument(help: "The path to the package.") var packagePath: String
-    
+    @OptionGroup() var common: CommandShellOptions
+
     static public var configuration: CommandConfiguration = CommandConfiguration(
         commandName: "link",
         abstract: "Link an existing folder as a package."
@@ -21,6 +23,7 @@ public struct LinkCommand: ParsableCommand {
     }
     
     public func run() throws {
+        let engine: Engine = common.loadEngine()
         let output = engine.output
         var package = self.packageName
         var path = self.packagePath
