@@ -12,7 +12,7 @@ public struct UpdateCommand: ParsableCommand {
     @Argument(help: "The package to update.") var packageName: String
     
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "update",
+        commandName: "update",
         abstract: "Update a package to the latest version."
     )
 

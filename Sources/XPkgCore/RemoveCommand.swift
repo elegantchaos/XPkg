@@ -13,7 +13,7 @@ public struct RemoveCommand: ParsableCommand {
     @Flag(help: "Force the removal of the package even if there are local changes.") var force: Bool
     
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "remove",
+        commandName: "remove",
         abstract: "Remove a package."
     )
 

@@ -13,7 +13,7 @@ public struct LinkCommand: ParsableCommand {
     @Argument(help: "The path to the package.") var packagePath: String
     
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "link",
+        commandName: "link",
         abstract: "Link an existing folder as a package."
     )
 

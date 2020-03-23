@@ -13,7 +13,7 @@ public struct PathCommand: ParsableCommand {
     @Flag(help: "Show the path to the vault.") var vault: Bool
     
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "path"
+        commandName: "path",
         abstract: "Show the path of a package."
     )
 

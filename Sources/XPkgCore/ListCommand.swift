@@ -14,7 +14,7 @@ public struct ListCommand: ParsableCommand {
     @Flag(help: "Produces output with extra details.") var full: Bool
     
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "list",
+        commandName: "list",
         abstract: "List the installed packages."
     )
 

@@ -13,7 +13,7 @@ public struct InstallCommand: ParsableCommand {
     @Option(name: .customLong("as"), help: "The name to use for the package.") var asName: String
 
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "install",
+        commandName: "install",
         abstract: "Install a package."
     )
     

@@ -9,7 +9,7 @@ import Runner
 
 public struct InitCommand: ParsableCommand {
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "init",
+        commandName: "init",
         abstract: "Create a new package."
     )
     

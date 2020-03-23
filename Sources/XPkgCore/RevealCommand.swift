@@ -11,7 +11,7 @@ public struct RevealCommand: ParsableCommand {
     @Flag(help: "Print the package path.") var path: Bool
 
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "reveal",
+        commandName: "reveal",
         abstract: "Reveal a package in the finder."
     )
 

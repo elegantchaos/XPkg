@@ -9,7 +9,7 @@ import Foundation
 
 public struct CheckCommand: ParsableCommand {
     static public var configuration: CommandConfiguration = CommandConfiguration(
-        name: "check",
+        commandName: "check",
         abstract: "Check that an installed package is ok."
     )
     
