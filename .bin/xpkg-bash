@@ -1,5 +1,5 @@
 xg() {
-    builtin pushd "`xpkg path $@ -logs output,-verbose`"
+    builtin pushd "`xpkg path $@`"
 }
 
 _comp_xg() {
