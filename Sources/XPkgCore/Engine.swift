@@ -49,28 +49,26 @@ public class Engine: CommandEngine {
         super.init(options: options)
     }
     
-    public override class var configuration: CommandConfiguration {
-        return CommandConfiguration(
-            commandName: CommandShell._commandName,
-            abstract: "Cross Platform Package Manager.",
-            discussion: "",
-            subcommands: [
-                InitCommand.self,
-                CheckCommand.self,
-                InstallCommand.self,
-                LinkCommand.self,
-                ListCommand.self,
-                PathCommand.self,
-                ReinstallCommand.self,
-                RemoveCommand.self,
-                RenameCommand.self,
-                RevealCommand.self,
-                UpdateCommand.self,
-            ],
-            defaultSubcommand: nil
-        )
-
+    public override class var abstract: String {
+        return "Cross Platform Package Manager."
     }
+    
+    public override class var subcommands: [ParsableCommand.Type] {
+        return [
+            InitCommand.self,
+            CheckCommand.self,
+            InstallCommand.self,
+            LinkCommand.self,
+            ListCommand.self,
+            PathCommand.self,
+            ReinstallCommand.self,
+            RemoveCommand.self,
+            RenameCommand.self,
+            RevealCommand.self,
+            UpdateCommand.self,
+        ]
+    }
+
     internal var xpkgURL: URL {
         let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
