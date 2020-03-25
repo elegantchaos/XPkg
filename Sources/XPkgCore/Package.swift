@@ -296,7 +296,7 @@ struct Package: Decodable {
     func currentBranch(engine: Engine) -> String? {
         let runner = Runner(for: engine.gitURL, cwd: local)
         if let result = try? runner.sync(arguments: ["rev-parse", "--abbrev-ref", "HEAD"]) {
-            engine.verbose.log(result.stdout)
+            engine.verbose.log("current branch: \(result.stdout)")
             if result.status == 0 {
                 let branch = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
                 if branch != "HEAD" {
@@ -313,35 +313,43 @@ struct Package: Decodable {
         return engine.latestVersion(URL(string:url)!)
     }
     
+    enum UpdateState {
+        case unchanged
+        case needsUpdate(to: String)
+        case notOnTag
+        case couldntFetchLatest
+        case couldntParseLatest
+    }
+    
     /// Does the package need updating?
     /// If it's on a version tag, and there's a newer version available, we return the newer version.
     /// If it's on the latest version tag, or checked out to a branch, we return nil.
     /// - Parameter engine: The current context.
-    func needsUpdate(engine: Engine) -> String? {
-        let branch = currentBranch(engine: engine)
-        guard branch == nil else {
-            engine.verbose.log("\(name) is on branch \(branch!)")
-            return nil
-        }
-        
+    func needsUpdate(engine: Engine) -> UpdateState {
         let current = currentVersion(engine: engine)
         guard !current.contains("-") else {
-            engine.verbose.log("\(name) is modified.")
-            return nil
+            let branch = currentBranch(engine: engine)
+            if branch == nil {
+                engine.verbose.log("\(name) is a modified version \(current).")
+            } else {
+                engine.verbose.log("\(name) is a modified version \(current) on branch \(branch!)")
+            }
+            return .notOnTag
         }
+
         
         guard let latest = latestVersion(engine: engine) else {
             engine.verbose.log("\(name) couldn't fetch latest version.")
-            return nil
+            return .couldntFetchLatest
         }
         
         guard let sCurrent = SemanticVersion(current), let sLatest = SemanticVersion(latest) else {
             engine.verbose.log("\(name) couldn't parse versions.")
-            return nil
+            return .couldntParseLatest
         }
         
         engine.verbose.log("\(name) \(current) \(latest)")
-        return sCurrent < sLatest ? latest : nil
+        return sCurrent < sLatest ? .needsUpdate(to: latest) : .unchanged
     }
     
     /// Checkout the package to a given branch, tag or other ref.

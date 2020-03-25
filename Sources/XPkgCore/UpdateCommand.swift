@@ -28,23 +28,33 @@ public struct UpdateCommand: ParsableCommand {
         } else if let packageName = packageName {
             let manifest = engine.loadManifest()
             let package = engine.existingPackage(from: packageName, manifest: manifest)
-            if let newerVersion = package.needsUpdate(engine: engine) {
-                package.update(to: newerVersion, engine: engine)
-                engine.output.log("Package \(package.name) was unchanged.")
-            }
+            update(package: package, engine: engine)
         } else {
             engine.output.log("Checking all packages for updates...")
             let _ = engine.forEachPackage { (package) in
-                if let newerVersion = package.needsUpdate(engine: engine) {
-                    package.update(to: newerVersion, engine: engine)
-                } else {
-                    engine.output.log("Package \(package.name) was unchanged.")
-                }
+                update(package: package, engine: engine)
             }
             engine.output.log("Done.")
         }
     }
 
+    func update(package: Package, engine: Engine) {
+        let state = package.needsUpdate(engine: engine)
+        switch state {
+            case .needsUpdate(let newerVersion):
+                package.update(to: newerVersion, engine: engine)
+            
+            case .unchanged:
+                engine.output.log("Package \(package.name) was unchanged.")
+            
+            case .notOnTag:
+            engine.output.log("Package \(package.name) is modified locally or not at a published version.")
+        
+            default:
+                engine.output.log("Could not fetch the latest version for \(package.name), so it has not been updated.")
+        }
+    }
+    
     func updateSelf(engine: Engine) {
         engine.output.log("Updating xpkg.")
         let url = engine.xpkgURL

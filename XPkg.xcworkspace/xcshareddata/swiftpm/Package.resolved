@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/elegantchaos/CommandShell",
         "state": {
           "branch": null,
-          "revision": "bf43151943272b7ccf996398287ab39d1a8103a7",
-          "version": "2.1.0"
+          "revision": "c2f8a03fb6f51a395d806170cc64db2ddc45a97c",
+          "version": "2.1.1"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/elegantchaos/Runner.git",
         "state": {
           "branch": null,
-          "revision": "394f2a5a92ac6b81215a3eeaec5ee4c8227a4a47",
-          "version": "1.0.5"
+          "revision": "875aa72a965fb1b7ebb6cf1e606e8011a5f44cd1",
+          "version": "1.1.0"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/elegantchaos/SemanticVersion.git",
         "state": {
           "branch": null,
-          "revision": "928a0ab25d43f1c4b02b6679aa109e3cdad08a93",
-          "version": "1.0.1"
+          "revision": "fe174904ce8a070a3ca52e8b7e25193f3a004d66",
+          "version": "1.0.3"
         }
       },
       {
@@ -60,8 +60,17 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "35b76bf577d3cc74820f8991894ce3bcdf024ddc",
-          "version": "0.0.2"
+          "revision": "8d31a0905c346a45c87773ad50862b5b3df8dff6",
+          "version": "0.0.4"
+        }
+      },
+      {
+        "package": "XCTestExtensions",
+        "repositoryURL": "https://github.com/elegantchaos/XCTestExtensions.git",
+        "state": {
+          "branch": null,
+          "revision": "5a6c9b3d5889d48d647f2a165c9bba8b966d3a22",
+          "version": "1.1.1"
         }
       },
       {
@@ -69,8 +78,8 @@
         "repositoryURL": "https://github.com/elegantchaos/XPkgPackage.git",
         "state": {
           "branch": null,
-          "revision": "cad1f898e01e53c000cad54c843a2be79ae5a5bf",
-          "version": "1.0.6"
+          "revision": "2b3b037efca0eb5f302ddb9d9d6d5af7ce6e7b6e",
+          "version": "1.0.8"
         }
       }
     ]

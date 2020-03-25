@@ -81,7 +81,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "reinstall xpkg-atom"
+            argument = "update xpkg-shell"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
