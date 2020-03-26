@@ -364,7 +364,7 @@ public class Engine: CommandEngine {
     */
 
     func possiblePackage(named name: String, manifest: Package) -> Package? {
-        return manifest.package(named: name) ?? manifest.package(named: "xpkg-\(name)")
+        return manifest.package(named: name)
     }
     
     /**

@@ -76,7 +76,15 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
+            argument = "update samdeane/xpkg-fish"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "install samdeane/xpkg-fish"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--verbose"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

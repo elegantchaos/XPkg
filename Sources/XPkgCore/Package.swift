@@ -113,7 +113,7 @@ struct Package: Decodable {
     
     func package(named name: String) -> Package? {
         for package in dependencies {
-            if package.name == name {
+            if (package.name == name) || (package.name == "xpkg-\(name)") || (package.url.contains(name)) {
                 return package
             }
         }
@@ -357,22 +357,27 @@ struct Package: Decodable {
     /// - Parameter engine: the context
     func checkout(to ref: String, engine: Engine) {
         let runner = Runner(for: engine.gitURL, cwd: local)
-        if let result = try? runner.sync(arguments: ["checkout", ref]) {
-            engine.verbose.log(result.stdout)
-            engine.verbose.log(result.stderr)
-            if result.status == 0 {
-                return
-            }
+        guard let result = try? runner.sync(arguments: ["checkout", ref]) else {
+            engine.output.log("Couldn't checkout package \(name) to \(ref).")
+            return
         }
         
-        engine.output.log("Couldn't update package \(name) to \(ref).")
+        engine.verbose.log(result.stdout)
+        engine.verbose.log(result.stderr)
+        if result.status != 0 {
+            if result.stderr.contains("The following untracked working tree files would be overwritten") {
+                engine.output.log("Package \(name) has untracked files.")
+            }
+
+            engine.output.log("Couldn't update package \(name) to \(ref).")
+        }
     }
 
     /// Fetch the latest commits.
     /// - Parameter engine: the context
     func fetch(engine: Engine) {
         let runner = Runner(for: engine.gitURL, cwd: local)
-        if let result = try? runner.sync(arguments: ["fetch"]) {
+        if let result = try? runner.sync(arguments: ["fetch", "--tags"]) {
             engine.verbose.log(result.stdout)
             engine.verbose.log(result.stderr)
         }
