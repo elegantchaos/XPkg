@@ -40,4 +40,4 @@ install_link "bash_profile" ~/.bash_profile
 install_link "zshenv" ~/.zshenv
 
 install_link "shell-hooks.sh" ~/.local/bin/hooks --no-backup
-install_link "fish" ~/.config/fish/config.fish --no-backup
+install_link "fish" ~/.config/fish/conf.d/com.elegantchaos.xpkg.fish --no-backup
