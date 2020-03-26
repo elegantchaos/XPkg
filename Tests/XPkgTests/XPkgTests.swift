@@ -5,6 +5,7 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 import XCTest
+import CommandShell
 @testable import XPkgCore
 
 class XPkgTests: XCTestCase {
@@ -23,20 +24,20 @@ class XPkgTests: XCTestCase {
     }
     
     func testName() {
-        let engine = Engine()
+        let engine = Engine(options: CommandShellOptions())
         engine.defaultOrgs = ["testorg"]
         let _ = engine.remotePackageURL("test", validator: validator(expecting: "git@github.com:testorg/test"))
         XCTAssertTrue(self.matched)
     }
 
     func testNameOrg() {
-        let engine = Engine()
+        let engine = Engine(options: CommandShellOptions())
         let _ = engine.remotePackageURL("someorg/someproj", validator: validator(expecting: "git@github.com:someorg/someproj"))
         XCTAssertTrue(self.matched)
     }
 
     func testRepo() {
-        let engine = Engine()
+        let engine = Engine(options: CommandShellOptions())
         let _ = engine.remotePackageURL("git@mygit.com:someorg/someproj", validator: validator(expecting: "git@mygit.com:someorg/someproj"))
         XCTAssertTrue(self.matched)
     }
