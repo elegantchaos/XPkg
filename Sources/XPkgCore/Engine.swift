@@ -6,6 +6,7 @@
 
 import ArgumentParser
 import CommandShell
+import Files
 import Foundation
 import Logger
 import Runner
@@ -20,20 +21,20 @@ extension URLSession {
         var data: Data?
         var response: URLResponse?
         var error: Error?
-
+        
         let semaphore = DispatchSemaphore(value: 0)
-
+        
         let dataTask = self.dataTask(with: request) {
             data = $0
             response = $1
             error = $2
-
+            
             semaphore.signal()
         }
         dataTask.resume()
-
+        
         _ = semaphore.wait(timeout: .distantFuture)
-
+        
         return (data, response, error)
     }
 }
@@ -41,9 +42,9 @@ extension URLSession {
 public class Engine: CommandEngine {
     let jsonChannel: Channel
     let fileManager = FileManager.default
-
+    
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
-
+    
     public required init(options: CommandShellOptions) {
         jsonChannel = Logger("json", handlers: [Logger.stdoutHandler])
         super.init(options: options)
@@ -68,11 +69,11 @@ public class Engine: CommandEngine {
             UpdateCommand.self,
         ]
     }
-
+    
     internal var xpkgURL: URL {
         let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
-
+        
         if fileManager.fileExists(at: localURL) {
             return localURL
         } else {
@@ -81,11 +82,11 @@ public class Engine: CommandEngine {
                 return globalURL
             }
         }
-
+        
         try? fileManager.createDirectory(at: localURL, withIntermediateDirectories: true)
         return localURL
     }
-
+    
     internal var xpkgCodeURL: URL {
         return xpkgURL.appendingPathComponent("code")
     }
@@ -96,14 +97,18 @@ public class Engine: CommandEngine {
     internal func latestVersion(_ url: URL) -> String? {
         let runner = Runner(for: gitURL)
         let arguments = ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]
-        guard let result = try? runner.sync(arguments: arguments, passthrough: false), result.status == 0 else {
-                return nil
+        print(arguments)
+        let callback: Runner.PipeCallback = {
+            text in print(text)
+        }
+        guard let result = try? runner.sync(arguments: arguments, stdoutMode: .callback(callback), stderrMode: .callback(callback)), result.status == 0 else {
+            return nil
         }
         
         guard let tag = result.stdout.split(separator: "/").last else {
             return ""
         }
-
+        
         guard tag.contains(".") else {
             return ""
         }
@@ -114,9 +119,9 @@ public class Engine: CommandEngine {
     typealias RepoValidator = (URL) -> String?
     
     func validate(_ remote: URL) -> String? {
-         let version = latestVersion(remote)
-         return version?.replacingOccurrences(of: "v", with: "")
-     }
+        let version = latestVersion(remote)
+        return version?.replacingOccurrences(of: "v", with: "")
+    }
     
     /// Given a package spec, try to find a URL and latest version for the package.
     /// The spec can be one of:
@@ -132,30 +137,39 @@ public class Engine: CommandEngine {
             return (remote, version)
         }
         
-        if let remote = URL(string: "git@github.com:\(package)"), let version = validate(remote) {
-            return (remote, version)
+//        let hosts = FileManager.default.locations.home.folder(".ssh").file("known_hosts")
+//        guard let text = hosts.asText, text.contains("github.com") else {
+//            print("github.com isn't in the known hosts file.")
+//            exit(-1)
+//        }
+        
+        var paths = ["\(package)"]
+        for org in defaultOrgs {
+            paths.append("\(org)/\(package)")
         }
         
-        for org in defaultOrgs {
-            if let remote = URL(string: "git@github.com:\(org)/\(package)"), let version = validate(remote) {
-                return (remote, version)
+        for method in ["https://github.com/", "git@github.com:"] {
+            for path in paths {
+                if let remote = URL(string: "\(method)\(path)"), let version = validate(remote) {
+                    return (remote, version)
+                }
             }
         }
         
         return (URL(string: "git@github.com:\(package)")!, nil)
     }
-
+    
     internal var vaultURL: URL {
         let url = xpkgURL.appendingPathComponent("vault")
-
+        
         try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
-
+    
     internal var gitURL: URL {
         return URL(fileURLWithPath: "/usr/bin/git")
     }
-
+    
     internal var swiftURL: URL {
         return URL(fileURLWithPath: "/usr/bin/swift")
     }
@@ -163,7 +177,7 @@ public class Engine: CommandEngine {
     internal var projectsURL: URL {
         return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
     }
-
+    
     func swift(_ arguments: [String], failureMessage: @autoclosure () -> String = "") -> Runner.Result? {
         let runner = Runner(for: swiftURL, cwd: vaultURL)
         do {
@@ -191,7 +205,7 @@ public class Engine: CommandEngine {
             output.log("\(action) failed.\n\(error)")
         }
     }
-
+    
     func tryToLoadManifest() -> Package? {
         do {
             let cachedURL = vaultURL.appendingPathComponent("Package.json")
@@ -212,13 +226,13 @@ public class Engine: CommandEngine {
                 if let index = json.firstIndex(of: "{") {
                     json.removeSubrange(json.startIndex ..< index)
                 }
-
+                
                 jsonChannel.log(json)
                 verbose.log(showResult.stderr)
-
+                
                 try? json.write(to: cachedURL, atomically: true, encoding: .utf8)
             }
-
+            
             let decode = JSONDecoder()
             if let data = json.data(using: .utf8) {
                 do {
@@ -234,7 +248,7 @@ public class Engine: CommandEngine {
         verbose.log("Failed to load manifest.")
         return nil
     }
-
+    
     func loadManifest() -> Package {
         let manifest = tryToLoadManifest()
         return manifest ?? Package(name: "XPkgVault")
@@ -278,7 +292,7 @@ public class Engine: CommandEngine {
                 ]
             )
             """
-
+        
         let url = vaultURL.appendingPathComponent("Package.swift")
         do {
             try createInstalledSourceStub()
@@ -306,12 +320,12 @@ public class Engine: CommandEngine {
         if let resolved = tryToLoadManifest() {
             return resolved
         }
-
+        
         // backup failed manifest for debugging
         let manifestURL = vaultURL.appendingPathComponent("Package.swift")
         let failedURL = vaultURL.appendingPathComponent("Failed Package.swift")
         try? fileManager.moveItem(at: manifestURL, to: failedURL)
-
+        
         // revert
         saveManifest(manifest: from)
         return nil
@@ -358,26 +372,26 @@ public class Engine: CommandEngine {
         }
         return true
     }
-
+    
     /**
-    Return a package structure for an existing package, if it exists
-    */
-
+     Return a package structure for an existing package, if it exists
+     */
+    
     func possiblePackage(named name: String, manifest: Package) -> Package? {
         return manifest.package(named: name)
     }
     
     /**
-    Return a package structure for an existing package that was specified as
-    an argument.
-    */
-
+     Return a package structure for an existing package that was specified as
+     an argument.
+     */
+    
     func existingPackage(from packageName: String, manifest: Package) -> Package {
         guard let package = possiblePackage(named: packageName, manifest: manifest) else {
             output.log("Package \(packageName) is not installed.")
             exit(1)
         }
-
+        
         return package
     }
     

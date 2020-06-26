@@ -12,8 +12,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/elegantchaos/XPkgPackage.git", from: "1.0.8"),
+        .package(url: "https://github.com/elegantchaos/Files.git", from: "1.1.3"),
         .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.5.3"),
-        .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.1.0"),
+        .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.3.0"),
         .package(url: "https://github.com/elegantchaos/BuilderConfiguration.git", from: "1.1.3"),
         .package(url: "https://github.com/elegantchaos/Builder.git", from: "1.2.0"),
         .package(url: "https://github.com/elegantchaos/CommandShell", from: "2.1.1"),
@@ -26,6 +27,7 @@ let package = Package(
         .target(
             name: "XPkgCore",
             dependencies: [
+                "Files",
                 "Logger",
                 "Runner",
                 "XPkgPackage",

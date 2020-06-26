@@ -8,6 +8,8 @@
 if [[ "$SHELL_HOOKS_ZSH" == "" ]]
 then
 
+export PATH="$HOME/.local/bin":"$PATH"
+
 export SHELL_HOOKS_ZSH=1
 export SHELL_HOOKS_PLATFORM=`uname`
 export SHELL_HOOKS_ROOT="$HOME/.local/share/shell-hooks"

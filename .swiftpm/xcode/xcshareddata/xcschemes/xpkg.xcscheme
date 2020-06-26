@@ -77,6 +77,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "update samdeane/xpkg-fish"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "install xpkg-shell"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
