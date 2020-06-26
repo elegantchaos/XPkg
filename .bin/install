@@ -17,19 +17,16 @@ LOCAL="$HOME/.local"
 echo "Installing links."
 if [[ -e "$LOCAL" ]]
 then
-    echo "Performing local installation."
+    echo "Installing to ~/.local."
     export STARTUP="$LOCAL/share/shell-hooks/startup"
     export BIN="$LOCAL/bin"
     export SUDO=
 else
-    echo "Performing global installation (requires sudo)."
+    echo "Installing to /usr/local (requires sudo)."
     export STARTUP="/usr/local/share/shell-hooks/startup"
     export BIN="/usr/local/bin"
     export SUDO=sudo
 fi
-
-echo "Xpkg bin is $BIN."
-echo "Xpkg startup is $STARTUP."
 
 $SUDO mkdir -p "$STARTUP"
 $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
