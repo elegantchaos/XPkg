@@ -28,8 +28,8 @@ else
     export SUDO=sudo
 fi
 
-echo "bin is $BIN."
-echo "startup is $STARTUP."
+echo "Xpkg bin is $BIN."
+echo "Xpkg startup is $STARTUP."
 
 $SUDO mkdir -p "$STARTUP"
 $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
@@ -42,6 +42,6 @@ mkdir -p "$FISH"
 ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 
 echo "Installing shell startup hooks."
-$SUDO "$ROOT/code/.bin/shell-hooks/install" "$ROOT"
+$SUDO "$ROOT/code/.bin/shell-hooks/install" "$ROOT" "$XPKG_INSTALL_MODE"
 
 echo "Done."

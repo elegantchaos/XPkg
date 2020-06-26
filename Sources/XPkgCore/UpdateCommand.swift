@@ -64,6 +64,7 @@ public struct UpdateCommand: ParsableCommand {
             engine.output.log(result.stdout)
         }
 
+        engine.output.log("Rebuilding.")
         let bootstrapURL = codeURL.appendingPathComponent(".bin").appendingPathComponent("bootstrap")
         let bootstrapRunner = Runner(for: bootstrapURL, cwd: codeURL)
         if let result = try? bootstrapRunner.sync() {

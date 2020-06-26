@@ -7,6 +7,7 @@ then
     echo "Updating xpkg."
     cd "$ROOT/code"
     git pull
+    XPKG_INSTALL_MODE="--no-backup"
 else
     echo "Downloading xpkg."
     mkdir -p "$ROOT"
