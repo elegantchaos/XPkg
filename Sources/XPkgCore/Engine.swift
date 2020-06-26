@@ -97,11 +97,14 @@ public class Engine: CommandEngine {
     internal func latestVersion(_ url: URL) -> String? {
         let runner = Runner(for: gitURL)
         let arguments = ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]
-        print(arguments)
+        
         let callback: Runner.PipeCallback = {
+            // TODO: filter out some known errors and exit or prompt for the user to fix them?
             text in print(text)
         }
-        guard let result = try? runner.sync(arguments: arguments, stdoutMode: .callback(callback), stderrMode: .callback(callback)), result.status == 0 else {
+        
+        // TODO: add a timeout?
+        guard let result = try? runner.sync(arguments: arguments, stdoutMode: .capture, stderrMode: .callback(callback)), result.status == 0 else {
             return nil
         }
         
@@ -123,6 +126,11 @@ public class Engine: CommandEngine {
         return version?.replacingOccurrences(of: "v", with: "")
     }
     
+    internal var gitLooksLikeItIsSetup: Bool {
+        let hosts = FileManager.default.locations.home.folder(".ssh").file("known_hosts")
+        return hosts.asText?.contains("github.com") ?? false
+    }
+    
     /// Given a package spec, try to find a URL and latest version for the package.
     /// The spec can be one of:
     /// - a full URL - which is used directly
@@ -137,18 +145,18 @@ public class Engine: CommandEngine {
             return (remote, version)
         }
         
-//        let hosts = FileManager.default.locations.home.folder(".ssh").file("known_hosts")
-//        guard let text = hosts.asText, text.contains("github.com") else {
-//            print("github.com isn't in the known hosts file.")
-//            exit(-1)
-//        }
-        
         var paths = ["\(package)"]
         for org in defaultOrgs {
             paths.append("\(org)/\(package)")
         }
-        
-        for method in ["https://github.com/", "git@github.com:"] {
+
+        var methods = ["https://github.com/"]
+        if gitLooksLikeItIsSetup {
+            // try git@ first if it looks like github is in the known hosts etc
+            methods.insert("git@github.com:", at: 0)
+        }
+
+        for method in methods {
             for path in paths {
                 if let remote = URL(string: "\(method)\(path)"), let version = validate(remote) {
                     return (remote, version)
