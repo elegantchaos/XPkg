@@ -10,8 +10,8 @@ import Foundation
 
 public struct PathCommand: ParsableCommand {
     @Argument(help: "The package to show.") var packageName: String?
-    @Flag(name: .customLong("self"), help: "Perform the action on xpkg itself, rather than an installed package.") var asSelf: Bool
-    @Flag(help: "Show the path to the vault.") var vault: Bool
+    @Flag(name: .customLong("self"), help: "Perform the action on xpkg itself, rather than an installed package.") var asSelf = false
+    @Flag(help: "Show the path to the vault.") var vault = false
     @OptionGroup() var common: CommandShellOptions
 
     static public var configuration: CommandConfiguration = CommandConfiguration(

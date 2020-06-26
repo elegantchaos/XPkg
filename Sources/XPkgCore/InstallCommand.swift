@@ -10,7 +10,7 @@ import Foundation
 
 public struct InstallCommand: ParsableCommand {
     @Argument(help: "The package to install.") var packageSpec: String
-    @Flag(name: .customLong("project"), help: "Install in the projects folder, and not as a package.") var asProject: Bool
+    @Flag(name: .customLong("project"), help: "Install in the projects folder, and not as a package.") var asProject = false
     @Option(name: .customLong("as"), help: "The name to use for the package.") var asName: String?
     @OptionGroup() var common: CommandShellOptions
 

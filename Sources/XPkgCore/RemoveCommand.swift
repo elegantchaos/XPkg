@@ -11,7 +11,7 @@ import Runner
 
 public struct RemoveCommand: ParsableCommand {
     @Argument(help: "The package to remove.") var packageName: String
-    @Flag(help: "Force the removal of the package even if there are local changes.") var force: Bool
+    @Flag(help: "Force the removal of the package even if there are local changes.") var force = false
     @OptionGroup() var common: CommandShellOptions
 
     static public var configuration: CommandConfiguration = CommandConfiguration(

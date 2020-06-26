@@ -9,7 +9,7 @@ import CommandShell
 
 public struct RevealCommand: ParsableCommand {
     @Argument(help: "The package to reveal.") var packageName: String
-    @Flag(help: "Print the package path.") var path: Bool
+    @Flag(help: "Print the package path.") var path = false
     @OptionGroup() var common: CommandShellOptions
 
     static public var configuration: CommandConfiguration = CommandConfiguration(

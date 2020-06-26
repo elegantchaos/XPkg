@@ -21,12 +21,21 @@ enum RenameError: Error {
 }
 
 struct PackageInfo: Codable {
-    let version = 1
+    let version: Int
     let name: String
     let remote: URL
     let local: URL
     let linked: Bool
     let removeable: Bool
+    
+    init(version: Int = 1, name: String, remote: URL, local: URL, linked: Bool, removeable: Bool) {
+        self.version = version
+        self.name = name
+        self.remote = remote
+        self.local = local
+        self.linked = linked
+        self.removeable = removeable
+    }
 }
 
 enum PackageError: Error, CustomStringConvertible {
@@ -343,7 +352,9 @@ struct Package: Decodable {
             return .couldntFetchLatest
         }
         
-        guard let sCurrent = SemanticVersion(current), let sLatest = SemanticVersion(latest) else {
+        let sCurrent = SemanticVersion(current)
+        let sLatest = SemanticVersion(latest)
+        guard !sCurrent.isInvalid && !sLatest.isInvalid else {
             engine.verbose.log("\(name) couldn't parse versions.")
             return .couldntParseLatest
         }

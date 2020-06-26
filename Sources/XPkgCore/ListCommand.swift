@@ -10,9 +10,9 @@ import Foundation
 
 
 public struct ListCommand: ParsableCommand {
-    @Flag(help: "Produces output on a single line.") var oneline: Bool
-    @Flag(help: "Produces minimal output.") var compact: Bool
-    @Flag(help: "Produces output with extra details.") var full: Bool
+    @Flag(help: "Produces output on a single line.") var oneline = false
+    @Flag(help: "Produces minimal output.") var compact = false
+    @Flag(help: "Produces output with extra details.") var full = false
     @OptionGroup() var common: CommandShellOptions
 
     static public var configuration: CommandConfiguration = CommandConfiguration(

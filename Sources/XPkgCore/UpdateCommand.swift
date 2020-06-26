@@ -9,7 +9,7 @@ import Runner
 import CommandShell
 
 public struct UpdateCommand: ParsableCommand {
-    @Flag(name: .customLong("self"), help: "Update xpkg itself.") var updateSelf: Bool
+    @Flag(name: .customLong("self"), help: "Update xpkg itself.") var updateSelf = false
     @Argument(help: "The package to update.") var packageName: String?
     @OptionGroup() var common: CommandShellOptions
 
