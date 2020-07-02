@@ -26,13 +26,31 @@ In a nutshell, that's what XPkg does.
 
 **Disclaimer: XPkg was developed purely for my own use. It is under active (albeit sporadic) development and probably has bugs in it. It will modify your `.bashrc`, `.zshrc` etc scripts, and although it backs them up, it may break things. Please do tell me if it does something wrong, but I can't guarantee to support you, and I definitely won't be held responsible for any damage it does. Use XPkg at your own risk!**
 
+### Dependencies
+
+When bringing up a new machine, Xpkg is one of the first things I install - and I then use it to install lots of other things.
+
+There one or two things that it does require first, however:
+
+- git
+- swift (or Xcode)
+- github access (ideally via ssh, which means you need to set up your ssh keys for the machine and register them with github)
+
+
+### Bootstrap
+
 Running `curl https://raw.githubusercontent.com/elegantchaos/XPkg/master/.bin/bootstrap | bash` should get you up and running.
 
 What this does is:
 - clone the project into `.local/share/xpkg`
 - build it
 - install some hooks to link it in to your path
-- install a couple of essential packages
+- prompt you to open a new shell or terminal
+
+During installation, an alias to xpkg is installed into `~/.local/bin`, and some startup hooks are installed for `bash`, `zsh` and `fish` which include this location in `$PATH`.
+
+*You need to start a new shell / open a new terminal window before this path change is picked up.*
+
 
 
 ## Usage

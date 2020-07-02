@@ -148,6 +148,7 @@ public class Engine: CommandEngine {
         var paths = ["\(package)"]
         for org in defaultOrgs {
             paths.append("\(org)/\(package)")
+            paths.append("\(org)/xpkg-\(package)")
         }
 
         var methods = ["https://github.com/"]

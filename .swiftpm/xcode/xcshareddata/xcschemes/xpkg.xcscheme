@@ -80,7 +80,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "install xpkg-shell"
+            argument = "install git"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

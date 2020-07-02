@@ -41,4 +41,4 @@ ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
 echo "Installing shell startup hooks."
 $SUDO "$ROOT/code/.bin/shell-hooks/install" "$ROOT" "$XPKG_INSTALL_MODE"
 
-echo "Done."
+printf "Done.\n\nOpen a new shell / terminal window and type xpkg to get started.\n\n"
