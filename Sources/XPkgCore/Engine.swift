@@ -98,13 +98,14 @@ public class Engine: CommandEngine {
         let runner = Runner(for: gitURL)
         let arguments = ["ls-remote", "--tags", "--refs", "--sort=v:refname", "--exit-code", url.absoluteString ]
         
-        let callback: Runner.PipeCallback = {
+        var error = ""
+        let callback = Runner.Mode.callback({ text in
+            error.append(text)
             // TODO: filter out some known errors and exit or prompt for the user to fix them?
-            text in print(text)
-        }
+        })
         
         // TODO: add a timeout?
-        guard let result = try? runner.sync(arguments: arguments, stdoutMode: .capture, stderrMode: .callback(callback)), result.status == 0 else {
+        guard let result = try? runner.sync(arguments: arguments, stdoutMode: .capture, stderrMode: callback), result.status == 0 else {
             return nil
         }
         

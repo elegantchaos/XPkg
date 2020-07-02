@@ -292,7 +292,7 @@ struct Package: Decodable {
     /// - Parameter engine: The current engine.
     func currentVersion(engine: Engine) -> String {
         let runner = Runner(for: engine.gitURL, cwd: local)
-        if let result = try? runner.sync(arguments: ["describe"]) {
+        if let result = try? runner.sync(arguments: ["describe", "--tags"]) {
             if result.status == 0 {
                 return result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
             }
