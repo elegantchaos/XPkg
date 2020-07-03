@@ -478,7 +478,7 @@ struct Package: Decodable {
             let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
             let hooks = "\(name)-xpkg-hooks"
             let arguments = ["run", hooks, name, path, action]
-            let result = try runner.sync(arguments: arguments)
+            let result = try runner.sync(arguments: arguments, stdoutMode: .passthrough)
             engine.verbose.log("\n> \(hooks) \(name) \(path) \(action)")
             if result.status == 0 {
                 engine.verbose.log("stdout: \(result.stdout)")
