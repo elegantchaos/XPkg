@@ -76,12 +76,12 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "install git"
-            isEnabled = "NO">
+            argument = "reinstall atom"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "update"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--verbose"
