@@ -185,7 +185,14 @@ public class Engine: CommandEngine {
     }
     
     internal var projectsURL: URL {
-        return URL(fileURLWithPath: ("~/Projects" as NSString).expandingTildeInPath)
+        let paths = ["~/Projects", "~/Developer/Projects"]
+        for path in paths {
+            let url = URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
+            if FileManager.default.fileExists(at: url) {
+                return url
+            }
+        }
+        return URL(fileURLWithPath: "Projects")
     }
     
     func swift(_ arguments: [String], failureMessage: @autoclosure () -> String = "") -> Runner.Result? {
