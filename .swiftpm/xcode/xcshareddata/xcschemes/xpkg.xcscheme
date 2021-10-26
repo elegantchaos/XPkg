@@ -77,7 +77,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "reinstall atom"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "update"
@@ -85,6 +85,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--verbose"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "path RobinOfFarringdon"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
