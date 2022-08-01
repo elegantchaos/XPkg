@@ -491,14 +491,6 @@ struct Package: Decodable {
                 engine.verbose.log("stdout: \(result.stdout)")
                 engine.verbose.log("stderr: \(result.stderr)\n")
             }
-            
-            // fallback to old method?
-            let configURL = local.appendingPathComponent(".xpkg.json")
-            if engine.fileManager.fileExists(atPath: configURL.path) {
-                let installed = InstalledPackage(local: local, output: engine.output, verbose: engine.verbose)
-                try installed.run(legacyAction: action, config: configURL)
-                return true
-            }
 
         } catch {
             engine.output.log("Couldn't run action \(action).")
