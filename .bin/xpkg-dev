@@ -1,0 +1,3 @@
+#!/bin/bash
+
+swift run --package-path ~/.local/share/xpkg/code xpkg "$@"

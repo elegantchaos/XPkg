@@ -33,6 +33,7 @@ $SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
 
 $SUDO mkdir -p "$BIN"
 $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
+$SUDO ln -sf "$ROOT/code/.bin/xpkg-dev" "$BIN/xpkg-dev"
 $SUDO ln -sf "$ROOT/code/.bin/uninstall" "$BIN/xpkg-uninstall"
 
 mkdir -p "$FISH"
