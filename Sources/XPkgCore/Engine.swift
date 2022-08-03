@@ -41,6 +41,8 @@ extension URLSession {
 }
 
 public class Engine: CommandEngine {
+    static let missingProductPattern = try! NSRegularExpression(pattern: #"'vault': product '(.*)' required by package 'vault' target 'Installed' not found in package '(.*)'."#)
+
     let jsonChannel: Channel
     let fileManager = FileManager.default
     
@@ -257,9 +259,8 @@ public class Engine: CommandEngine {
         let code = showResult.status
         let output = showResult.stderr
         guard code == 0 else {
-            let pattern = try! NSRegularExpression(pattern: #"'vault': product '(.*)' required by package 'vault' target 'Installed' not found in package '(.*)'."#)
             let range = NSRange(location: 0, length: output.count)
-            let matches = pattern.matches(in: output, range: range)
+            let matches = Self.missingProductPattern.matches(in: output, range: range)
             if let match = matches.first {
                 let product = (output as NSString).substring(with: match.range(at: 1))
                 let package = (output as NSString).substring(with: match.range(at: 2))

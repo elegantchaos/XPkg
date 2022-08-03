@@ -21,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/elegantchaos/XPkgPackage.git", from: "1.0.9")
         ],
     targets: [
-      .target(
+      .executableTarget(
           name: "XPkgCommand",
           dependencies: ["XPkgCore"]),
         .target(
@@ -34,7 +34,7 @@ let package = Package(
                 "XPkgPackage",
                 "CommandShell"
         ]),
-        .target(
+        .executableTarget(
             name: "Configure",
           dependencies: ["BuilderConfiguration"]),
         .testTarget(
