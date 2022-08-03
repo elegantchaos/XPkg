@@ -278,7 +278,7 @@ public class Engine: CommandEngine {
         for package in manifest.dependencies {
             let version = package.version
             if version.isEmpty || version == "unspecified" {
-                dependencies.append("        .package(url: \"\(package.url)\", Version(1,0,0)...Version(10000,0,0)),\n")
+                dependencies.append("        .package(url: \"\(package.url)\", Version(0,0,1)...Version(10000,0,0)),\n")
             } else {
                 dependencies.append("        .package(url: \"\(package.url)\", from:\"\(version)\"),\n")
             }
