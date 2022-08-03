@@ -288,7 +288,7 @@ public class Engine: CommandEngine {
         }
     }
     
-    func saveManifest(manifest: Package) {
+    func saveManifestAndRemoveCachedDependencies(manifest: Package) {
         var dependencies = ""
         var products = ""
         
@@ -349,8 +349,14 @@ public class Engine: CommandEngine {
     }
     
     func updateManifest(from oldPackage: Package, to newPackage: Package) -> Package? {
-        removeDependencyCache()
-        saveManifest(manifest: newPackage)
+        let backupURL = manifestURL.appendingPathExtension("backup")
+        do {
+            try fileManager.moveItem(at: manifestURL, to: backupURL)
+        } catch {
+            verbose.log("Failed to backup existing manifest.")
+        }
+
+        saveManifestAndRemoveCachedDependencies(manifest: newPackage)
         do {
             let resolved = try loadManifest()
             return resolved
@@ -359,11 +365,17 @@ public class Engine: CommandEngine {
             let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .short)
             let failedURL = vaultURL.appendingPathComponent("Failed Package \(date).swift")
             try? fileManager.moveItem(at: manifestURL, to: failedURL)
-            
-            // revert
-            saveManifest(manifest: oldPackage)
-            return nil
         }
+        
+        do {
+            try fileManager.removeItem(at: manifestURL)
+            try fileManager.moveItem(at: backupURL, to: manifestURL)
+        } catch {
+            verbose.log("Failed to restore previous manifest. Will attempt to recreate it.")
+            saveManifestAndRemoveCachedDependencies(manifest: oldPackage)
+        }
+
+        return nil
     }
     
     func processUpdate(from: Package, to: Package) {
