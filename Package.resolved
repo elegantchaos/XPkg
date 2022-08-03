@@ -1,97 +1,104 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Builder",
-        "repositoryURL": "https://github.com/elegantchaos/Builder.git",
-        "state": {
-          "branch": null,
-          "revision": "34cd0fdd17f5022cbddc85b7676b2d255a6b7ee1",
-          "version": "1.2.1"
-        }
-      },
-      {
-        "package": "BuilderConfiguration",
-        "repositoryURL": "https://github.com/elegantchaos/BuilderConfiguration.git",
-        "state": {
-          "branch": null,
-          "revision": "560f557d88437a724b9d548cf57d11e066d0d08b",
-          "version": "1.1.3"
-        }
-      },
-      {
-        "package": "CommandShell",
-        "repositoryURL": "https://github.com/elegantchaos/CommandShell",
-        "state": {
-          "branch": null,
-          "revision": "981d563e7c3689036b7af11292ce3396dec232b6",
-          "version": "2.1.3"
-        }
-      },
-      {
-        "package": "Files",
-        "repositoryURL": "https://github.com/elegantchaos/Files.git",
-        "state": {
-          "branch": null,
-          "revision": "0fc27ae20624324f3a44733412fad9649d588fed",
-          "version": "1.1.3"
-        }
-      },
-      {
-        "package": "Logger",
-        "repositoryURL": "https://github.com/elegantchaos/Logger.git",
-        "state": {
-          "branch": null,
-          "revision": "e8a0dea5e826a6b3f7d020bd113247274991fb97",
-          "version": "1.5.5"
-        }
-      },
-      {
-        "package": "Runner",
-        "repositoryURL": "https://github.com/elegantchaos/Runner.git",
-        "state": {
-          "branch": null,
-          "revision": "db79e08a53d822156221dc2614970b9dfe1301f5",
-          "version": "1.3.0"
-        }
-      },
-      {
-        "package": "SemanticVersion",
-        "repositoryURL": "https://github.com/elegantchaos/SemanticVersion.git",
-        "state": {
-          "branch": null,
-          "revision": "6bda5a45a2f687a82a0fbb002bee8ad31e44f478",
-          "version": "1.1.0"
-        }
-      },
-      {
-        "package": "swift-argument-parser",
-        "repositoryURL": "https://github.com/apple/swift-argument-parser",
-        "state": {
-          "branch": null,
-          "revision": "eb51f949cdd0c9d88abba9ce79d37eb7ea1231d0",
-          "version": "0.2.0"
-        }
-      },
-      {
-        "package": "XCTestExtensions",
-        "repositoryURL": "https://github.com/elegantchaos/XCTestExtensions.git",
-        "state": {
-          "branch": null,
-          "revision": "15991478b5c9bda527a0a59567ad0fa26940f74c",
-          "version": "1.1.2"
-        }
-      },
-      {
-        "package": "XPkgPackage",
-        "repositoryURL": "https://github.com/elegantchaos/XPkgPackage.git",
-        "state": {
-          "branch": null,
-          "revision": "7d0c8d8449d396326672eb7000ed81c3353941fa",
-          "version": "1.0.9"
-        }
+  "pins" : [
+    {
+      "identity" : "builder",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Builder.git",
+      "state" : {
+        "revision" : "34cd0fdd17f5022cbddc85b7676b2d255a6b7ee1",
+        "version" : "1.2.1"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "builderconfiguration",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/BuilderConfiguration.git",
+      "state" : {
+        "revision" : "560f557d88437a724b9d548cf57d11e066d0d08b",
+        "version" : "1.1.3"
+      }
+    },
+    {
+      "identity" : "commandshell",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/CommandShell",
+      "state" : {
+        "revision" : "981d563e7c3689036b7af11292ce3396dec232b6",
+        "version" : "2.1.3"
+      }
+    },
+    {
+      "identity" : "expressions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Expressions.git",
+      "state" : {
+        "revision" : "3f1a4caccb9e33d95d0650e9b78350acd3576300",
+        "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "files",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Files.git",
+      "state" : {
+        "revision" : "0fc27ae20624324f3a44733412fad9649d588fed",
+        "version" : "1.1.3"
+      }
+    },
+    {
+      "identity" : "logger",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Logger.git",
+      "state" : {
+        "revision" : "e8a0dea5e826a6b3f7d020bd113247274991fb97",
+        "version" : "1.5.5"
+      }
+    },
+    {
+      "identity" : "runner",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Runner.git",
+      "state" : {
+        "revision" : "db79e08a53d822156221dc2614970b9dfe1301f5",
+        "version" : "1.3.0"
+      }
+    },
+    {
+      "identity" : "semanticversion",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/SemanticVersion.git",
+      "state" : {
+        "revision" : "6bda5a45a2f687a82a0fbb002bee8ad31e44f478",
+        "version" : "1.1.0"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "eb51f949cdd0c9d88abba9ce79d37eb7ea1231d0",
+        "version" : "0.2.0"
+      }
+    },
+    {
+      "identity" : "xctestextensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/XCTestExtensions.git",
+      "state" : {
+        "revision" : "15991478b5c9bda527a0a59567ad0fa26940f74c",
+        "version" : "1.1.2"
+      }
+    },
+    {
+      "identity" : "xpkgpackage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/XPkgPackage.git",
+      "state" : {
+        "revision" : "7d0c8d8449d396326672eb7000ed81c3353941fa",
+        "version" : "1.0.9"
+      }
+    }
+  ],
+  "version" : 2
 }

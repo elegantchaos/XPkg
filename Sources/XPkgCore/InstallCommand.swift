@@ -42,7 +42,7 @@ public struct InstallCommand: ParsableCommand {
         
         // resolve the spec to a full url and a version
         output.log("Searching for package \(packageSpec)...")
-        let (url, version) = engine.remotePackageURL(packageSpec)
+        let (url, version) = try engine.remotePackageURL(packageSpec)
         var updatedManifest = manifest
         if let version = version, !version.isEmpty {
             engine.output.log("Installing \(url.path) \(version).")

@@ -6,6 +6,7 @@
 
 import ArgumentParser
 import CommandShell
+import Expressions
 import Files
 import Foundation
 import Logger
@@ -70,11 +71,6 @@ public class Engine: CommandEngine {
         ]
     }
     
-    enum Failure: Error {
-        case packageNotInstalled(String)
-        case couldntLoadDependencyData
-        case couldntDecodeDependencyData
-    }
     
     internal var xpkgURL: URL {
         let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
@@ -145,17 +141,24 @@ public class Engine: CommandEngine {
     /// - a qualified org/package page - we try to make this into a github URL
     /// - Parameter package: the package spec
     /// - Parameter skipValidation: whether to perform online validation; provided for testing
-    internal func remotePackageURL(_ package: String, validator: RepoValidator? = nil) -> (URL, String?) {
+    internal func remotePackageURL(_ package: String, validator: RepoValidator? = nil) throws -> (URL, String?) {
         let validate = validator ?? { url in self.validate(url) }
         
         if let remote = URL(string: package), let version = validate(remote) {
             return (remote, version)
         }
         
+        let tryPrefixing = !package.starts(with: "xpkg-")
+        let containsSlash = package.contains("/")
+        
         var paths = ["\(package)"]
-        for org in defaultOrgs {
-            paths.append("\(org)/\(package)")
-            paths.append("\(org)/xpkg-\(package)")
+        if !containsSlash {
+            for org in defaultOrgs {
+                paths.append("\(org)/\(package)")
+                if tryPrefixing {
+                    paths.append("\(org)/xpkg-\(package)")
+                }
+            }
         }
 
         var methods = ["https://github.com/"]
@@ -166,13 +169,14 @@ public class Engine: CommandEngine {
 
         for method in methods {
             for path in paths {
+                verbose.log("Trying \(method)\(path)")
                 if let remote = URL(string: "\(method)\(path)"), let version = validate(remote) {
                     return (remote, version)
                 }
             }
         }
         
-        return (URL(string: "git@github.com:\(package)")!, nil)
+        throw Failure.badPackageSpec(package)
     }
     
     internal var vaultURL: URL {
@@ -230,14 +234,14 @@ public class Engine: CommandEngine {
     }
     
     var dependencyCacheURL: URL {
-        vaultURL.appendingPathComponent("Package.json")
+        vaultURL.appendingPathComponent("Dependencies.json")
     }
     
     var manifestURL: URL {
         vaultURL.appendingPathComponent("Package.swift")
     }
     
-    func dependencyData(readCache: Bool, writeCache: Bool) -> Data? {
+    func dependencyData(readCache: Bool, writeCache: Bool) throws -> Data {
         let cachedURL = dependencyCacheURL
         
         if readCache, let cached = try? Data(contentsOf: cachedURL) {
@@ -245,10 +249,24 @@ public class Engine: CommandEngine {
             return cached
         }
 
-        verbose.log("Reading dependencies from \(vaultURL).")
-        guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
-            verbose.log("Failed to fetch dependencies.")
-            return nil
+        verbose.log("Reading dependencies from \(manifestURL).")
+        guard let showResult = swift(["package", "show-dependencies", "--format", "json"]) else {
+            throw Failure.couldntLoadDependencyData
+        }
+        
+        let code = showResult.status
+        let output = showResult.stderr
+        guard code == 0 else {
+            let pattern = try! NSRegularExpression(pattern: #"/'vault': product '(.*)' required by package 'vault' target 'Installed' not found in package '(.*))'."#)
+            let range = NSRange(location: 0, length: output.count)
+            let matches = pattern.matches(in: output, range: range)
+            if let match = matches.first {
+                let product = (output as NSString).substring(with: match.range(at: 1))
+                let package = (output as NSString).substring(with: match.range(at: 2))
+                throw Failure.packageMissingHooks(product, package)
+            }
+
+            throw Failure.errorLoadingDependencyData(code, output)
         }
             
         var json = showResult.stdout
@@ -257,14 +275,13 @@ public class Engine: CommandEngine {
         }
             
         jsonChannel.log(json)
-        verbose.log(showResult.stderr)
             
         if writeCache {
             verbose.log("Saved cached dependencies.")
             try? json.write(to: cachedURL, atomically: true, encoding: .utf8)
         }
         
-        return json.data(using: .utf8)
+        return json.data(using: .utf8)!
     }
     
     func loadManifest(readCache: Bool = true, writeCache: Bool = true, createIfMissing: Bool = false) throws -> Package {
@@ -273,9 +290,7 @@ public class Engine: CommandEngine {
             return Package(name: "XPkgVault")
         }
         
-        guard let data = dependencyData(readCache: readCache, writeCache: writeCache) else {
-            throw Failure.couldntLoadDependencyData
-        }
+        let data = try dependencyData(readCache: readCache, writeCache: writeCache)
 
         do {
             let decode = JSONDecoder()
@@ -357,8 +372,10 @@ public class Engine: CommandEngine {
         }
 
         saveManifestAndRemoveCachedDependencies(manifest: newPackage)
+        
         do {
             let resolved = try loadManifest()
+            try? fileManager.removeItem(at: backupURL)
             return resolved
         } catch {
             // backup failed manifest for debugging
