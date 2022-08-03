@@ -257,7 +257,7 @@ public class Engine: CommandEngine {
         let code = showResult.status
         let output = showResult.stderr
         guard code == 0 else {
-            let pattern = try! NSRegularExpression(pattern: #"/'vault': product '(.*)' required by package 'vault' target 'Installed' not found in package '(.*))'."#)
+            let pattern = try! NSRegularExpression(pattern: #"'vault': product '(.*)' required by package 'vault' target 'Installed' not found in package '(.*)'."#)
             let range = NSRange(location: 0, length: output.count)
             let matches = pattern.matches(in: output, range: range)
             if let match = matches.first {
