@@ -221,7 +221,7 @@ struct Package: Decodable {
             message = "Failed to edit \(name)."
         }
         
-        engine.removeManifestCache()
+        engine.removeDependencyCache()
         let _ = engine.swift(args, failureMessage: message)
     }
 
@@ -230,7 +230,7 @@ struct Package: Decodable {
      */
     
     func unedit(engine: Engine) -> Bool {
-        engine.removeManifestCache()
+        engine.removeDependencyCache()
         guard let result = engine.swift(["package", "unedit", name]) else {
             engine.output.log("Failed to unlink \(name) from \(path).")
             return false

@@ -26,8 +26,8 @@ public struct RemoveCommand: ParsableCommand {
         let engine: Engine = common.loadEngine()
         let output = engine.output
         
-        let manifest = engine.loadManifest()
-        let package = engine.existingPackage(from: packageName, manifest: manifest)
+        let manifest = try engine.loadManifest()
+        let package = try engine.existingPackage(from: packageName, manifest: manifest)
 
         var safeToDelete = force
         if !safeToDelete {
@@ -61,7 +61,7 @@ public struct RemoveCommand: ParsableCommand {
             engine.processUpdate(from: manifest, to: updatedManifest)
             
             // try to write the updated manifest
-            guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count < manifest.dependencies.count else {
+            guard let resolved = try engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count < manifest.dependencies.count else {
                 output.log("Couldn't remove `\(package.name)`.")
                 return
             }

@@ -26,26 +26,26 @@ public struct ListCommand: ParsableCommand {
     public func run() throws {
         let engine: Engine = common.loadEngine()
         if oneline {
-          listOneline(engine: engine)
+          try listOneline(engine: engine)
         } else if compact {
-            listCompact(engine: engine)
+            try listCompact(engine: engine)
         } else if full {
-            listFull(engine: engine)
+            try listFull(engine: engine)
         } else {
-            listNormal(engine: engine)
+            try listNormal(engine: engine)
         }
     }
 
-    func listOneline(engine: Engine) {
+    func listOneline(engine: Engine) throws {
         var output: [String] = []
-        let _ = engine.forEachPackage { (package) in
+        let _ = try engine.forEachPackage { (package) in
             output.append(package.name)
         }
         engine.output.log(output.joined(separator: " "))
     }
 
-    func listCompact(engine: Engine) {
-        let gotPackages = engine.forEachPackage { (package) in
+    func listCompact(engine: Engine) throws {
+        let gotPackages = try engine.forEachPackage { (package) in
             engine.output.log("\(package.name)")
         }
         if !gotPackages {
@@ -53,9 +53,9 @@ public struct ListCommand: ParsableCommand {
         }
     }
 
-    func listNormal(engine: Engine) {
+    func listNormal(engine: Engine) throws {
         var gotLinked = false
-        let gotPackages = engine.forEachPackage { (package) in
+        let gotPackages = try engine.forEachPackage { (package) in
             let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
             let flags = linked ? "*" : " "
             gotLinked = gotLinked || linked
@@ -72,8 +72,8 @@ public struct ListCommand: ParsableCommand {
         }
     }
 
-    func listFull(engine: Engine) {
-        let gotPackages = engine.forEachPackage { (package) in
+    func listFull(engine: Engine) throws {
+        let gotPackages = try engine.forEachPackage { (package) in
             let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
             let location = linked ? "\(package.local.path) (linked)" : package.local.path
             let status = package.status(engine: engine)

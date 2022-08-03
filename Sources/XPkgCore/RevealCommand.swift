@@ -22,8 +22,8 @@ public struct RevealCommand: ParsableCommand {
     
     public func run() throws {
         let engine: Engine = common.loadEngine()
-        let manifest = engine.loadManifest()
-        let package = engine.existingPackage(from: packageName, manifest: manifest)
+        let manifest = try engine.loadManifest()
+        let package = try engine.existingPackage(from: packageName, manifest: manifest)
         if path {
             engine.output.log(package.path)
         } else {

@@ -23,12 +23,12 @@ public struct CheckCommand: ParsableCommand {
     public func run() throws {
         let engine: Engine = common.loadEngine()
         if packageName == "" {
-            let _ = engine.forEachPackage { (package) in
+            let _ = try engine.forEachPackage { (package) in
                 check(package: package, engine: engine)
             }
         } else {
-            let manifest = engine.loadManifest()
-            let package = engine.existingPackage(from: packageName, manifest: manifest)
+            let manifest = try engine.loadManifest()
+            let package = try engine.existingPackage(from: packageName, manifest: manifest)
             check(package: package, engine: engine)
         }
     }

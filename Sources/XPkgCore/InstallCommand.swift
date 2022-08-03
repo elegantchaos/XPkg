@@ -25,13 +25,14 @@ public struct InstallCommand: ParsableCommand {
     
     public func run() throws {
         let engine: Engine = common.loadEngine()
-        InstallCommand.install(engine: engine, packageSpec: packageSpec, asProject: asProject, asName: asName)
+        try InstallCommand.install(engine: engine, packageSpec: packageSpec, asProject: asProject, asName: asName)
     }
     
-    static func install(engine: Engine, packageSpec: String, asProject: Bool = false, asName: String? = nil, linkTo: URL? = nil) {
+    static func install(engine: Engine, packageSpec: String, asProject: Bool = false, asName: String? = nil, linkTo: URL? = nil) throws {
         let output = engine.output
-        
-        let manifest = engine.loadManifest()
+
+        // load the existing manifest; if it's missing we'll create a new empty one
+        let manifest = try engine.loadManifest(createIfMissing: true)
         
         // do a quick check first for an existing local package with the name/spec
         if let existingPackage = manifest.package(matching: packageSpec) {
@@ -84,7 +85,8 @@ public struct InstallCommand: ParsableCommand {
         
         // if it wrote ok, run the install actions for any new packages
         // we need to reload the package once again as it has moved
-        let reloadedManifest = engine.loadManifest()
+        let reloadedManifest = try engine.loadManifest(readCache: false, writeCache: true)
+        
         engine.verbose.log("Running actions for new packages.")
         engine.processUpdate(from: manifest, to: reloadedManifest)
         

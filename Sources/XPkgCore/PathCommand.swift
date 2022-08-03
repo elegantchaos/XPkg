@@ -31,7 +31,7 @@ public struct PathCommand: ParsableCommand {
         } else if vault {
             url = engine.vaultURL
         } else if let name = packageName {
-            if let package = engine.possiblePackage(named: name, manifest: engine.loadManifest()) {
+            if let package = engine.possiblePackage(named: name, manifest: try engine.loadManifest()) {
                 url = package.local
             } else {
                 let project = engine.projectsURL.appendingPathComponent(name)

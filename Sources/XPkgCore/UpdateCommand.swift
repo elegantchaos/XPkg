@@ -26,12 +26,12 @@ public struct UpdateCommand: ParsableCommand {
         if updateSelf {
             updateSelf(engine: engine)
         } else if let packageName = packageName {
-            let manifest = engine.loadManifest()
-            let package = engine.existingPackage(from: packageName, manifest: manifest)
+            let manifest = try engine.loadManifest()
+            let package = try engine.existingPackage(from: packageName, manifest: manifest)
             update(package: package, engine: engine)
         } else {
             engine.output.log("Checking all packages for updates...")
-            let _ = engine.forEachPackage { (package) in
+            let _ = try engine.forEachPackage { (package) in
                 update(package: package, engine: engine)
             }
             engine.output.log("Done.")

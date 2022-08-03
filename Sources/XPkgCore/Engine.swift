@@ -70,6 +70,12 @@ public class Engine: CommandEngine {
         ]
     }
     
+    enum Failure: Error {
+        case packageNotInstalled(String)
+        case couldntLoadDependencyData
+        case couldntDecodeDependencyData
+    }
+    
     internal var xpkgURL: URL {
         let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
         let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
@@ -223,52 +229,63 @@ public class Engine: CommandEngine {
         }
     }
     
-    func tryToLoadManifest() -> Package? {
-        do {
-            let cachedURL = vaultURL.appendingPathComponent("Package.json")
-            var json = ""
-            if let cached = try? String(contentsOf: cachedURL, encoding: .utf8) {
-                verbose.log("Loading cached manifest.")
-                json = cached
-            }
-            
-            if json.isEmpty {
-                verbose.log("Loading manifest from \(vaultURL).")
-                guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
-                    verbose.log("Failed to fetch dependencies.")
-                    return nil
-                }
-                
-                json = showResult.stdout
-                if let index = json.firstIndex(of: "{") {
-                    json.removeSubrange(json.startIndex ..< index)
-                }
-                
-                jsonChannel.log(json)
-                verbose.log(showResult.stderr)
-                
-                try? json.write(to: cachedURL, atomically: true, encoding: .utf8)
-            }
-            
-            let decode = JSONDecoder()
-            if let data = json.data(using: .utf8) {
-                do {
-                    let manifest = try decode.decode(Package.self, from: data)
-                    return manifest
-                }
-            }
-            verbose.log("Failed to decode manifest.")
-        } catch {
-            verbose.log(error)
-        }
-        
-        verbose.log("Failed to load manifest.")
-        return nil
+    var dependencyCacheURL: URL {
+        vaultURL.appendingPathComponent("Package.json")
     }
     
-    func loadManifest() -> Package {
-        let manifest = tryToLoadManifest()
-        return manifest ?? Package(name: "XPkgVault")
+    var manifestURL: URL {
+        vaultURL.appendingPathComponent("Package.swift")
+    }
+    
+    func dependencyData(readCache: Bool, writeCache: Bool) -> Data? {
+        let cachedURL = dependencyCacheURL
+        
+        if readCache, let cached = try? Data(contentsOf: cachedURL) {
+            verbose.log("Loaded cached dependencies.")
+            return cached
+        }
+
+        verbose.log("Reading dependencies from \(vaultURL).")
+        guard let showResult = swift(["package", "show-dependencies", "--format", "json"]), showResult.status == 0 else {
+            verbose.log("Failed to fetch dependencies.")
+            return nil
+        }
+            
+        var json = showResult.stdout
+        if let index = json.firstIndex(of: "{") {
+            json.removeSubrange(json.startIndex ..< index)
+        }
+            
+        jsonChannel.log(json)
+        verbose.log(showResult.stderr)
+            
+        if writeCache {
+            verbose.log("Saved cached dependencies.")
+            try? json.write(to: cachedURL, atomically: true, encoding: .utf8)
+        }
+        
+        return json.data(using: .utf8)
+    }
+    
+    func loadManifest(readCache: Bool = true, writeCache: Bool = true, createIfMissing: Bool = false) throws -> Package {
+
+        if !fileManager.fileExists(atURL: manifestURL), createIfMissing {
+            return Package(name: "XPkgVault")
+        }
+        
+        guard let data = dependencyData(readCache: readCache, writeCache: writeCache) else {
+            throw Failure.couldntLoadDependencyData
+        }
+
+        do {
+            let decode = JSONDecoder()
+            let manifestPackage = try decode.decode(Package.self, from: data)
+            return manifestPackage
+        } catch {
+            verbose.log("Failed to decode manifest.")
+            verbose.log(error)
+            throw Failure.couldntDecodeDependencyData
+        }
     }
     
     func saveManifest(manifest: Package) {
@@ -314,7 +331,7 @@ public class Engine: CommandEngine {
         do {
             try createInstalledSourceStub()
             try manifestText.write(to: url, atomically: true, encoding: .utf8)
-            removeManifestCache()
+            removeDependencyCache()
         } catch {
             verbose.log(error)
         }
@@ -327,25 +344,26 @@ public class Engine: CommandEngine {
         try "".write(to: mainURL, atomically: true, encoding: .utf8)
     }
     
-    func removeManifestCache() {
-        let cachedURL = vaultURL.appendingPathComponent("Package.json")
-        try? fileManager.removeItem(at: cachedURL)
+    func removeDependencyCache() {
+        try? fileManager.removeItem(at: dependencyCacheURL)
     }
     
-    func updateManifest(from: Package, to: Package) -> Package? {
-        saveManifest(manifest: to)
-        if let resolved = tryToLoadManifest() {
+    func updateManifest(from oldPackage: Package, to newPackage: Package) -> Package? {
+        removeDependencyCache()
+        saveManifest(manifest: newPackage)
+        do {
+            let resolved = try loadManifest()
             return resolved
+        } catch {
+            // backup failed manifest for debugging
+            let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .short)
+            let failedURL = vaultURL.appendingPathComponent("Failed Package \(date).swift")
+            try? fileManager.moveItem(at: manifestURL, to: failedURL)
+            
+            // revert
+            saveManifest(manifest: oldPackage)
+            return nil
         }
-        
-        // backup failed manifest for debugging
-        let manifestURL = vaultURL.appendingPathComponent("Package.swift")
-        let failedURL = vaultURL.appendingPathComponent("Failed Package.swift")
-        try? fileManager.moveItem(at: manifestURL, to: failedURL)
-        
-        // revert
-        saveManifest(manifest: from)
-        return nil
     }
     
     func processUpdate(from: Package, to: Package) {
@@ -379,8 +397,9 @@ public class Engine: CommandEngine {
         }
     }
     
-    func forEachPackage(_ block: (Package) -> ()) -> Bool {
-        let manifest = loadManifest()
+    func forEachPackage(_ block: (Package) -> ()) throws -> Bool {
+        let manifest = try loadManifest()
+        
         if manifest.dependencies.count == 0 {
             return false
         }
@@ -403,14 +422,31 @@ public class Engine: CommandEngine {
      an argument.
      */
     
-    func existingPackage(from packageName: String, manifest: Package) -> Package {
+    func existingPackage(from packageName: String, manifest: Package) throws -> Package {
         guard let package = possiblePackage(named: packageName, manifest: manifest) else {
-            output.log("Package \(packageName) is not installed.")
-            exit(1)
+            throw Failure.packageNotInstalled(packageName)
         }
         
         return package
     }
+    
+//    func fail(_ failure: Failure) -> Never {
+//        let message: String
+//        let code: Int32
+//
+//        switch failure {
+//            case .packageNotInstalled(let packageName):
+//                message = "Package \(packageName) is not installed."
+//                code = 1
+//                
+//            case .couldntLoadManifest:
+//                message = "Manifest is missing or corrupt."
+//                code = 2
+//        }
+//        
+//        output.log(message)
+//        exit(code)
+//    }
     
     func exit(_ code: Int32) -> Never {
         Logger.defaultManager.flush()
