@@ -380,17 +380,6 @@ public class Engine: CommandEngine {
         
         saveManifestAndRemoveCachedDependencies(manifest: newPackage)
         
-        defer {
-            try? fileManager.removeItem(at: manifestURL)
-            do {
-                try fileManager.moveItem(at: backupURL, to: manifestURL)
-                verbose.log("Restored manifest from backup.")
-            } catch {
-                verbose.log("Failed to restore previous manifest. Will attempt to recreate it.")
-                saveManifestAndRemoveCachedDependencies(manifest: oldPackage)
-            }
-        }
-        
         do {
             let resolved = try loadManifest()
             return resolved
@@ -400,6 +389,14 @@ public class Engine: CommandEngine {
             let failedURL = vaultURL.appendingPathComponent("Failed Package \(date).swift")
             try? fileManager.moveItem(at: manifestURL, to: failedURL)
             verbose.log("Failed to load updated manifest. Saved manifest as \(failedURL) for inspection.")
+
+            do {
+                try fileManager.moveItem(at: backupURL, to: manifestURL)
+                verbose.log("Restored manifest from backup.")
+            } catch {
+                verbose.log("Failed to restore previous manifest. Will attempt to recreate it.")
+                saveManifestAndRemoveCachedDependencies(manifest: oldPackage)
+            }
             
             throw error
         }
