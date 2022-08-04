@@ -43,7 +43,7 @@ public struct LinkCommand: ParsableCommand {
 
         let packageURL = linkedURL.appendingPathComponent("Package.swift")
         if FileManager.default.fileExists(at: packageURL) {
-            try InstallCommand.install(engine: engine, packageSpec: package, linkTo: linkedURL)
+            try engine.install(packageSpec: package, linkTo: linkedURL)
         } else {
             engine.output.log("Linked \(package) as an alias.")
             let defaults = UserDefaults.standard

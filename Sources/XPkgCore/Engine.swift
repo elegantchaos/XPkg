@@ -65,6 +65,7 @@ public class Engine: CommandEngine {
             LinkCommand.self,
             ListCommand.self,
             PathCommand.self,
+            RebuildCommand.self,
             ReinstallCommand.self,
             RemoveCommand.self,
             RenameCommand.self,
@@ -517,5 +518,99 @@ public class Engine: CommandEngine {
             }
         }
         return nil
+    }
+    
+    /// Pull the latest version of XPkg, then re-run the bootstrap script
+    /// to build & install it.
+    func update() throws {
+        output.log("Updating xpkg.")
+        let url = xpkgURL
+        let codeURL = url.appendingPathComponent("code")
+        let runner = Runner(for: gitURL, cwd: codeURL)
+        let result = try runner.sync(arguments: ["pull"])
+        output.log(result.stdout)
+
+        try runBootstrap()
+    }
+
+    /// Run the bootstrap script.
+    /// This will rebuild Xpkg and (re)install any essential links.
+    func runBootstrap() throws {
+        output.log("Rebuilding.")
+        let codeURL = xpkgURL.appendingPathComponent("code")
+        let bootstrapURL = codeURL.appendingPathComponent(".bin").appendingPathComponent("bootstrap")
+        let bootstrapRunner = Runner(for: bootstrapURL, cwd: codeURL)
+        let result = try bootstrapRunner.sync()
+        output.log(result.stdout)
+    }
+
+    /// Install a package.
+    func install(packageSpec: String, asProject: Bool = false, asName: String? = nil, linkTo: URL? = nil) throws {
+        // load the existing manifest; if it's missing we'll create a new empty one
+        let manifest = try loadManifest(createIfMissing: true)
+        
+        // do a quick check first for an existing local package with the name/spec
+        if let existingPackage = manifest.package(matching: packageSpec) {
+            output.log("Package `\(existingPackage.name)` is already installed.")
+            return
+        }
+        
+        // resolve the spec to a full url and a version
+        output.log("Searching for package \(packageSpec)...")
+        let (url, version) = try remotePackageURL(packageSpec)
+        
+        // now we have a full spec, check again to see if it's already installed
+        if let existingPackage = manifest.package(matching: url.deletingPathExtension().path) {
+            output.log("Package `\(existingPackage.name)` is already installed. Use `\(name) upgrade \(packageSpec)` to upgrade it to the latest version.")
+            return
+        }
+
+        if let version = version, !version.isEmpty {
+            output.log("Installing \(url.path) \(version).")
+        } else {
+            output.log("Installing \(url.path).")
+        }
+
+        // add the package to the manifest
+        verbose.log("Adding package to manifest.")
+        let newPackage = Package(url: url, version: version ?? "")
+        var updatedManifest = manifest
+        updatedManifest.add(package: newPackage)
+        
+        // try to write the update
+        verbose.log("Writing manifest.")
+        let resolved = try updateManifest(from: manifest, to: updatedManifest)
+        
+        guard resolved.dependencies.count > manifest.dependencies.count else {
+            output.log("Couldn't add `\(packageSpec)`.")
+            return
+        }
+        
+        // link into project if requested
+        guard let installedPackage = resolved.package(withURL: url) else {
+            output.log("Couldn't find package.")
+            verbose.log(resolved.dependencies.map({ $0.url }))
+            return
+        }
+
+        let specifyLink = asProject || (linkTo != nil)
+        let name = asName ?? installedPackage.name
+        var linkURL: URL? = nil
+        if specifyLink {
+            let pathURL = linkTo ?? projectsURL.appendingPathComponent(name)
+            verbose.log("Linking package into \(pathURL.path).")
+            linkURL = pathURL
+        } else {
+            verbose.log("Linking package into Packages/.")
+        }
+        
+        installedPackage.edit(at: linkURL, engine: self)
+        
+        // if it wrote ok, run the install actions for any new packages
+        // we need to reload the package once again as it has moved
+        let reloadedManifest = try loadManifest(readCache: false, writeCache: true)
+        
+        verbose.log("Running actions for new packages.")
+        processUpdate(from: manifest, to: reloadedManifest)
     }
 }

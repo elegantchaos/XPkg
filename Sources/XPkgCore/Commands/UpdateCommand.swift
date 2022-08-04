@@ -24,7 +24,7 @@ public struct UpdateCommand: ParsableCommand {
     public func run() throws {
         let engine: Engine = common.loadEngine()
         if updateSelf {
-            updateSelf(engine: engine)
+            try engine.update()
         } else if let packageName = packageName {
             let manifest = try engine.loadManifest()
             let package = try engine.existingPackage(from: packageName, manifest: manifest)
@@ -55,21 +55,5 @@ public struct UpdateCommand: ParsableCommand {
         }
     }
     
-    func updateSelf(engine: Engine) {
-        engine.output.log("Updating xpkg.")
-        let url = engine.xpkgURL
-        let codeURL = url.appendingPathComponent("code")
-        let runner = Runner(for: engine.gitURL, cwd: codeURL)
-        if let result = try? runner.sync(arguments: ["pull"]) {
-            engine.output.log(result.stdout)
-        }
-
-        engine.output.log("Rebuilding.")
-        let bootstrapURL = codeURL.appendingPathComponent(".bin").appendingPathComponent("bootstrap")
-        let bootstrapRunner = Runner(for: bootstrapURL, cwd: codeURL)
-        if let result = try? bootstrapRunner.sync() {
-            engine.output.log(result.stdout)
-        }
-    }
 
 }
