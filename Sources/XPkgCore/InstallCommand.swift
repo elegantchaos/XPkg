@@ -43,7 +43,13 @@ public struct InstallCommand: ParsableCommand {
         // resolve the spec to a full url and a version
         output.log("Searching for package \(packageSpec)...")
         let (url, version) = try engine.remotePackageURL(packageSpec)
-        var updatedManifest = manifest
+        
+        // now we have a full spec, check again to see if it's already installed
+        if let existingPackage = manifest.package(matching: url.deletingPathExtension().path) {
+            output.log("Package `\(existingPackage.name)` is already installed. Use `\(engine.name) upgrade \(packageSpec)` to upgrade it to the latest version.")
+            return
+        }
+
         if let version = version, !version.isEmpty {
             engine.output.log("Installing \(url.path) \(version).")
         } else {
@@ -53,7 +59,7 @@ public struct InstallCommand: ParsableCommand {
         // add the package to the manifest
         engine.verbose.log("Adding package to manifest.")
         let newPackage = Package(url: url, version: version ?? "")
-        updatedManifest = manifest
+        var updatedManifest = manifest
         updatedManifest.add(package: newPackage)
         
         // try to write the update
