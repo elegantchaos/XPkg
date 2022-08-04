@@ -120,9 +120,14 @@ struct Package: Decodable {
         return nil
     }
     
+    func name(contains string: String) -> Bool {
+        guard let url = URL(string: url) else { return false }
+        return url.path.contains(string)
+    }
+    
     func package(named name: String) -> Package? {
         for package in dependencies {
-            if (package.name == name) || (package.name == "xpkg-\(name)") || (package.url.contains(name)) {
+            if (package.name == name) || (package.name == "xpkg-\(name)") || package.name(contains: name) {
                 return package
             }
         }
