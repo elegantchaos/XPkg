@@ -61,7 +61,10 @@ public struct RemoveCommand: ParsableCommand {
             engine.processUpdate(from: manifest, to: updatedManifest)
             
             // try to write the updated manifest
-            guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count < manifest.dependencies.count else {
+            let resolved = try engine.updateManifest(from: manifest, to: updatedManifest)
+
+            // check that the count went down
+            guard resolved.dependencies.count < manifest.dependencies.count else {
                 output.log("Couldn't remove `\(package.name)`.")
                 return
             }

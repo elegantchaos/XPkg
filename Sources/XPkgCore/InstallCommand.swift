@@ -58,7 +58,9 @@ public struct InstallCommand: ParsableCommand {
         
         // try to write the update
         engine.verbose.log("Writing manifest.")
-        guard let resolved = engine.updateManifest(from: manifest, to: updatedManifest), resolved.dependencies.count > manifest.dependencies.count else {
+        let resolved = try engine.updateManifest(from: manifest, to: updatedManifest)
+        
+        guard resolved.dependencies.count > manifest.dependencies.count else {
             output.log("Couldn't add `\(packageSpec)`.")
             return
         }

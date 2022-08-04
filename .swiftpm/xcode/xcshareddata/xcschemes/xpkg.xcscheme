@@ -80,6 +80,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "install Logger"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "update"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -89,7 +93,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "path RobinOfFarringdon"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

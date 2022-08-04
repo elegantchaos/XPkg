@@ -42,7 +42,7 @@ extension URLSession {
 
 public class Engine: CommandEngine {
     static let missingProductPattern = try! NSRegularExpression(pattern: #"'vault': product '(.*)' required by package 'vault' target 'Installed' not found in package '(.*)'."#)
-
+//                                                                         'vault': product 'Logger-xpkg-hooks' required by package 'vault' target 'Installed' not found in package 'Logger'
     let jsonChannel: Channel
     let fileManager = FileManager.default
     
@@ -364,36 +364,45 @@ public class Engine: CommandEngine {
         try? fileManager.removeItem(at: dependencyCacheURL)
     }
     
-    func updateManifest(from oldPackage: Package, to newPackage: Package) -> Package? {
+    func updateManifest(from oldPackage: Package, to newPackage: Package) throws -> Package {
         let backupURL = manifestURL.appendingPathExtension("backup")
         do {
             try fileManager.moveItem(at: manifestURL, to: backupURL)
+            verbose.log("Backed up manifest to \(backupURL).")
         } catch {
             verbose.log("Failed to backup existing manifest.")
         }
-
+        
+        defer {
+            verbose.log("Removing backup if still present.")
+            try? fileManager.removeItem(at: backupURL)
+        }
+        
         saveManifestAndRemoveCachedDependencies(manifest: newPackage)
+        
+        defer {
+            try? fileManager.removeItem(at: manifestURL)
+            do {
+                try fileManager.moveItem(at: backupURL, to: manifestURL)
+                verbose.log("Restored manifest from backup.")
+            } catch {
+                verbose.log("Failed to restore previous manifest. Will attempt to recreate it.")
+                saveManifestAndRemoveCachedDependencies(manifest: oldPackage)
+            }
+        }
         
         do {
             let resolved = try loadManifest()
-            try? fileManager.removeItem(at: backupURL)
             return resolved
         } catch {
             // backup failed manifest for debugging
             let date = DateFormatter.localizedString(from: Date(), dateStyle: .short, timeStyle: .short)
             let failedURL = vaultURL.appendingPathComponent("Failed Package \(date).swift")
             try? fileManager.moveItem(at: manifestURL, to: failedURL)
+            verbose.log("Failed to load updated manifest. Saved manifest as \(failedURL) for inspection.")
+            
+            throw error
         }
-        
-        do {
-            try fileManager.removeItem(at: manifestURL)
-            try fileManager.moveItem(at: backupURL, to: manifestURL)
-        } catch {
-            verbose.log("Failed to restore previous manifest. Will attempt to recreate it.")
-            saveManifestAndRemoveCachedDependencies(manifest: oldPackage)
-        }
-
-        return nil
     }
     
     func processUpdate(from: Package, to: Package) {
