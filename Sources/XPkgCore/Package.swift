@@ -121,8 +121,18 @@ struct Package: Decodable {
     }
     
     func name(contains string: String) -> Bool {
-        guard let url = URL(string: url) else { return false }
-        return url.path.contains(string)
+        let prefix = "git@github.com:"
+        if url.starts(with: prefix) {
+            let start = url.index(url.startIndex, offsetBy: prefix.count)
+            let path = url[start...]
+            return path.contains(string)
+        }
+
+        if let url = URL(string: url) {
+            return url.path.contains(string)
+        }        
+
+        return false
     }
     
     func package(named name: String) -> Package? {
