@@ -82,6 +82,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "path git"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "repair"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

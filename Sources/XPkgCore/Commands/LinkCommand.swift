@@ -29,7 +29,7 @@ public struct LinkCommand: ParsableCommand {
         var path = self.packagePath
 
         if package == "" {
-            package = engine.remoteNameForCwd()
+            package = engine.remoteOriginForCwd()
         }
         
         if path == "" {

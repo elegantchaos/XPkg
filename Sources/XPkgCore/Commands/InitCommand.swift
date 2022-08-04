@@ -23,7 +23,7 @@ public struct InitCommand: ParsableCommand {
     public func run() throws {
         let fm = FileManager.default
         let engine: Engine = common.loadEngine()
-        var name = engine.remoteNameForCwd()
+        var name = engine.remoteOriginForCwd()
         var path = engine.localRepoForCwd()
         if path.isEmpty {
             path = fm.currentDirectoryPath

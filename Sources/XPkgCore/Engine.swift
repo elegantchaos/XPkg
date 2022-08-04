@@ -11,6 +11,7 @@ import Files
 import Foundation
 import Logger
 import Runner
+import SemanticVersion
 import XPkgPackage
 
 #if canImport(FoundationNetworking)
@@ -49,7 +50,7 @@ public class Engine: CommandEngine {
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
     
     public required init(options: CommandShellOptions) {
-        jsonChannel = Logger("json", handlers: [Logger.stdoutHandler])
+        jsonChannel = Channel("json", handlers: [Channel.stdoutHandler])
         super.init(options: options)
     }
     
@@ -69,6 +70,7 @@ public class Engine: CommandEngine {
             ReinstallCommand.self,
             RemoveCommand.self,
             RenameCommand.self,
+            RepairCommand.self,
             RevealCommand.self,
             UpdateCommand.self,
         ]
@@ -286,10 +288,14 @@ public class Engine: CommandEngine {
         return json.data(using: .utf8)!
     }
     
+    func emptyManifest() -> Package {
+        Package(name: "XPkgVault")
+    }
+    
     func loadManifest(readCache: Bool = true, writeCache: Bool = true, createIfMissing: Bool = false) throws -> Package {
 
         if !fileManager.fileExists(atURL: manifestURL), createIfMissing {
-            return Package(name: "XPkgVault")
+            return emptyManifest()
         }
         
         let data = try dependencyData(readCache: readCache, writeCache: writeCache)
@@ -486,18 +492,24 @@ public class Engine: CommandEngine {
 //    }
     
     func exit(_ code: Int32) -> Never {
-        Logger.defaultManager.flush()
+        Manager.shared.flush()
         Foundation.exit(code)
     }
     
-    func remoteNameForCwd() -> String {
-        let runner = Runner(for: gitURL)
-        if let result = try? runner.sync(arguments: ["remote", "get-url", "origin"]) {
-            if result.status == 0 {
-                return result.stdout.trimmingCharacters(in: CharacterSet.newlines)
-            }
-        }
-        return ""
+    func remoteOriginForCwd() -> String {
+        return remoteOrigin() ?? ""
+    }
+
+    func remoteOrigin(forLocalURL url: URL? = nil) -> String? {
+        let runner = Runner(for: gitURL, cwd: url)
+        guard let result = try? runner.sync(arguments: ["remote", "get-url", "origin"]), result.status == 0 else { return nil }
+        return result.stdout.trimmingCharacters(in: CharacterSet.newlines)
+    }
+    
+    func remoteURL(forLocalURL url: URL?) -> URL? {
+        guard let origin = remoteOrigin(forLocalURL: url) else { return nil }
+        return URL(string: origin)
+        
     }
     
     func localRepoForCwd()-> String {
@@ -613,4 +625,61 @@ public class Engine: CommandEngine {
         verbose.log("Running actions for new packages.")
         processUpdate(from: manifest, to: reloadedManifest)
     }
+    
+    /// Returns the version of the package, according to `git describe`
+    /// - Parameter engine: The current engine.
+    func currentVersion(forLocalURL url: URL) -> String? {
+        let runner = Runner(for: gitURL, cwd: url)
+        guard let result = try? runner.sync(arguments: ["describe", "--tags"]), result.status == 0 else { return nil }
+        let fullVersion = result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        let version = SemanticVersion(fullVersion)
+        return version.isInvalid ? nil : version.asString(dropTrailingZeros: false)
+    }
+
+    /// Given a local directory, try to make a Package.
+    /// This will work if it's a git directory with an origin remote set,
+    /// and a tagged version.
+    func reconstructPackage(from localURL: URL) -> Package? {
+        guard localURL.isFileURL else { return nil }
+        
+        guard let remoteURL = remoteURL(forLocalURL: localURL) else { return nil }
+        let version = currentVersion(forLocalURL: localURL) ?? "unspecified"
+        
+        return Package(localURL: localURL, remoteURL: remoteURL, version: version)
+    }
+    
+    /// Attempt to repair a corrupt manifest.
+    /// We look in the Packages/ folder inside the value. Each folder in there should be a package,
+    /// so we make a new empty manifest, and then try to install each package in turn.
+    func repair() throws {
+        let packages = fileManager.locations.folder(for: vaultURL).folder("Packages")
+        if packages.exists {
+            var manifest = emptyManifest()
+            try packages.forEach(filter: .folders, recursive: false) { folder in
+                if let package = reconstructPackage(from: folder.url) {
+                    manifest.add(package: package)
+                }
+            }
+            saveManifestAndRemoveCachedDependencies(manifest: manifest)
+        }
+    }
+}
+
+extension SemanticVersion {
+    public func asString(dropTrailingZeros: Bool = true) -> String {
+        guard !isInvalid else {
+            return "<invalid>"
+        }
+
+        guard !isUnknown else {
+            return "<unknown>"
+        }
+        
+        var string = "\(major).\(minor)"
+        if !dropTrailingZeros || patch != 0 {
+            string += ".\(patch)"
+        }
+        return string
+    }
+
 }

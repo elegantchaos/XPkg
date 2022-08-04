@@ -77,7 +77,7 @@ public struct ListCommand: ParsableCommand {
             let linked = !package.local.absoluteString.contains(engine.vaultURL.absoluteString)
             let location = linked ? "\(package.local.path) (linked)" : package.local.path
             let status = package.status(engine: engine)
-            let version = package.currentVersion(engine: engine)
+            let version = engine.currentVersion(forLocalURL: package.local) ?? ""
             let statusString = status == .pristine ? "" : " (\(status))\n"
             engine.output.log("\n\(package.name) (\(version))\n---------------------\n\(package.url)\n\(location)\n\(statusString)")
         }

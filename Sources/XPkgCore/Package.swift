@@ -65,13 +65,6 @@ struct Package: Decodable {
     let url: String
     var dependencies: [Package]
 
-    static func normalize(url: URL) -> URL {
-        let urlNoGitExtension = url.pathExtension == "git" ? url.deletingPathExtension() : url
-        let string = urlNoGitExtension.absoluteString.replacingOccurrences(of: "git@github.com:", with: "https://github.com/")
-        return URL(string: string)!
-    }
-
-    
     init(url: URL, version: String) {
         self.name = url.lastPathComponent
         self.path = ""
@@ -87,7 +80,14 @@ struct Package: Decodable {
         self.version = ""
         self.dependencies = []
     }
-
+    
+    init(localURL: URL, remoteURL: URL, version: String) {
+        self.name = localURL.deletingPathExtension().lastPathComponent
+        self.path = localURL.path
+        self.url = remoteURL.absoluteString
+        self.version = version
+        self.dependencies = []
+    }
     
     var global: Bool { return false }
     var local: URL { return URL(fileURLWithPath: path) }
@@ -97,7 +97,7 @@ struct Package: Decodable {
     }()
 
     lazy var normalized: URL = {
-        return Package.normalize(url: self.remote)
+        remote.normalizedGitURL
     }()
     
     lazy var qualified: String = {
@@ -107,7 +107,7 @@ struct Package: Decodable {
 
     func package(matching spec: String) -> Package? {
         let url = URL(string:spec)
-        let normalised = url == nil ? spec : Package.normalize(url: url!).absoluteString
+        let normalised = url == nil ? spec : url!.normalizedGitURL.absoluteString
         for var package in dependencies {
             if package.name == spec {
                 return package
@@ -145,7 +145,7 @@ struct Package: Decodable {
     }
     
     func package(withURL url: URL) -> Package? {
-        let normalised = Package.normalize(url: url)
+        let normalised = url.normalizedGitURL
         for var package in dependencies {
             if package.normalized == normalised {
                 return package
@@ -303,18 +303,6 @@ struct Package: Decodable {
     }
 
     
-    /// Returns the version of the package, according to `git describe`
-    /// - Parameter engine: The current engine.
-    func currentVersion(engine: Engine) -> String {
-        let runner = Runner(for: engine.gitURL, cwd: local)
-        if let result = try? runner.sync(arguments: ["describe", "--tags"]) {
-            if result.status == 0 {
-                return result.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
-            }
-        }
-        return ""
-    }
-    
     /// Returns the name of the branch that the package is on, or nil if it isn't on a branch.
     /// - Parameter engine: The current engine.
     func currentBranch(engine: Engine) -> String? {
@@ -350,7 +338,7 @@ struct Package: Decodable {
     /// If it's on the latest version tag, or checked out to a branch, we return nil.
     /// - Parameter engine: The current context.
     func needsUpdate(engine: Engine) -> UpdateState {
-        let current = currentVersion(engine: engine)
+        let current = engine.currentVersion(forLocalURL: local) ?? ""
         guard !current.contains("-") else {
             let branch = currentBranch(engine: engine)
             if branch == nil {
