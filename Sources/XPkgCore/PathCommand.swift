@@ -12,6 +12,7 @@ public struct PathCommand: ParsableCommand {
     @Argument(help: "The package to show.") var packageName: String?
     @Flag(name: .customLong("self"), help: "Perform the action on xpkg itself, rather than an installed package.") var asSelf = false
     @Flag(help: "Show the path to the vault.") var vault = false
+    @Flag(help: "Show the path to the projects folder.") var projects = false
     @OptionGroup() var common: CommandShellOptions
 
     static public var configuration: CommandConfiguration = CommandConfiguration(
@@ -30,6 +31,8 @@ public struct PathCommand: ParsableCommand {
             url = engine.xpkgCodeURL
         } else if vault {
             url = engine.vaultURL
+        } else if projects {
+            url = engine.projectsURL
         } else if let name = packageName {
             if let package = engine.possiblePackage(named: name, manifest: try engine.loadManifest()) {
                 url = package.local
