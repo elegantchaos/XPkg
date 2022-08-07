@@ -32,6 +32,10 @@ let package = Package(
                 "XPkgCore"
             ],
             
+            resources: [
+                .process("EmbeddedInfo.plist")
+            ],
+            
             plugins: [
                 .plugin(name: "VersionatorPlugin", package: "Versionator")
             ]
