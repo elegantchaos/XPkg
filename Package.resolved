@@ -1,33 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "builder",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/elegantchaos/Builder.git",
-      "state" : {
-        "revision" : "2c62722be9ed28035242a05f6abcc154a514ca9e",
-        "version" : "1.2.3"
-      }
-    },
-    {
-      "identity" : "builderconfiguration",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/elegantchaos/BuilderConfiguration.git",
-      "state" : {
-        "revision" : "c21cebac262244d920894bba2351ff65c1378bf2",
-        "version" : "1.1.5"
-      }
-    },
-    {
-      "identity" : "commandshell",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/elegantchaos/CommandShell",
-      "state" : {
-        "revision" : "981d563e7c3689036b7af11292ce3396dec232b6",
-        "version" : "2.1.3"
-      }
-    },
-    {
       "identity" : "expressions",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/elegantchaos/Expressions.git",
@@ -77,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/elegantchaos/SemanticVersion.git",
       "state" : {
-        "revision" : "6bda5a45a2f687a82a0fbb002bee8ad31e44f478",
-        "version" : "1.1.0"
+        "revision" : "f6851038d07c1d8dc585754131995654fdcbec43",
+        "version" : "1.1.1"
       }
     },
     {
@@ -88,6 +61,15 @@
       "state" : {
         "revision" : "6b2aa2748a7881eebb9f84fb10c01293e15b52ca",
         "version" : "0.5.0"
+      }
+    },
+    {
+      "identity" : "versionator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/Versionator.git",
+      "state" : {
+        "revision" : "ca4498bd1121c31678770b5752da79841ed20053",
+        "version" : "1.0.2"
       }
     },
     {

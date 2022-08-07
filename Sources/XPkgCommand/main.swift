@@ -6,5 +6,10 @@
 
 import CommandShell
 import XPkgCore
+import SemanticVersion
 
-CommandShell<Engine>.main()
+var info: [String:Any] = [:]
+info[.versionInfoKey] = CurrentVersion.string
+
+CommandShell<Engine>.main(info: info)
+

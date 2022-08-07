@@ -49,9 +49,9 @@ public class Engine: CommandEngine {
     
     var defaultOrgs = ["elegantchaos", "samdeane"] // TODO: read from preference
     
-    public required init(options: CommandShellOptions) {
+    public required init(options: CommandShellOptions, info: [String:Any]?) {
         jsonChannel = Channel("json", handlers: [Channel.stdoutHandler])
-        super.init(options: options)
+        super.init(options: options, info: info)
     }
     
     public override class var abstract: String {
