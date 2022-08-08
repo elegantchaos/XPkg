@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/elegantchaos/Versionator.git",
       "state" : {
-        "revision" : "ca4498bd1121c31678770b5752da79841ed20053",
-        "version" : "1.0.2"
+        "revision" : "d7bf7747ae277f6a5cd3193806262160d579f0cc",
+        "version" : "1.0.3"
       }
     },
     {
