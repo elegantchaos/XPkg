@@ -11,10 +11,11 @@ import SemanticVersion
 
 var info: [String:Any] = [:]
 
-let year = DateFormatter.localizedString(from: Date(), dateStyle: .long, timeStyle: .none)
 info[.versionInfoKey] = CurrentVersion.string
 info[.buildInfoKey] = CurrentVersion.build
-info[.copyrightInfoKey] = "Copyright © \(year) Elegant Chaos. All rights reserved."
+
+let components = Calendar.current.dateComponents([.year], from: Date())
+info[.copyrightInfoKey] = "Copyright © \(components.year!) Elegant Chaos. All rights reserved."
 
 CommandShell<Engine>.main(info: info)
 
