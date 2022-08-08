@@ -11,15 +11,10 @@ import SemanticVersion
 
 var info: [String:Any] = [:]
 
-if let url = Bundle.module.url(forResource: "EmbeddedInfo", withExtension: "plist"),
-   let data = try? Data(contentsOf: url),
-   let decoded = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil),
-   let dictionary = decoded as? [String:Any] {
-    info = dictionary
-}
-
+let year = DateFormatter.localizedString(from: Date(), dateStyle: .long, timeStyle: .none)
 info[.versionInfoKey] = CurrentVersion.string
 info[.buildInfoKey] = CurrentVersion.build
+info[.copyrightInfoKey] = "Copyright © \(year) Elegant Chaos. All rights reserved."
 
 CommandShell<Engine>.main(info: info)
 
