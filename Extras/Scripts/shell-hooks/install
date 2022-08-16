@@ -13,8 +13,9 @@ function install_link() {
         then
           echo "Backing up $2."
           mv "$2" "$2.backup"
+        else
+          rm "$2"
         fi
-        rm "$2"
       fi
     fi
 
