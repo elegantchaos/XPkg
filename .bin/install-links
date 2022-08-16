@@ -21,12 +21,12 @@ else
 fi
 
 $SUDO mkdir -p "$STARTUP"
-$SUDO ln -sf "$ROOT/code/.bin/xpkg-bash" "$STARTUP/xpkg"
+$SUDO ln -sf "$ROOT/code/Extras/Scripts/xpkg-bash" "$STARTUP/xpkg"
 
 $SUDO mkdir -p "$BIN"
 $SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
-$SUDO ln -sf "$ROOT/code/.bin/xpkg-dev" "$BIN/xpkg-dev"
-$SUDO ln -sf "$ROOT/code/.bin/uninstall" "$BIN/xpkg-uninstall"
+$SUDO ln -sf "$ROOT/code/Extras/Scripts/xpkg-dev" "$BIN/xpkg-dev"
+$SUDO ln -sf "$ROOT/code/Extras/Scripts/uninstall" "$BIN/xpkg-uninstall"
 
 mkdir -p "$FISH"
-ln -sf "$ROOT/code/.bin/xg.fish" "$FISH/xg.fish"
+ln -sf "$ROOT/code/Extras/Scripts/xg.fish" "$FISH/xg.fish"

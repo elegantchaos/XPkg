@@ -18,5 +18,5 @@ fi
 
 if [[ $? == 0 ]]
 then
-    source "$ROOT/code/.bin/install"
+    source "$ROOT/code/Extras/Scripts/install"
 fi
