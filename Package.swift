@@ -17,11 +17,13 @@ let package = Package(
         .package(url: "https://github.com/elegantchaos/CommandShell.git", from: "2.1.5"),
         .package(url: "https://github.com/elegantchaos/Expressions.git", from: "1.1.1"),
         .package(url: "https://github.com/elegantchaos/Files.git", from: "1.2.2"),
-        .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.8.0"),
+        .package(url: "https://github.com/elegantchaos/Logger.git", from: "1.8.1"),
         .package(url: "https://github.com/elegantchaos/Runner.git", from: "1.3.2"),
         .package(url: "https://github.com/elegantchaos/SemanticVersion.git", from: "1.1.1"),
+        .package(url: "https://github.com/elegantchaos/XPkgPackage.git", from: "1.2.0"),
+        
+        // tools
         .package(url: "https://github.com/elegantchaos/Versionator.git", from: "1.0.3"),
-        .package(url: "https://github.com/elegantchaos/XPkgPackage.git", from: "1.0.9")
     ],
     
     targets: [
@@ -58,3 +60,11 @@ let package = Package(
             )
     ]
 )
+
+import Foundation
+if ProcessInfo.processInfo.environment["RESOLVE_COMMAND_PLUGINS"] != nil {
+    package.dependencies.append(contentsOf: [
+        .package(url: "https://github.com/elegantchaos/ActionBuilderPlugin.git", from: "1.0.2"),
+        .package(url: "https://github.com/elegantchaos/SwiftFormatterPlugin.git", from: "1.0.2")
+    ])
+}

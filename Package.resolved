@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/elegantchaos/Logger.git",
       "state" : {
-        "revision" : "6dc36bcaae47498a79d01a9b41ac5ee6a26e4809",
-        "version" : "1.8.0"
+        "revision" : "a5cfb4ede43a0f4782afb2aea3175a04f206efcf",
+        "version" : "1.8.1"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/elegantchaos/XPkgPackage.git",
       "state" : {
-        "revision" : "cdcc0cff87cfe9f117c0cd26b700137f25a968de",
-        "version" : "1.1.1"
+        "revision" : "de01ca7b02865a280688018c3928ca4cf6a89f53",
+        "version" : "1.2.0"
       }
     }
   ],
