@@ -28,11 +28,11 @@ public struct ReinstallCommand: ParsableCommand {
         engine.attempt(action: "Reinstalling \(package.name).") {
             do {
                 engine.verbose.log("Uninstalling \(package.name)")
-                if try package.run(action: "remove", engine: engine) {
+                if try package.run(action: "remove", engine: engine, verbose: common.verbose) {
                     engine.output.log("Removed \(package.name).")
                 }
                 engine.verbose.log("Installing \(package.name)")
-                if try package.run(action: "install", engine: engine) {
+                if try package.run(action: "install", engine: engine, verbose: common.verbose) {
                     engine.output.log("Reinstalled \(package.name).")
                 }
             } catch {

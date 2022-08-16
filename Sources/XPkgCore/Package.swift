@@ -475,14 +475,18 @@ struct Package: Decodable {
 //        self.name = newName
     }
     
-    func run(action: String, engine: Engine) throws -> Bool {
+    func run(action: String, engine: Engine, verbose: Bool = false) throws -> Bool {
         do {
             // run as a new-style package
             let runner = Runner(for: engine.swiftURL, cwd: engine.vaultURL)
             let hooks = "\(name)-xpkg-hooks"
-            let arguments = ["run", hooks, name, path, action]
+            var arguments = ["run", hooks, name, path, action]
+            if verbose {
+                arguments.append("--verbose")
+            }
+            
             let result = try runner.sync(arguments: arguments, stdoutMode: .passthrough)
-            engine.verbose.log("\n> \(hooks) \(name) \(path) \(action)")
+            engine.verbose.log("\n> \(arguments.dropFirst().joined(separator: " "))")
             if result.status == 0 {
                 engine.verbose.log("stdout: \(result.stdout)")
                 engine.verbose.log("stderr: \(result.stderr)\n")
