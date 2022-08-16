@@ -1,9 +1,0 @@
-#!/bin/bash
-
-ROOT="$HOME/.local/share/xpkg"
-if [[ ! -e "$ROOT" ]]
-then
-    ROOT="/usr/local/share/xpkg"
-fi
-
-swift run --package-path "$ROOT/code" xpkg "$@"
