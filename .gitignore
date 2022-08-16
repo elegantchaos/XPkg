@@ -5,3 +5,4 @@ xcuserdata
 .bin/shell-hooks/.zcompdump
 .bin/shell-hooks/.zsh_history
 .bin/shell-hooks/.zsh_sessions
+.zsh_sessions
