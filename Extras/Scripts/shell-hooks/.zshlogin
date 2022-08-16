@@ -1,0 +1,23 @@
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# Created by Sam Deane, 05/06/2019.
+# All code (c) 2019 - present day, Elegant Chaos Limited.
+# For licensing terms, see http://elegantchaos.com/license/liberal/.
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+echo "login"
+
+if [[ "$SHELL_HOOKS_LOGIN" == "" ]]
+then
+
+export SHELL_HOOKS_LOGIN=1
+export BASH_HOOKS_LOGIN=1 # legacy
+
+source_hooks "$SHELL_HOOKS_ROOT/login"
+source_hooks "$SHELL_HOOKS_ROOT/login-$SHELL_HOOKS_PLATFORM"
+
+if [[ -e "$HOME/.zshlogin" ]]
+then
+    source "$HOME/.zshlogin"
+fi
+
+fi

@@ -1,0 +1,23 @@
+xg() {
+    builtin pushd "`xpkg path $@`"
+}
+
+_comp_xg() {
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=( $(compgen -W "$(xpkg list --compact)" -- "$cur") )
+}
+
+_comp_xg_zsh() {
+#    _arguments "1: :($(xpkg list --compact))"
+#  args = ( "blah: test thing" )
+  _arguments $args
+}
+
+if [[ "SHELL_HOOKS_SHELL" == "bash" ]]
+then
+  complete -o nospace -o bashdefault -F _comp_xg xg
+
+elif [[ "SHELL_HOOKS_SHELL" == "zsh" ]]
+then
+  compdef _comp_xg_zsh xg
+fi

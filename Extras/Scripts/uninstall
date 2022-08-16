@@ -1,0 +1,13 @@
+
+ROOT="$HOME/.local/share/xpkg"
+
+echo "Removing shell startup scripts."
+$SUDO "$ROOT/code/Extras/Scripts/shell-hooks/install" "uninstall"
+
+echo "Removing shell hooks."
+rm -rf ~/.local/share/shell-hooks
+
+echo "Removing xpkg."
+rm -rf ~/.local/share/xpkg
+
+echo "Done."

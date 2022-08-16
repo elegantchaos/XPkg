@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+ROOT="$HOME/.local/share/xpkg"
+
+FISH="$HOME/.config/fish/functions"
+
+LOCAL="$HOME/.local"
+echo "Installing links."
+if [[ -e "$LOCAL" ]]
+then
+    echo "Installing to ~/.local."
+    export STARTUP="$LOCAL/share/shell-hooks/startup"
+    export BIN="$LOCAL/bin"
+    export SUDO=
+else
+    echo "Installing to /usr/local (requires sudo)."
+    export STARTUP="/usr/local/share/shell-hooks/startup"
+    export BIN="/usr/local/bin"
+    export SUDO=sudo
+fi
+
+$SUDO mkdir -p "$STARTUP"
+$SUDO ln -sf "$ROOT/code/Extras/Scripts/xpkg-bash" "$STARTUP/xpkg"
+
+$SUDO mkdir -p "$BIN"
+$SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
+$SUDO ln -sf "$ROOT/code/Extras/Scripts/xpkg-dev" "$BIN/xpkg-dev"
+$SUDO ln -sf "$ROOT/code/Extras/Scripts/uninstall" "$BIN/xpkg-uninstall"
+
+mkdir -p "$FISH"
+ln -sf "$ROOT/code/Extras/Scripts/xg.fish" "$FISH/xg.fish"
