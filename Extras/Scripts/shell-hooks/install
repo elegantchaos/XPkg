@@ -37,7 +37,15 @@ then
 fi
 
 install_link "bashrc" ~/.bashrc $BACKUPSWITCH
-install_link "bash_profile" ~/.bash_profile $BACKUPSWITCH
+
+if [[ -e ~/.bash_profile ]]
+then
+    install_link "bash_profile" ~/.bash_profile $BACKUPSWITCH
+elif [[ -e ~/.profile ]]
+then
+    install_link "bash_profile" ~/.profile $BACKUPSWITCH
+fi
+
 install_link "zshenv" ~/.zshenv $BACKUPSWITCH
 
 install_link "shell-hooks.sh" ~/.local/bin/hooks --no-backup
