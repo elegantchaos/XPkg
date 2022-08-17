@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
-FROM --platform=linux/amd64 swift:5.6-bionic
+#FROM --platform=linux/amd64 swift:5.6-bionic
+FROM swiftlang/swift:nightly-jammy
 RUN apt-get -y update
 RUN apt-get install curl
 RUN useradd -ms /bin/bash tester
