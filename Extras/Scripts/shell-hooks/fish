@@ -11,6 +11,4 @@ set -x SHELL_HOOKS_PLATFORM (uname)
 set -x SHELL_HOOKS_ROOT "$HOME/.local/share/shell-hooks"
 set -x SHELL_HOOKS_INTERACTIVE 1
 
-if status --is-login
-  set -x PATH "$HOME/.local/bin" $PATH
-end
+fish_add_path "$HOME/.local/bin"
