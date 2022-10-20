@@ -6,3 +6,4 @@ xcuserdata
 .bin/shell-hooks/.zsh_history
 .bin/shell-hooks/.zsh_sessions
 .zsh_sessions
+Extras/Scripts/shell-hooks/.zsh_history
