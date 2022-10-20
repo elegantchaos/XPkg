@@ -23,22 +23,23 @@ class XPkgTests: XCTestCase {
         }
     }
     
+    var info: [String:Any] = [:]
     func testName() {
-        let engine = Engine(options: CommandShellOptions())
+        let engine = Engine(options: CommandShellOptions(), info: info)
         engine.defaultOrgs = ["testorg"]
-        let _ = engine.remotePackageURL("test", validator: validator(expecting: "git@github.com:testorg/test"))
+        let _ = try! engine.remotePackageURL("test", validator: validator(expecting: "git@github.com:testorg/test"))
         XCTAssertTrue(self.matched)
     }
 
     func testNameOrg() {
-        let engine = Engine(options: CommandShellOptions())
-        let _ = engine.remotePackageURL("someorg/someproj", validator: validator(expecting: "git@github.com:someorg/someproj"))
+        let engine = Engine(options: CommandShellOptions(), info: info)
+        let _ = try! engine.remotePackageURL("someorg/someproj", validator: validator(expecting: "git@github.com:someorg/someproj"))
         XCTAssertTrue(self.matched)
     }
 
     func testRepo() {
-        let engine = Engine(options: CommandShellOptions())
-        let _ = engine.remotePackageURL("git@mygit.com:someorg/someproj", validator: validator(expecting: "git@mygit.com:someorg/someproj"))
+        let engine = Engine(options: CommandShellOptions(), info: info)
+        let _ = try! engine.remotePackageURL("git@mygit.com:someorg/someproj", validator: validator(expecting: "git@mygit.com:someorg/someproj"))
         XCTAssertTrue(self.matched)
     }
 }

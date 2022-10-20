@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "commandshell",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/elegantchaos/CommandShell.git",
+      "state" : {
+        "revision" : "63f783a6546fed0723b2eb8b8fa12e27277b0ea2",
+        "version" : "2.1.5"
+      }
+    },
+    {
       "identity" : "expressions",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/elegantchaos/Expressions.git",
