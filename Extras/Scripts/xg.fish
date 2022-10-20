@@ -5,6 +5,9 @@ function __fish_xg_complete_packages
 end
 
 function xg
-  set -l directory (xpkg path $argv)
-  pushd $directory
+  if test -z "$argv"
+    pushd (xpkg path --projects)
+  else
+    pushd (xpkg path $argv)
+  end
 end
