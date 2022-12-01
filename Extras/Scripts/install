@@ -5,41 +5,6 @@ ROOT="$HOME/.local/share/xpkg"
 
 echo "Building."
 swift build --product xpkg
-if [[ $? != 0 ]]
-then
-    echo "Build failed."
-    exit 1
-fi
 
-FISH="$HOME/.config/fish/functions"
-
-LOCAL="$HOME/.local"
-echo "Installing links."
-if [[ -e "$LOCAL" ]]
-then
-    echo "Installing to ~/.local."
-    export STARTUP="$LOCAL/share/shell-hooks/startup"
-    export BIN="$LOCAL/bin"
-    export SUDO=
-else
-    echo "Installing to /usr/local (requires sudo)."
-    export STARTUP="/usr/local/share/shell-hooks/startup"
-    export BIN="/usr/local/bin"
-    export SUDO=sudo
-fi
-
-$SUDO mkdir -p "$STARTUP"
-$SUDO ln -sf "$ROOT/code/Extras/Scripts/xpkg-bash" "$STARTUP/xpkg"
-
-$SUDO mkdir -p "$BIN"
-$SUDO ln -sf "$ROOT/code/.build/debug/xpkg" "$BIN/xpkg"
-$SUDO ln -sf "$ROOT/code/Extras/Scripts/xpkg-dev" "$BIN/xpkg-dev"
-$SUDO ln -sf "$ROOT/code/Extras/Scripts/uninstall" "$BIN/xpkg-uninstall"
-
-mkdir -p "$FISH"
-ln -sf "$ROOT/code/Extras/Scripts/xg.fish" "$FISH/xg.fish"
-
-echo "Installing shell startup hooks."
-$SUDO "$ROOT/code/Extras/Scripts/shell-hooks/install" "$ROOT" "$XPKG_INSTALL_MODE"
-
-printf "Done.\n\nOpen a new shell / terminal window and type xpkg to get started.\n\n"
+echo "Installing."
+swift run xpkg bootstrap

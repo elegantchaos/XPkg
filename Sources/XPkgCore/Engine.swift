@@ -60,8 +60,9 @@ public class Engine: CommandEngine {
     
     public override class var subcommands: [ParsableCommand.Type] {
         return [
-            InitCommand.self,
+            BootstrapCommand.self,
             CheckCommand.self,
+            InitCommand.self,
             InstallCommand.self,
             LinkCommand.self,
             ListCommand.self,
@@ -76,16 +77,49 @@ public class Engine: CommandEngine {
         ]
     }
     
+    internal var isLocal: Bool {
+        return true // TODO: implement this properly
+    }
+
+    internal var localURL: URL {
+        return URL(fileURLExpandingPath: "~/.local/share").resolvingSymlinksInPath()
+    }
+
+    internal var globalURL: URL {
+        return URL(fileURLWithPath: "/usr/local/share/")
+    }
+    
+    internal var localXpkgURL: URL {
+        localURL.appendingPathComponent("xpkg")
+    }
+    
+    internal var globalXpkgURL: URL {
+        globalURL.appendingPathComponent("xpkg")
+    }
+    
+    internal var shareURL: URL {
+        return isLocal ? localURL : globalURL
+    }
+    
+    internal var localBinURL: URL {
+        return URL(fileURLExpandingPath: "~/.local/bin").resolvingSymlinksInPath()
+    }
+    
+    internal var globalBinURL: URL {
+        return URL(fileURLWithPath: "/usr/local/bin")
+    }
+
+    internal var binURL: URL {
+        return isLocal ? localBinURL : globalBinURL
+    }
     
     internal var xpkgURL: URL {
-        let localPath = ("~/.local/share/xpkg" as NSString).expandingTildeInPath as String
-        let localURL = URL(fileURLWithPath: localPath).resolvingSymlinksInPath()
-        
-        if fileManager.fileExists(at: localURL) {
-            return localURL
+        var xpkgURL = localURL.appendingPathComponent("xpkg")
+        if fileManager.fileExists(at: xpkgURL) {
+            return xpkgURL
         } else {
-            let globalURL = URL(fileURLWithPath: "/usr/local/share/xpkg").resolvingSymlinksInPath()
-            if fileManager.fileExists(atPath: globalURL.path) {
+            xpkgURL = globalURL.appendingPathComponent("xpkg")
+            if fileManager.fileExists(at: xpkgURL) {
                 return globalURL
             }
         }

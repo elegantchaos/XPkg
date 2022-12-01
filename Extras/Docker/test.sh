@@ -3,5 +3,9 @@
 # Download and run the bootstrap script
 curl https://raw.githubusercontent.com/elegantchaos/XPkg/development/Extras/Scripts/bootstrap | bash
 
+#cat ~/.bashrc
+cat ~/.profile
+#ls ~/.local/share/xpkg/
+
 # Test xpkg
-xpkg list
+bash -l -c "xpkg list"
