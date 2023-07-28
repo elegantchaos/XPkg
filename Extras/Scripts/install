@@ -38,6 +38,8 @@ $SUDO ln -sf "$ROOT/code/Extras/Scripts/uninstall" "$BIN/xpkg-uninstall"
 
 mkdir -p "$FISH"
 ln -sf "$ROOT/code/Extras/Scripts/xg.fish" "$FISH/xg.fish"
+ln -sf "$ROOT/code/Extras/Scripts/xg-edit.fish" "$FISH/xg-edit.fish"
+ln -sf "$ROOT/code/Extras/Scripts/xg-show.fish" "$FISH/xg-show.fish"
 
 echo "Installing shell startup hooks."
 $SUDO "$ROOT/code/Extras/Scripts/shell-hooks/install" "$ROOT" "$XPKG_INSTALL_MODE"
