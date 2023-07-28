@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"name": "xpkg-source",
+			"path": "../code/Sources"
+		},
+		{
+			"name": "xpkg-scripts",
+			"path": "../code/Extras/Scripts"
+		},
+		{
+			"name": "fish-share",
+			"path": "../../fish"
+		},
+		{
+			"name": "fish-config",
+			"path": "../../../../.config/fish"
+		}
+	],
+	"settings": {}
+}
