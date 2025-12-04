@@ -22,11 +22,11 @@ public struct PathCommand: ParsableCommand {
 
     public init() {
     }
-    
+
     public func run() throws {
         let engine: Engine = common.loadEngine()
         var url: URL? = nil
-        
+
         if asSelf {
             url = engine.xpkgCodeURL
         } else if vault {
@@ -41,11 +41,15 @@ public struct PathCommand: ParsableCommand {
                 if FileManager.default.fileExists(at: project) {
                     url = project
                 }
+                let website = engine.websitesURL.appendingPathComponent(name)
+                if FileManager.default.fileExists(at: website) {
+                    url = website
+                }
             }
         } else {
             throw ValidationError("Package name required.")
         }
-        
+
         if let found = url {
             engine.output.log(found.path)
         }
