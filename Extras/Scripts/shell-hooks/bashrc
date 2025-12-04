@@ -18,10 +18,16 @@ export BASH_HOOKS_ROOT="$HOME/.local/share/shell-hooks"
 # local resources just using ./my-resource
 function source_hook() {
   absolute=$(readlink "$1")
-  container=$(dirname "$absolute")
-  pushd "$container" > /dev/null
-  source "$absolute"
-  popd > /dev/null
+  if [[ $? == 0 ]]; then
+    # readlink succeeded, so we have a valid absolute path
+    container=$(dirname "$absolute")
+    pushd "$container" > /dev/null
+    source "$absolute"
+    popd > /dev/null
+  else
+    # readlink failed, so just use the original path
+    source "$1"
+  fi
 }
 
 # Source each hook in a folder.
