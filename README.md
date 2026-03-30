@@ -2,6 +2,16 @@
 
 A simple cross-platform "package" manager.
 
+---
+
+**NOTE:**
+
+This project is now retired. I've moved instead to a solution based on the [Homebrew](https://brew.sh) package manager, with a private tap.
+
+Using Swift Package Manager was an interesting experiment, but ultimately XPkg felt like an unnecessary re-invention of the wheel when something like Homebrew already exists, and serves the platforms that I currently care about (macOS/Linux).
+
+---
+
 ## Overview
 
 I tend to set up many aspects of my environment in a similar way, whether I'm on Linux, macOS, or some other unix-like.
@@ -36,12 +46,12 @@ There one or two things that it does require first, however:
 - swift (or Xcode)
 - github access (ideally via ssh, which means you need to set up your ssh keys for the machine and register them with github)
 
-
 ### Bootstrap
 
 Running `curl https://raw.githubusercontent.com/elegantchaos/XPkg/main/Extras/Scripts/bootstrap | bash` should get you up and running.
 
 What this does is:
+
 - clone the project into `.local/share/xpkg`
 - build it
 - install some hooks to link it in to your path
@@ -49,9 +59,7 @@ What this does is:
 
 During installation, an alias to xpkg is installed into `~/.local/bin`, and some startup hooks are installed for `bash`, `zsh` and `fish` which include this location in `$PATH`.
 
-*You need to start a new shell / open a new terminal window before this path change is picked up.*
-
-
+_You need to start a new shell / open a new terminal window before this path change is picked up._
 
 ## Usage
 
@@ -156,8 +164,8 @@ Previously we had packages and manifests. Now we have packages and installers.
 
 I plan to rename a lot of things to reflect the new reality:
 
-  - `xpkg-hooks` will probably become `xpkg-installer`
-  - `XPkgPackage` will probably become `XPkgInstaller`
+- `xpkg-hooks` will probably become `xpkg-installer`
+- `XPkgPackage` will probably become `XPkgInstaller`
 
 ### Hooking Into Shell Startup
 
@@ -170,7 +178,6 @@ This package is called `shell-hooks` (https://github.com/elegantchaos/shell-hook
 It hooks itself into the startup process for Bash, Zsh, and Fish. At startup, it scans `~/.config/shell-hooks/` and runs any files that it finds there. It actually uses subdirectories and pattern matching to choose exactly which files to run, depending on what platform you're on, and whether this is an interative or non-interactive session.
 
 The standard installer support package `XpkgPackage` knows about shell-hooks, and provides support for installing symbolic links into its directories. This makes it really simple for Xpkg packages to insert themselves into the shell startup process.
-
 
 ## Existing Packages
 
@@ -193,7 +200,6 @@ I'm slowly converting over my tangle of old scripts and links to packages, and h
 
 Many of these are in private repos, because they're basically _my_ settings, but you'll find a few public on github. I will try to open up more over time, I just need to make sure that they don't accidentally contain private tokens or other stuff not-for-general-consumption.
 
-
 ## How It Works
 
 XPkg basically creates a local swift package in a hidden directory, and maintains a `Package.swift` file in there.
@@ -210,8 +216,7 @@ Using SPM to do all the dependency resolution and fetching seemed like a good wa
 
 The idea is potentially pretty solid I think, and would be purely an implementation detail if it weren't for the fact that the use of SPM is exposed as a way to provide the installers. In theory other installer mechanisms could be provided instead / as well.
 
-  During development, I've found that occasionally bugs in XPkg itself can cause the auto-generated `Package.swift` to become corrupted and need hand editing. This is obviously not ideal for something that other people would use, but it should be possible to prevent this corruption from happening when XPkg itself settles down.
-
+During development, I've found that occasionally bugs in XPkg itself can cause the auto-generated `Package.swift` to become corrupted and need hand editing. This is obviously not ideal for something that other people would use, but it should be possible to prevent this corruption from happening when XPkg itself settles down.
 
 ## Future Plans
 
